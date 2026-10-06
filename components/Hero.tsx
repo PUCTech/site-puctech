@@ -3,12 +3,12 @@ import { hero } from "@/data/home";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden border-b border-brand-800">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,#143966_0%,transparent_100%)] opacity-70"
       />
-      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 py-28 text-center md:py-40">
+      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 py-20 text-center md:py-28">
         <h1 className="text-6xl font-bold tracking-tight md:text-8xl">
           PUC<span className="font-light italic text-brand-200">Tech</span>
         </h1>

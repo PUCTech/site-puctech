@@ -3,7 +3,7 @@ import { pillars } from "@/data/home";
 
 export default function Pillars() {
   return (
-    <Section eyebrow="O que fazemos" title="Nossos pilares">
+    <Section eyebrow="O que fazemos" title="Nossos pilares" tone ="alt">
       <div className="grid gap-6 md:grid-cols-3">
         {pillars.map((pillar, index) => (
           <div

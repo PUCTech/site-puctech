@@ -55,7 +55,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <p className="border-t border-brand-800 py-4 text-center text-xs text-brand-200/60">
+      <p className="pb-6 text-center text-xs text-brand-200/60">
         © {new Date().getFullYear()} PucTech. Todos os direitos reservados.
       </p>
     </footer>
