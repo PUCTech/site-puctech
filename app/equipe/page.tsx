@@ -5,7 +5,7 @@ import CurrentTeam from "@/components/team/CurrentTeam";
 import { advisors, founders } from "@/data/team";
 
 export const metadata: Metadata = {
-  title: "Equipe | PucTech",
+  title: "Equipe",
   description:
     "Conheça os orientadores, fundadores e a equipe atual da PucTech, Liga Academia de Tecnologia da PUC-SP.",
 };
