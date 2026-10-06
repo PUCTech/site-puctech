@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { siteConfig } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PucTech | Liga Academia de Tecnologia da PUC-SP",
-  description: "Liga acadêmica de tecnologia da PUC-SP.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: "PucTech | Liga Academia de Tecnologia da PUC-SP",
+    template: "%s | PucTech",
+  },
+  description:
+    "Aproximando os estudantes ao mercado de trabalho, integrando teoria e prática, em prol do desenvolvimento profissional.",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "PucTech",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

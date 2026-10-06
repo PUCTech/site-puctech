@@ -11,17 +11,15 @@ export default function About() {
             <p key={text}>{text}</p>
           ))}
         </div>
-        <div className="flex justify-center">
-          <div className="rounded-3xl border border-brand-800 bg-brand-900/50 p-10">
+          <div className="flex justify-center">
             <Image
               src="/logo.png"
               alt="Logo da PucTech"
-              width={200}
-              height={200}
-              className="rounded-2xl"
+              width={240}
+              height={240}
+              className="rounded-3xl"
             />
           </div>
-        </div>
       </div>
     </Section>
   );
