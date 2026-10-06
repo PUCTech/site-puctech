@@ -14,10 +14,10 @@ export const about = {
 };
 
 export const stats = [
-  { value: "50+", label: "Membros" },
-  { value: "10+", label: "Projetos" },
-  { value: "20+", label: "Eventos realizados" },
-  { value: "5+", label: "Empresas parceiras" },
+  { value: 50, suffix: "+", label: "Membros" },
+  { value: 10, suffix: "+", label: "Projetos" },
+  { value: 20, suffix: "+", label: "Eventos realizados" },
+  { value: 5, suffix: "+", label: "Empresas parceiras" },
 ];
 
 export const pillars = [
