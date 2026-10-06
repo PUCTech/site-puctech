@@ -235,5 +235,3 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `Pillars` → `Event
 ## Publicação
 
 A Vercel está ligada a este repositório. Cada push na `main` gera um novo deploy em produção, e cada pull request recebe um link de preview.
-
-Para usar um domínio próprio, conecte-o em **Vercel → Settings → Domains** e defina a variável de ambiente `NEXT_PUBLIC_SITE_URL` com o endereço novo (por exemplo `https://puctech.com.br`). Ela atualiza o sitemap, o `robots.txt` e a imagem de compartilhamento.
