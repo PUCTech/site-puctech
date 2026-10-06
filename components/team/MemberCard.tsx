@@ -1,6 +1,11 @@
 import Image from "next/image";
 import type { Member } from "@/data/team";
 
+export const membersGrid =
+  "grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(10rem,11rem))]";
+export const featuredGrid =
+  "grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]";
+
 type MemberCardProps = {
   member: Member;
   role?: string; // texto abaixo do nome (ex.: "Membro", "Presidente")
@@ -28,15 +33,15 @@ export default function MemberCard({
 
   return (
     <article
-      className={`relative flex flex-col items-center rounded-2xl border p-6 text-center transition-colors ${
-        highlight
-          ? "border-brand-500 bg-linear-to-b from-brand-800 to-brand-900 shadow-lg shadow-brand-500/10"
-          : "border-brand-800 bg-brand-900/50 hover:border-brand-500"
+      className={`relative flex flex-col items-center rounded-2xl border border-transparent p-4 text-center transition-colors hover:border-brand-500 ${
+        highlight ? "bg-brand-200" : "bg-white"
       }`}
     >
       <div
-        className={`relative overflow-hidden rounded-full bg-brand-800 ${
-          highlight ? "h-32 w-32 ring-2 ring-brand-200" : "h-24 w-24"
+        className={`relative overflow-hidden rounded-full ${
+          highlight
+            ? "h-24 w-24 bg-white ring-2 ring-white"
+            : "h-20 w-20 bg-brand-200"
         }`}
       >
         {member.photo ? (
@@ -44,14 +49,14 @@ export default function MemberCard({
             src={member.photo}
             alt={`Foto de ${member.name}`}
             fill
-            sizes="128px"
+            sizes="96px"
             className="object-cover"
           />
         ) : (
           <span
             aria-hidden
-            className={`flex h-full w-full items-center justify-center font-semibold text-brand-200 ${
-              highlight ? "text-3xl" : "text-2xl"
+            className={`flex h-full w-full items-center justify-center font-semibold text-brand-800 ${
+              highlight ? "text-2xl" : "text-xl"
             }`}
           >
             {getInitials(member.name)}
@@ -59,17 +64,19 @@ export default function MemberCard({
         )}
       </div>
 
-      <h3 className={`mt-4 font-semibold ${highlight ? "text-xl" : "text-lg"}`}>
+      <h3
+        className={`mt-3 font-semibold leading-tight text-brand-950 ${
+          highlight ? "text-lg" : "text-base"
+        }`}
+      >
         {member.name}
       </h3>
-      {role && <p className="mt-1 text-sm text-brand-200/80">{role}</p>}
+      {role && <p className="mt-0.5 text-sm text-brand-800">{role}</p>}
 
       {badge && (
         <span
-          className={`mt-4 rounded-full px-3 py-1 text-xs font-medium ${
-            highlight
-              ? "bg-brand-200 text-brand-950"
-              : "border border-brand-800 text-brand-200"
+          className={`mt-3 rounded-full px-2.5 py-0.5 text-xs font-medium leading-snug text-brand-800 ${
+            highlight ? "bg-white" : "bg-brand-200"
           }`}
         >
           {badge}
@@ -77,13 +84,14 @@ export default function MemberCard({
       )}
 
       {member.linkedin && (
-        // O after:absolute faz o link cobrir o cartão inteiro (clique em qualquer lugar).
         <a
           href={member.linkedin}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`LinkedIn de ${member.name} (abre em nova aba)`}
-          className="mt-4 text-sm text-brand-200/80 underline decoration-transparent underline-offset-4 transition-colors after:absolute after:inset-0 after:rounded-2xl hover:text-white hover:decoration-brand-200 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-200"
+          className={`mt-3 text-sm underline decoration-transparent underline-offset-4 transition-colors after:absolute after:inset-0 after:rounded-2xl hover:decoration-current focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500 ${
+            highlight ? "text-brand-800" : "text-brand-500"
+          }`}
         >
           LinkedIn ↗
         </a>

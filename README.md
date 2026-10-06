@@ -1,4 +1,4 @@
-# PucTech | Site da Liga Academia de Tecnologia da PUC-SP
+# PucTech | Site da Liga Acadêmica de Tecnologia da PUC-SP
 
 Site institucional da PucTech, publicado em https://www.puctech.com.br/
 

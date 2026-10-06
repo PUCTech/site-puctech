@@ -18,13 +18,13 @@ export default function Hero() {
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link
             href="/equipe"
-            className="rounded-full bg-brand-500 px-6 py-3 font-medium transition-colors hover:bg-brand-500/80"
+            className="rounded-full bg-white px-6 py-3 font-medium text-brand-950 transition-colors hover:bg-brand-200"
           >
             Conheça a equipe
           </Link>
           <a
             href="#sobre"
-            className="rounded-full border border-brand-800 px-6 py-3 font-medium transition-colors hover:border-brand-200 hover:text-brand-200"
+            className="rounded-full border border-brand-500 px-6 py-3 font-medium transition-colors hover:border-brand-200 hover:text-brand-200"
           >
             Saiba mais
           </a>

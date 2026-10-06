@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "PucTech | Liga Academia de Tecnologia da PUC-SP",
+    default: "PucTech | Liga Acadêmica de Tecnologia da PUC-SP",
     template: "%s | PucTech",
   },
   description:

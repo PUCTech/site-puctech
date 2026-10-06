@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import MemberCard from "@/components/team/MemberCard";
+import MemberCard, {
+  featuredGrid,
+  membersGrid,
+} from "@/components/team/MemberCard";
 import { areaInfo, members, type AreaId, type Member } from "@/data/team";
 
 type TabId = "geral" | AreaId;
@@ -22,19 +25,19 @@ const sections: {
     level: "president",
     title: "Presidentes",
     highlight: true,
-    grid: "sm:grid-cols-2 lg:grid-cols-3",
+    grid: featuredGrid,
   },
   {
     level: "member",
     title: "Membros",
     highlight: false,
-    grid: "sm:grid-cols-2 lg:grid-cols-4",
+    grid: membersGrid,
   },
   {
     level: "trainee",
     title: "Trainees",
     highlight: false,
-    grid: "sm:grid-cols-2 lg:grid-cols-4",
+    grid: membersGrid,
   },
 ];
 
@@ -59,8 +62,7 @@ const team = members.filter(
 const areasOf = (member: Member): AreaId[] =>
   Array.from(new Set([...(member.areas ?? []), ...(member.presidentOf ?? [])]));
 
-// Nível da pessoa dentro de uma aba. Quem preside só algumas áreas aparece como
-// presidente nelas e como membro nas outras.
+// Nível da pessoa dentro de uma aba. Quem preside só algumas áreas aparece como presidente nelas e como membro nas outras.
 function levelIn(member: Member, area: AreaId | undefined): Level {
   if (member.group === "trainee") return "trainee";
   if (member.group === "presidente") return "president";
@@ -145,7 +147,7 @@ export default function CurrentTeam() {
           return (
             <div key={section.level}>
               <h3 className="text-xl font-semibold">{section.title}</h3>
-              <div className={`mt-6 grid gap-6 ${section.grid}`}>
+              <div className={`mt-6 ${section.grid}`}>
                 {people.map((member, index) => (
                   <MemberCard
                     key={`${active}-${section.level}-${index}`}

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Section from "@/components/Section";
-import MemberCard from "@/components/team/MemberCard";
+import MemberCard, { membersGrid } from "@/components/team/MemberCard";
 import CurrentTeam from "@/components/team/CurrentTeam";
 import { advisors, founders } from "@/data/team";
 
 export const metadata: Metadata = {
   title: "Equipe",
   description:
-    "Conheça os orientadores, fundadores e a equipe atual da PucTech, Liga Academia de Tecnologia da PUC-SP.",
+    "Conheça os orientadores, fundadores e a equipe atual da PucTech, Liga Acadêmica de Tecnologia da PUC-SP.",
 };
 
 export default function EquipePage() {
@@ -30,7 +30,7 @@ export default function EquipePage() {
       </section>
 
       <Section eyebrow="Orientação" title="Orientadores">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className={membersGrid}>
           {advisors.map((member, index) => (
             <MemberCard key={index} member={member} role="Orientador(a)" />
           ))}
@@ -38,7 +38,7 @@ export default function EquipePage() {
       </Section>
 
       <Section eyebrow="História" title="Fundadores">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className={membersGrid}>
           {founders.map((member, index) => (
             <MemberCard key={index} member={member} role="Fundador(a)" />
           ))}

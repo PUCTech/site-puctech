@@ -8,7 +8,7 @@ export const hero = {
 export const about = {
   title: "Uma liga feita por estudantes, para estudantes",
   paragraphs: [
-    "A PucTech é a Liga Academia de Tecnologia da PUC-SP. Reunimos estudantes de diferentes cursos interessados em tecnologia, inovação e carreira.",
+    "A PucTech é a Liga Acadêmica de Tecnologia da PUC-SP. Reunimos estudantes de diferentes cursos interessados em tecnologia, inovação e carreira.",
     "Promovemos palestras, workshops e projetos práticos que conectam o que se aprende em sala de aula com os desafios reais do mercado.",
   ],
 };

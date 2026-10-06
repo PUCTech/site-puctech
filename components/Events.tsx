@@ -8,16 +8,20 @@ export default function Events() {
         {events.map((event) => (
           <article
             key={event.title}
-            className="flex flex-col rounded-2xl border border-brand-800 bg-brand-900/50 p-6 transition-colors hover:border-brand-500"
+            className="flex flex-col rounded-2xl border border-transparent bg-white p-6 transition-colors hover:border-brand-500"
           >
-            <span className="w-fit rounded-full bg-brand-800 px-3 py-1 text-xs font-medium text-brand-200">
+            <span className="w-fit rounded-full bg-brand-200 px-3 py-1 text-xs font-medium text-brand-800">
               {event.tag}
             </span>
-            <h3 className="mt-4 text-lg font-semibold">{event.title}</h3>
-            <p className="mt-2 flex-1 text-sm text-brand-200/80">
+            <h3 className="mt-4 text-lg font-semibold text-brand-950">
+              {event.title}
+            </h3>
+            <p className="mt-2 flex-1 text-sm text-brand-800">
               {event.description}
             </p>
-            <p className="mt-6 text-sm text-brand-500">{event.date}</p>
+            <p className="mt-6 text-sm font-medium text-brand-500">
+              {event.date}
+            </p>
           </article>
         ))}
       </div>

@@ -7,7 +7,7 @@ const siteUrl =
 export const siteConfig = {
   name: "PucTech",
   url: siteUrl,
-  description: "Liga Academia de Tecnologia da PUC-SP",
+  description: "Liga Acadêmica de Tecnologia da PUC-SP",
   links: {
     instagram: "https://www.instagram.com/puctechsp/",
     linkedin: "https://www.linkedin.com/company/puctechsp/",

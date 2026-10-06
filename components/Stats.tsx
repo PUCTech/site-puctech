@@ -54,9 +54,9 @@ export default function Stats() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="rounded-2xl border border-brand-800 bg-brand-900/50 p-6 text-center"
+            className="rounded-2xl bg-white p-6 text-center"
           >
-            <p className="text-4xl font-bold text-brand-200">
+            <p className="text-4xl font-bold text-brand-500">
               <span aria-hidden>
                 {Math.round(stat.value * progress)}
                 {stat.suffix}
@@ -66,7 +66,7 @@ export default function Stats() {
                 {stat.suffix}
               </span>
             </p>
-            <p className="mt-2 text-sm text-brand-200/80">{stat.label}</p>
+            <p className="mt-2 text-sm text-brand-800">{stat.label}</p>
           </div>
         ))}
       </div>
