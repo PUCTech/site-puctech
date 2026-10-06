@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6">
+    <main className="flex min-h-[70vh] flex-col items-center justify-center gap-6">
       <Image
         src="/logo.png"
         alt="Logo da PucTech"
