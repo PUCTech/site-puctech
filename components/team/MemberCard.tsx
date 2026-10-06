@@ -3,6 +3,7 @@ import type { Member } from "@/data/team";
 
 type MemberCardProps = {
   member: Member;
+  role?: string; // texto abaixo do nome (ex.: "Membro", "Presidente")
   variant?: "default" | "highlight";
   badge?: string;
 };
@@ -19,6 +20,7 @@ function getInitials(name: string) {
 
 export default function MemberCard({
   member,
+  role,
   variant = "default",
   badge,
 }: MemberCardProps) {
@@ -26,7 +28,7 @@ export default function MemberCard({
 
   return (
     <article
-      className={`flex flex-col items-center rounded-2xl border p-6 text-center transition-colors ${
+      className={`relative flex flex-col items-center rounded-2xl border p-6 text-center transition-colors ${
         highlight
           ? "border-brand-500 bg-linear-to-b from-brand-800 to-brand-900 shadow-lg shadow-brand-500/10"
           : "border-brand-800 bg-brand-900/50 hover:border-brand-500"
@@ -60,7 +62,7 @@ export default function MemberCard({
       <h3 className={`mt-4 font-semibold ${highlight ? "text-xl" : "text-lg"}`}>
         {member.name}
       </h3>
-      <p className="mt-1 text-sm text-brand-200/80">{member.role}</p>
+      {role && <p className="mt-1 text-sm text-brand-200/80">{role}</p>}
 
       {badge && (
         <span
@@ -75,13 +77,15 @@ export default function MemberCard({
       )}
 
       {member.linkedin && (
+        // O after:absolute faz o link cobrir o cartão inteiro (clique em qualquer lugar).
         <a
           href={member.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 text-sm text-brand-200/80 underline decoration-transparent underline-offset-4 transition-colors hover:text-white hover:decoration-brand-200"
+          aria-label={`LinkedIn de ${member.name} (abre em nova aba)`}
+          className="mt-4 text-sm text-brand-200/80 underline decoration-transparent underline-offset-4 transition-colors after:absolute after:inset-0 after:rounded-2xl hover:text-white hover:decoration-brand-200 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-200"
         >
-          LinkedIn
+          LinkedIn ↗
         </a>
       )}
     </article>

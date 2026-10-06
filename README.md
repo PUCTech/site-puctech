@@ -1,6 +1,6 @@
 # PucTech | Site da Liga Academia de Tecnologia da PUC-SP
 
-Site institucional da PucTech, publicado em https://site-puctech.vercel.app.
+Site institucional da PucTech, publicado em https://www.puctech.com.br/
 
 Feito com **Next.js** (App Router), **TypeScript** e **Tailwind CSS**, hospedado na **Vercel**. Cada push na branch `main` publica uma nova versão automaticamente.
 
@@ -118,16 +118,18 @@ Em `stats`, `value` é o número final da contagem (um número, não texto) e `s
 
 ### `data/team.ts`
 
-Cada pessoa segue este formato:
+Toda a equipe fica em uma lista só, `members`, uma linha por pessoa. Para adicionar, copie uma linha; para editar, mude os campos; para remover, apague a linha. A ordem da lista é a ordem no site.
 
-```ts
-type Member = {
-  name: string;       // obrigatório
-  role: string;       // obrigatório
-  photo?: string;     // opcional, ex.: "/equipe/nome.jpg"
-  linkedin?: string;  // opcional
-};
-```
+| Campo | Obrigatório | Função |
+|---|---|---|
+| `name` | sim | Nome |
+| `group` | sim | `"orientador"`, `"fundador"`, `"presidente"` (geral), `"membro"` ou `"trainee"` |
+| `areas` | não | Áreas de membro ou trainee; sem área, só aparece na aba Geral |
+| `presidentOf` | não | Áreas que o membro preside |
+| `photo` | não | Ex.: `"/equipe/nome.jpg"` (crie `public/equipe/` se não existir) |
+| `linkedin` | não | Torna o cartão inteiro um link |
+
+Para criar uma área nova, adicione um item em `areaInfo` e inclua o `id` no tipo `AreaId`. A aba aparece sozinha.
 
 Sem `photo`, o cartão mostra um círculo com as iniciais do nome. Para usar uma foto, coloque o arquivo em `public/equipe/` e informe o caminho começando por `/equipe/`. Fotos quadradas, ou com o rosto centralizado, ficam melhores no círculo.
 

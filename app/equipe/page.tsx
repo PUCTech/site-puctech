@@ -31,16 +31,16 @@ export default function EquipePage() {
 
       <Section eyebrow="Orientação" title="Orientadores">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {advisors.map((member) => (
-            <MemberCard key={member.name} member={member} />
+          {advisors.map((member, index) => (
+            <MemberCard key={index} member={member} role="Orientador(a)" />
           ))}
         </div>
       </Section>
 
       <Section eyebrow="História" title="Fundadores">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {founders.map((member) => (
-            <MemberCard key={member.name} member={member} />
+          {founders.map((member, index) => (
+            <MemberCard key={index} member={member} role="Fundador(a)" />
           ))}
         </div>
       </Section>
