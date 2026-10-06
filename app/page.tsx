@@ -1,20 +1,19 @@
-import Image from "next/image";
+import Hero from "@/components/Hero";
+import About from "@/components/About";
+import Stats from "@/components/Stats";
+import Pillars from "@/components/Pillars";
+import Events from "@/components/Events";
+import Invitation from "@/components/Invitation";
 
 export default function Home() {
   return (
-    <main className="flex min-h-[70vh] flex-col items-center justify-center gap-6">
-      <Image
-        src="/logo.png"
-        alt="Logo da PucTech"
-        width={160}
-        height={160}
-        priority
-        className="rounded-2xl"
-      />
-      <h1 className="text-4xl font-bold">
-        PUC<span className="font-light italic text-brand-200">Tech</span>
-      </h1>
-      <p className="text-brand-200">Liga Academia de Tecnologia da PUC-SP</p>
+    <main>
+      <Hero />
+      <About />
+      <Stats />
+      <Pillars />
+      <Events />
+      <Invitation />
     </main>
   );
 }
