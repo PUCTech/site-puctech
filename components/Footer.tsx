@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { navLinks, siteConfig } from "@/lib/site";
 
+const footerLink =
+  "text-brand-200/80 underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-white hover:decoration-brand-200 focus-visible:text-white focus-visible:decoration-brand-200";
+
 export default function Footer() {
   return (
     <footer className="border-t border-brand-800 bg-brand-950">
@@ -19,10 +22,7 @@ export default function Footer() {
             <li className="font-semibold">Navegação</li>
             {navLinks.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-brand-200/80 transition-colors hover:text-brand-200"
-                >
+                <Link href={link.href} className={footerLink}>
                   {link.label}
                 </Link>
               </li>
@@ -36,7 +36,7 @@ export default function Footer() {
                 href={siteConfig.links.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-200/80 transition-colors hover:text-brand-200"
+                className={footerLink}
               >
                 Instagram
               </a>
@@ -46,7 +46,7 @@ export default function Footer() {
                 href={siteConfig.links.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-200/80 transition-colors hover:text-brand-200"
+                className={footerLink}
               >
                 LinkedIn
               </a>
