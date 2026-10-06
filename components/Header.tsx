@@ -10,9 +10,14 @@ export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   const linkClass = (href: string) =>
-    `transition-colors hover:text-brand-200 ${
-      pathname === href ? "text-brand-200" : "text-white"
+    `w-fit border-b-2 py-1 transition-colors ${
+      isActive(href)
+        ? "border-brand-200 font-semibold text-white"
+        : "border-transparent text-brand-200/60 hover:text-white"
     }`;
 
   return (
@@ -37,7 +42,12 @@ export default function Header() {
 
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className={linkClass(link.href)}>
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={isActive(link.href) ? "page" : undefined}
+              className={linkClass(link.href)}
+            >
               {link.label}
             </Link>
           ))}
@@ -74,6 +84,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
+              aria-current={isActive(link.href) ? "page" : undefined}
               className={linkClass(link.href)}
               onClick={() => setOpen(false)}
             >
