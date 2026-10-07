@@ -17,7 +17,8 @@ body {
   color: #ffffff;
 }
 
-.partners-mask {
+/* Carrosséis (parceiros e projetos): esmaece as bordas para os quadrados "entrarem" e "saírem" suavemente. */
+.carousel-mask {
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   -webkit-mask-image: linear-gradient(
     to right,
@@ -28,8 +29,24 @@ body {
   );
 }
 
+/* Pop-up de projeto: entrada suave. */
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.project-dialog[open] {
+  animation: dialog-in 200ms ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .partners-mask > div {
-    transition: none !important;
+  .project-dialog[open] {
+    animation: none;
   }
 }

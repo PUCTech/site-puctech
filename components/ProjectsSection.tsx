@@ -1,5 +1,8 @@
+import Link from "next/link";
+import ProjectsShowcase from "@/components/ProjectsShowcase";
 import Section from "@/components/Section";
 import { projectsIntro } from "@/data/home";
+import { projects } from "@/data/projects";
 
 export default function ProjectsSection() {
   return (
@@ -17,6 +20,19 @@ export default function ProjectsSection() {
           </li>
         ))}
       </ul>
+
+      {projects.length > 0 && (
+        <div className="mt-12">
+          <ProjectsShowcase projects={projects} />
+        </div>
+      )}
+
+      <Link
+        href="/projetos"
+        className="mt-10 inline-block rounded-full border border-brand-500 px-6 py-3 font-medium transition-colors hover:border-brand-200 hover:text-brand-200"
+      >
+        Conheça nossos projetos
+      </Link>
     </Section>
   );
 }
