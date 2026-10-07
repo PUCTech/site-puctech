@@ -3,6 +3,7 @@ import {
   LinkedinIcon,
   LinkIcon,
   TiktokIcon,
+  XIcon,
 } from "@/components/SocialIcons";
 import { socialIntro } from "@/data/home";
 import { siteConfig } from "@/lib/site";
@@ -52,6 +53,15 @@ export default function Social() {
             >
               <TiktokIcon />
               TikTok
+            </a>
+            <a
+              href={siteConfig.links.x}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={button}
+            >
+              <XIcon />
+              X
             </a>
             <a
               href={siteConfig.links.allLinks}

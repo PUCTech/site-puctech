@@ -46,7 +46,7 @@ export const partners: { name: string; logo?: string }[] = [
   { name: "Blumi Talents", logo: "/parceiros/blumi-talents.jpg" },
   { name: "Peacore", logo: "/parceiros/peacore.jpg" },
   { name: "Conecta Devs", logo: "/parceiros/conecta-devs.jpg" },
-  { name: "PUC Junior" },
+  { name: "PUC Junior", logo: "/parceiros/puc-junior.jpg" },
   { name: "PUC Angels", logo: "/parceiros/puc-angels.jpg" },
 ];
 

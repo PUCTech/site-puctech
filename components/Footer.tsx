@@ -4,6 +4,7 @@ import {
   LinkedinIcon,
   LinkIcon,
   TiktokIcon,
+  XIcon,
 } from "@/components/SocialIcons";
 import { navLinks, siteConfig } from "@/lib/site";
 
@@ -70,6 +71,17 @@ export default function Footer() {
               >
                 <TiktokIcon className="size-4" />
                 TikTok
+              </a>
+            </li>
+                        <li>
+              <a
+                href={siteConfig.links.x}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialLink}
+              >
+                <XIcon className="size-4" />
+                X
               </a>
             </li>
             <li>
