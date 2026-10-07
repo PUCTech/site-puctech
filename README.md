@@ -123,7 +123,7 @@ Toda a equipe fica em uma lista só, `members`, uma linha por pessoa. Para adici
 | Campo | Obrigatório | Função |
 |---|---|---|
 | `name` | sim | Nome |
-| `group` | sim | `"orientador"`, `"fundador"`, `"presidente"` (geral), `"membro"` ou `"trainee"` |
+| `group` | sim | `"orientador"`, `"fundador"`, `"presidente"` (geral), `"vice-presidente"`, `"membro"` ou `"trainee"` |
 | `areas` | não | Áreas de membro ou trainee; sem área, só aparece na aba Geral |
 | `presidentOf` | não | Áreas que o membro preside |
 | `photo` | não | Ex.: `"/equipe/nome.jpg"` (crie `public/equipe/` se não existir) |

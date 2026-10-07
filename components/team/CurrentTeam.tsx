@@ -54,6 +54,7 @@ function joinLabels(ids: AreaId[]) {
 const team = members.filter(
   (member) =>
     member.group === "presidente" ||
+    member.group === "vice-presidente" ||
     member.group === "membro" ||
     member.group === "trainee",
 );
@@ -65,7 +66,9 @@ const areasOf = (member: Member): AreaId[] =>
 // Nível da pessoa dentro de uma aba. Quem preside só algumas áreas aparece como presidente nelas e como membro nas outras.
 function levelIn(member: Member, area: AreaId | undefined): Level {
   if (member.group === "trainee") return "trainee";
-  if (member.group === "presidente") return "president";
+  if (member.group === "presidente" || member.group === "vice-presidente") {
+    return "president";
+  }
   const presides = area
     ? Boolean(member.presidentOf?.includes(area))
     : (member.presidentOf?.length ?? 0) > 0;
@@ -77,6 +80,7 @@ function roleIn(member: Member, area: AreaId | undefined): string {
   if (level === "trainee") return "Trainee";
   if (level === "member") return "Membro";
   if (member.group === "presidente") return "Presidente geral";
+  if (member.group === "vice-presidente") return "Vice-presidente";
   if (area) return "Presidente";
   return `Presidente de ${joinLabels(member.presidentOf ?? [])}`;
 }

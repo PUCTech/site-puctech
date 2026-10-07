@@ -3,23 +3,24 @@
 //   • Editar     → altere os campos na linha da pessoa.
 //   • Remover    → apague a linha da pessoa.
 // A ordem da lista é a ordem em que as pessoas aparecem no site.
-
+//
 // Campos:
 //   name        → nome (obrigatório)
 //   group       → obrigatório. Um destes:
-//                 "orientador"  → seção Orientadores
-//                 "fundador"    → seção Fundadores
-//                 "presidente"  → presidente geral da liga (sem área)
-//                 "membro"      → membro da equipe atual
-//                 "trainee"     → trainee da equipe atual
+//                 "orientador"      → seção Orientadores
+//                 "fundador"        → seção Fundadores
+//                 "presidente"      → presidente geral da liga (sem área)
+//                 "vice-presidente" → vice-presidente da liga (sem área)
+//                 "membro"          → membro da equipe atual
+//                 "trainee"         → trainee da equipe atual
 //   areas       → áreas em que a pessoa é membro/trainee: "marketing", "eventos", "pessoas"
 //                 (pode ter uma, várias ou nenhuma; sem área, só aparece na aba Geral)
 //   presidentOf → áreas que a pessoa preside (só para group "membro")
 //   photo       → ex.: "/equipe/nome.jpg" (arquivo em public/equipe/)
 //   linkedin    → com ele, o cartão inteiro vira um link
-
+//
 // Quem preside uma área já pertence a ela, não precisa repetir em `areas`.
-
+//
 // Exemplos de linha:
 //   { name: "Ana", group: "orientador" },
 //   { name: "Bia", group: "fundador", linkedin: "https://..." },
@@ -31,7 +32,7 @@
 //   { name: "Gil", group: "membro" },                                              // membro sem área
 //   { name: "Iara", group: "trainee", areas: ["pessoas"] },                        // trainee de Pessoas
 //   { name: "João", group: "trainee" },                                            // trainee sem área
-
+//
 // Quem é fundador (ou orientador) e também faz parte da equipe atual ganha duas linhas, uma de cada group.
 
 export type AreaId = "marketing" | "eventos" | "pessoas";
@@ -40,6 +41,7 @@ export type Group =
   | "orientador"
   | "fundador"
   | "presidente"
+  | "vice-presidente"
   | "membro"
   | "trainee";
 
@@ -81,35 +83,49 @@ export const areaInfo: AreaInfo[] = [
 
 export const members: Member[] = [
   // Orientadores
-  { name: "Exemplo", group: "orientador" },
-  { name: "Exemplo", group: "orientador" },
+  { name: "Profa. Cristiana", group: "orientador", photo: "/equipe/profa-cristiana.jpg", linkedin: "http://lattes.cnpq.br/9085326429110439" },
+  { name: "Prof. Daniel Gatti", group: "orientador", photo: "/equipe/prof-daniel-gatti.jpg", linkedin: "https://www.linkedin.com/in/dgatti/" },
 
   // Fundadores
-  { name: "Exemplo", group: "fundador" },
-  { name: "Exemplo", group: "fundador" },
-  { name: "Exemplo", group: "fundador" },
+  { name: "Igor Simões", group: "fundador", photo: "/equipe/igor-simoes.jpg", linkedin: "https://www.linkedin.com/in/igorssimoes/" },
+  { name: "Leonardo Grupioni", group: "fundador", photo: "/equipe/leonardo-grupioni.jpg", linkedin: "https://www.linkedin.com/in/leonardo-grupioni-5929941aa/" },
+  { name: "René Lopes", group: "fundador", photo: "/equipe/rene-lopes.jpg", linkedin: "https://www.linkedin.com/in/ren%C3%A9-l-silva-06a293189/" },
 
-  // Marketing
-  { name: "Exemplo", group: "membro", presidentOf: ["marketing"] },
-  { name: "Exemplo", group: "membro", presidentOf: ["marketing"] },
-  { name: "Exemplo", group: "membro", areas: ["marketing"] },
-  { name: "Exemplo", group: "membro", areas: ["marketing"] },
-  { name: "Exemplo", group: "membro", areas: ["marketing"] },
-  { name: "Exemplo", group: "membro", areas: ["marketing"] },
+  // Diretoria
+  { name: "Luís Augusto", group: "presidente", photo: "/equipe/luis-augusto.jpg", linkedin: "https://www.linkedin.com/in/lu%C3%ADs-augusto-coelho-de-souza-5b5324324/" },
+  { name: "Kauã Bezerra", group: "vice-presidente", photo: "/equipe/kaua-bezerra.jpg", linkedin: "https://www.linkedin.com/in/kau%C3%A3-bezerra-88a0921b0/" },
 
-  // Eventos
-  { name: "Exemplo", group: "membro", presidentOf: ["eventos"] },
-  { name: "Exemplo", group: "membro", areas: ["eventos"] },
-  { name: "Exemplo", group: "membro", areas: ["eventos"] },
-  { name: "Exemplo", group: "membro", areas: ["eventos"] },
-  { name: "Exemplo", group: "membro", areas: ["eventos"] },
+  // Membros
+  { name: "Guilherme Coutinho", group: "membro", areas: ["eventos"], photo: "/equipe/guilherme-coutinho.jpg", linkedin: "https://www.linkedin.com/in/guicoutinho/" },
+  { name: "Guilherme Pequeneza", group: "membro", areas: ["eventos"], photo: "/equipe/guilherme-pequeneza.jpg", linkedin: "https://www.linkedin.com/in/guilherme-pequeneza-2b1132366/" },
+  { name: "Liam Lopes", group: "membro", areas: ["eventos"], photo: "/equipe/liam-lopes.jpg", linkedin: "https://www.linkedin.com/in/liam-lopes-8250b1214/" },
+  { name: "Raul Kolaric", group: "membro", areas: ["marketing"], photo: "/equipe/raul-kolaric.jpg", linkedin: "https://www.linkedin.com/in/raulkolaric/" },
+  { name: "Vitor Seiji", group: "membro", photo: "/equipe/vitor-seiji.jpg", linkedin: "https://www.linkedin.com/in/vitor-seiji-17809b389/" },
 
-  // Pessoas
-  { name: "Exemplo", group: "membro", presidentOf: ["pessoas"] },
-  { name: "Exemplo", group: "membro", presidentOf: ["pessoas"] },
-  { name: "Exemplo", group: "membro", areas: ["pessoas"] },
-  { name: "Exemplo", group: "membro", areas: ["pessoas"] },
-  { name: "Exemplo", group: "membro", areas: ["pessoas"] },
+  // Trainees
+  { name: "Bruna Samy", group: "trainee", photo: "/equipe/bruna-samy.jpg", linkedin: "https://www.linkedin.com/in/brunasamyfreming/" },
+  { name: "Davi Bastyi", group: "trainee", photo: "/equipe/davi-bastyi.jpg" },
+  { name: "Felipe Correia", group: "trainee", linkedin: "https://www.linkedin.com/in/felipe-urzi-04021b34a/" },
+  { name: "Gabriel Almeida", group: "trainee", photo: "/equipe/gabriel-almeida.jpg", linkedin: "https://www.linkedin.com/in/gabriel-almeida-115877410/" },
+  { name: "Heitor Cavalcanti", group: "trainee", photo: "/equipe/heitor-cavalcanti.jpg", linkedin: "https://www.linkedin.com/in/heitorscavalcanti/" },
+  { name: "Hellen Araujo", group: "trainee", photo: "/equipe/hellen-araujo.jpg", linkedin: "https://www.linkedin.com/in/hellen-araujo-da-silva-550b86322/" },
+  { name: "Henrique Campos", group: "trainee", photo: "/equipe/henrique-campos.jpg", linkedin: "https://www.linkedin.com/in/henrique-campos-rodrigues-578927328/" },
+  { name: "Igor Dias", group: "trainee", photo: "/equipe/igor-dias.jpg", linkedin: "https://www.linkedin.com/in/igor-dias-7355773b3/" },
+  { name: "Isabella Fleury", group: "trainee", photo: "/equipe/isabella-fleury.jpg", linkedin: "https://www.linkedin.com/in/isabella-fleury-b756b83b4/" },
+  { name: "João Gabriel", group: "trainee", photo: "/equipe/joao-gabriel.jpg", linkedin: "https://www.linkedin.com/in/jo%C3%A3o-gabriel-reis-silva-212707410/" },
+  { name: "João Vitor", group: "trainee", photo: "/equipe/joao-vitor.jpg", linkedin: "https://www.linkedin.com/in/jo%C3%A3o-vitor-quintella/" },
+  { name: "Leopoldo", group: "trainee", photo: "/equipe/leopoldo.jpg", linkedin: "https://www.linkedin.com/in/leopoldo-ortuzal-zuchieri-7a98a8410/" },
+  { name: "Lorenzo", group: "trainee", photo: "/equipe/lorenzo.jpg", linkedin: "https://www.linkedin.com/in/lorenzo-cunha-032a9a3a7/" },
+  { name: "Pedro Cione", group: "trainee", linkedin: "https://www.linkedin.com/in/pedrocione/" },
+  { name: "Pedro Henrique", group: "trainee", photo: "/equipe/pedro-henrique.jpg", linkedin: "https://www.linkedin.com/in/pedrofpereira/" },
+  { name: "Pedro Murakami", group: "trainee", photo: "/equipe/pedro-murakami.jpg", linkedin: "https://www.linkedin.com/in/pedro-vama-murakami/" },
+  { name: "Pedru Paulo", group: "trainee", photo: "/equipe/pedru-paulo.jpg", linkedin: "https://www.linkedin.com/in/pedru-paulo-c-gama-02633b399/" },
+  { name: "Rafael Infantini", group: "trainee", photo: "/equipe/rafael-infantini.jpg", linkedin: "https://www.linkedin.com/in/rbinfantini/" },
+  { name: "Rafael Taffo", group: "trainee", photo: "/equipe/rafael-taffo.jpg", linkedin: "https://www.linkedin.com/in/rafael-taffo-montanha-5a11093bb/" },
+  { name: "Rafaella Castro", group: "trainee", photo: "/equipe/rafaella-castro.jpg", linkedin: "https://www.linkedin.com/in/rafaellazlima/" },
+  { name: "Renato Corral", group: "trainee", photo: "/equipe/renato-corral.jpg", linkedin: "https://www.linkedin.com/in/renatocorralsilva/" },
+  { name: "Thierry", group: "trainee", photo: "/equipe/thierry.jpg", linkedin: "https://www.linkedin.com/in/thierry-nadjarian-a33a4a347/" },
+  { name: "Victoria Tavares", group: "trainee", photo: "/equipe/victoria-tavares.jpg", linkedin: "https://www.linkedin.com/in/victoria-tavares-877808411/" },
 ];
 
 // Confere a lista a cada build. Se algo estiver errado, o build falha com uma

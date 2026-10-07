@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { Member } from "@/data/team";
 
 export const membersGrid =
-  "grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(10rem,11rem))]";
+  "grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,12.5rem)]";
 export const featuredGrid =
   "grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]";
 
@@ -13,10 +13,12 @@ type MemberCardProps = {
   badge?: string;
 };
 
+const TITLES = ["prof.", "profa."];
+
 function getInitials(name: string) {
   return name
     .split(" ")
-    .filter(Boolean)
+    .filter((part) => part && !TITLES.includes(part.toLowerCase()))
     .slice(0, 2)
     .map((part) => part[0])
     .join("")
@@ -33,7 +35,7 @@ export default function MemberCard({
 
   return (
     <article
-      className={`relative flex flex-col items-center rounded-2xl border border-transparent p-4 text-center transition-colors hover:border-brand-500 ${
+      className={`relative flex flex-col items-center rounded-2xl border border-transparent px-3 py-4 text-center transition-colors hover:border-brand-500 ${
         highlight ? "bg-brand-200" : "bg-white"
       }`}
     >
