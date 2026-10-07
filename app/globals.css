@@ -6,6 +6,7 @@
   --color-brand-800: #143966;
   --color-brand-500: #2b6fac;
   --color-brand-200: #bae4fe;
+  --color-paper: #f0f4f9;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -14,4 +15,46 @@
 body {
   background: var(--color-brand-950);
   color: #ffffff;
+}
+
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% / 3));
+  }
+}
+
+.marquee {
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+}
+
+.marquee-track {
+  animation: marquee 30s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+  }
+
+  .marquee-copy {
+    display: none;
+  }
 }

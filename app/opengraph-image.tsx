@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "PucTech | Liga Acadêmica de Tecnologia da PUC-SP";
+export const alt = "PUC Tech | A Primeira Liga de Ciência e Tecnologia da PUC-SP";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -25,7 +25,7 @@ export default function Image() {
           <span style={{ color: "#bae4fe", marginLeft: 16 }}>Tech</span>
         </div>
         <div style={{ marginTop: 24, fontSize: 36, color: "#bae4fe" }}>
-          Liga Acadêmica de Tecnologia da PUC-SP
+          A Primeira Liga de Ciência e Tecnologia da PUC-SP
         </div>
       </div>
     ),

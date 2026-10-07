@@ -1,8 +1,16 @@
 import Link from "next/link";
+import {
+  InstagramIcon,
+  LinkedinIcon,
+  LinkIcon,
+  TiktokIcon,
+} from "@/components/SocialIcons";
 import { navLinks, siteConfig } from "@/lib/site";
 
 const footerLink =
   "text-brand-200/80 underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-white hover:decoration-brand-200 focus-visible:text-white focus-visible:decoration-brand-200";
+
+const socialLink = `inline-flex items-center gap-2 ${footerLink}`;
 
 export default function Footer() {
   return (
@@ -12,7 +20,7 @@ export default function Footer() {
           <p className="text-lg font-bold">
             PUC<span className="font-light italic text-brand-200">Tech</span>
           </p>
-          <p className="mt-2 max-w-xs text-sm text-brand-200/80">
+          <p className="mt-2 max-w-sm text-sm text-brand-200/80">
             {siteConfig.description}
           </p>
         </div>
@@ -36,8 +44,9 @@ export default function Footer() {
                 href={siteConfig.links.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={footerLink}
+                className={socialLink}
               >
+                <InstagramIcon className="size-4" />
                 Instagram
               </a>
             </li>
@@ -46,9 +55,32 @@ export default function Footer() {
                 href={siteConfig.links.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={footerLink}
+                className={socialLink}
               >
+                <LinkedinIcon className="size-4" />
                 LinkedIn
+              </a>
+            </li>
+            <li>
+              <a
+                href={siteConfig.links.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialLink}
+              >
+                <TiktokIcon className="size-4" />
+                TikTok
+              </a>
+            </li>
+            <li>
+              <a
+                href={siteConfig.links.allLinks}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialLink}
+              >
+                <LinkIcon className="size-4" />
+                Nossos links
               </a>
             </li>
           </ul>
@@ -56,7 +88,7 @@ export default function Footer() {
       </div>
 
       <p className="pb-6 text-center text-xs text-brand-200/60">
-        © {new Date().getFullYear()} PucTech. Todos os direitos reservados.
+        © {new Date().getFullYear()} PUC Tech. Todos os direitos reservados.
       </p>
     </footer>
   );

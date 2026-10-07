@@ -5,12 +5,14 @@ const siteUrl =
     : "http://localhost:3000");
 
 export const siteConfig = {
-  name: "PucTech",
+  name: "PUC Tech",
   url: siteUrl,
-  description: "Liga Acadêmica de Tecnologia da PUC-SP",
+  description: "A Primeira Liga de Ciência e Tecnologia da PUC-SP",
   links: {
     instagram: "https://www.instagram.com/puctechsp/",
     linkedin: "https://www.linkedin.com/company/puctechsp/",
+    tiktok: "https://www.tiktok.com/@puctechsp",
+    allLinks: "https://puctech.com.br/links",
   },
 };
 

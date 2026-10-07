@@ -1,9 +1,9 @@
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Stats from "@/components/Stats";
-import Pillars from "@/components/Pillars";
-import Events from "@/components/Events";
-import Invitation from "@/components/Invitation";
+import ProjectsSection from "@/components/ProjectsSection";
+import Partners from "@/components/Partners";
+import Social from "@/components/Social";
 
 export default function Home() {
   return (
@@ -11,9 +11,9 @@ export default function Home() {
       <Hero />
       <About />
       <Stats />
-      <Pillars />
-      <Events />
-      <Invitation />
+      <ProjectsSection />
+      <Partners />
+      <Social />
     </main>
   );
 }
