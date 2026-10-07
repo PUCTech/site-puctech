@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { hero } from "@/data/home";
 
 export default function Hero() {
@@ -21,20 +20,6 @@ export default function Hero() {
         <h1 className="mt-8 text-balance text-3xl font-bold tracking-tight sm:text-5xl">
           {hero.title}
         </h1>
-        <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <Link
-            href="/equipe"
-            className="rounded-full bg-paper px-6 py-3 font-medium text-brand-950 transition-colors hover:bg-brand-200"
-          >
-            Conheça os membros
-          </Link>
-          <a
-            href="#sobre"
-            className="rounded-full border border-brand-500 px-6 py-3 font-medium transition-colors hover:border-brand-200 hover:text-brand-200"
-          >
-            Saiba mais
-          </a>
-        </div>
       </div>
     </section>
   );

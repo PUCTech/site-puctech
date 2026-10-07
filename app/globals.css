@@ -17,44 +17,19 @@ body {
   color: #ffffff;
 }
 
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-100% / 3));
-  }
-}
-
-.marquee {
-  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+.partners-mask {
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   -webkit-mask-image: linear-gradient(
     to right,
     transparent,
-    #000 6%,
-    #000 94%,
+    #000 8%,
+    #000 92%,
     transparent
   );
 }
 
-.marquee-track {
-  animation: marquee 30s linear infinite;
-}
-
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-    width: auto;
-    flex-wrap: wrap;
-    row-gap: 1rem;
-  }
-
-  .marquee-copy {
-    display: none;
+  .partners-mask > div {
+    transition: none !important;
   }
 }
