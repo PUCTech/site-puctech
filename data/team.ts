@@ -103,6 +103,7 @@ export const members: Member[] = [
   { name: "Vitor Seiji", group: "membro", photo: "/equipe/vitor-seiji.jpg", linkedin: "https://www.linkedin.com/in/vitor-seiji-17809b389/" },
 
   // Trainees
+  { name: "Ana Paula", group: "trainee", photo: "/equipe/ana-paula.jpg" },
   { name: "Bruna Samy", group: "trainee", photo: "/equipe/bruna-samy.jpg", linkedin: "https://www.linkedin.com/in/brunasamyfreming/" },
   { name: "Davi Bastyi", group: "trainee", photo: "/equipe/davi-bastyi.jpg" },
   { name: "Felipe Correia", group: "trainee", linkedin: "https://www.linkedin.com/in/felipe-urzi-04021b34a/" },

@@ -52,6 +52,7 @@ export default function MemberCard({
             alt={`Foto de ${member.name}`}
             fill
             sizes="96px"
+            loading="eager"
             className="object-cover"
           />
         ) : (
