@@ -49,12 +49,12 @@ export default function Stats() {
   }, []);
 
   return (
-    <Section eyebrow="Números" title="A PucTech em números">
-      <div ref={gridRef} className="grid grid-cols-2 gap-4 md:grid-cols-4">
+    <Section title="Nossos números">
+      <div ref={gridRef} className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="rounded-2xl bg-white p-6 text-center"
+            className="rounded-2xl bg-paper p-6 text-center last:odd:col-span-2 lg:last:odd:col-span-1"
           >
             <p className="text-4xl font-bold text-brand-500">
               <span aria-hidden>
@@ -66,7 +66,7 @@ export default function Stats() {
                 {stat.suffix}
               </span>
             </p>
-            <p className="mt-2 text-sm text-brand-800">{stat.label}</p>
+            <p className="mt-2 text-balance text-sm text-brand-800">{stat.label}</p>
           </div>
         ))}
       </div>

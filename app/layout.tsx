@@ -18,15 +18,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "PucTech | Liga Acadêmica de Tecnologia da PUC-SP",
-    template: "%s | PucTech",
+    default: "PUC Tech | A Primeira Liga de Ciência e Tecnologia da PUC-SP",
+    template: "%s | PUC Tech",
   },
   description:
-    "Aproximando os estudantes ao mercado de trabalho, integrando teoria e prática, em prol do desenvolvimento profissional.",
+    "A primeira liga de ciência e tecnologia da PUC-SP, formada por estudantes que acreditam no protagonismo estudantil como motor de transformação.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    siteName: "PucTech",
+    siteName: "PUC Tech",
   },
   twitter: {
     card: "summary_large_image",

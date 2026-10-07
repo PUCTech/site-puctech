@@ -1,60 +1,57 @@
-// ATENÇÃO: todo o conteúdo abaixo é EXEMPLO. Substitua pelos dados reais da PucTech.
+// Textos e números da home. Para destacar uma palavra em negrito, use **assim**.
 
 export const hero = {
-  subtitle:
-    "Aproximando os estudantes ao mercado de trabalho, integrando teoria e prática, em prol do desenvolvimento profissional!",
+  title: "A Primeira Liga de Ciência e Tecnologia da PUC-SP",
 };
 
 export const about = {
-  title: "Uma liga feita por estudantes, para estudantes",
+  title: "Sobre",
   paragraphs: [
-    "A PucTech é a Liga Acadêmica de Tecnologia da PUC-SP. Reunimos estudantes de diferentes cursos interessados em tecnologia, inovação e carreira.",
-    "Promovemos palestras, workshops e projetos práticos que conectam o que se aprende em sala de aula com os desafios reais do mercado.",
+    "A **PUC Tech** é a primeira liga de ciência e tecnologia da PUC-SP, formada por estudantes que acreditam no protagonismo estudantil como motor de transformação. Nosso propósito é criar experiências práticas e colaborativas que ampliem a formação universitária, conectando teoria e prática, tecnologia e impacto social.",
+    "Atuamos por meio de projetos, oficinas, eventos e iniciativas que desenvolvem competências técnicas, profissionais e humanas. Somos um espaço onde estudantes lideram, inovam e constroem soluções reais para desafios concretos, em equipe e com propósito.",
   ],
 };
 
 export const stats = [
-  { value: 50, suffix: "+", label: "Membros" },
-  { value: 10, suffix: "+", label: "Projetos" },
+  { value: 50, suffix: "+", label: "Estudantes já passaram pela liga" },
+  { value: 10, suffix: "+", label: "Projetos desenvolvidos" },
   { value: 20, suffix: "+", label: "Eventos realizados" },
   { value: 5, suffix: "+", label: "Empresas parceiras" },
+  { value: 15, suffix: "+", label: "Estudantes empregados" },
 ];
 
-export const pillars = [
-  {
-    title: "Teoria e prática",
-    description:
-      "Projetos reais que transformam o conteúdo de sala de aula em experiência.",
-  },
-  {
-    title: "Mercado de trabalho",
-    description:
-      "Contato direto com profissionais e empresas da área de tecnologia.",
-  },
-  {
-    title: "Comunidade",
-    description:
-      "Networking e troca de conhecimento entre estudantes de todos os cursos.",
-  },
+export const projectsIntro = {
+  text: "Desenvolvemos soluções aplicadas com foco em inteligência artificial, engenharia de software, cibersegurança e inovação social.",
+  areas: [
+    "Inteligência Artificial",
+    "Engenharia de Software",
+    "Cibersegurança",
+    "Dados e Pesquisa Aplicada",
+  ],
+};
+
+export const partnersIntro = {
+  title: "Parceiros da PUC Tech",
+  paragraphs: [
+    "Acreditamos que inovação se faz em comunidade.",
+    "Contamos com o apoio de empresas, organizações estudantis, startups e da própria universidade para ampliar nosso impacto.",
+  ],
+};
+
+// Para mostrar o logo de um parceiro, coloque o arquivo em public/parceiros/
+// e acrescente logo: "/parceiros/nome.png". Sem logo, aparece o nome em texto.
+export const partners: { name: string; logo?: string }[] = [
+  { name: "PUC-SP", logo: "/parceiros/puc-sp.jpg" },
+  { name: "Amazon AWS", logo: "/parceiros/amazon-aws.jpg" },
+  { name: "Blumi Talents", logo: "/parceiros/blumi-talents.jpg" },
+  { name: "Peacore", logo: "/parceiros/peacore.jpg" },
+  { name: "Conecta Devs", logo: "/parceiros/conecta-devs.jpg" },
+  { name: "PUC Junior" },
+  { name: "PUC Angels", logo: "/parceiros/puc-angels.jpg" },
 ];
 
-export const events = [
-  {
-    tag: "Palestra",
-    title: "Carreira em tecnologia: por onde começar?",
-    date: "15/03/2026",
-    description: "Bate-papo com profissionais sobre os primeiros passos na área.",
-  },
-  {
-    tag: "Workshop",
-    title: "Introdução ao desenvolvimento web",
-    date: "02/04/2026",
-    description: "Oficina prática para quem quer criar o primeiro site.",
-  },
-  {
-    tag: "Networking",
-    title: "Encontro com empresas parceiras",
-    date: "20/05/2026",
-    description: "Conversa aberta com recrutadores e times de tecnologia.",
-  },
-];
+export const socialIntro = {
+  title: "Acompanhe nossas redes sociais",
+  tagline: "Não perca nenhuma novidade!",
+  text: "Divulgamos projetos, eventos, mentorias e oportunidades de envolvimento pelas nossas redes sociais.",
+};

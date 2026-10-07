@@ -36,13 +36,13 @@ export default function MemberCard({
   return (
     <article
       className={`relative flex flex-col items-center rounded-2xl border border-transparent px-3 py-4 text-center transition-colors hover:border-brand-500 ${
-        highlight ? "bg-brand-200" : "bg-white"
+        highlight ? "bg-brand-200" : "bg-paper"
       }`}
     >
       <div
         className={`relative overflow-hidden rounded-full ${
           highlight
-            ? "h-24 w-24 bg-white ring-2 ring-white"
+            ? "h-24 w-24 bg-paper ring-2 ring-paper"
             : "h-20 w-20 bg-brand-200"
         }`}
       >
@@ -79,7 +79,7 @@ export default function MemberCard({
       {badge && (
         <span
           className={`mt-3 rounded-full px-2.5 py-0.5 text-xs font-medium leading-snug text-brand-800 ${
-            highlight ? "bg-white" : "bg-brand-200"
+            highlight ? "bg-paper" : "bg-brand-200"
           }`}
         >
           {badge}
