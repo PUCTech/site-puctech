@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-brand-800 bg-brand-950/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Link
           href="/"
           className="flex items-center gap-3"
@@ -30,7 +30,7 @@ export default function Header() {
         >
           <Image
             src="/logo.png"
-            alt="Logo da PucTech"
+            alt="Logo da PUC Tech"
             width={36}
             height={36}
             className="rounded-lg"
@@ -40,7 +40,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -55,7 +55,7 @@ export default function Header() {
 
         <button
           type="button"
-          className="md:hidden"
+          className="lg:hidden"
           aria-label="Abrir menu"
           aria-expanded={open}
           onClick={() => setOpen(!open)}
@@ -79,7 +79,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-4 border-t border-brand-800 px-6 py-4 md:hidden">
+        <nav className="flex flex-col gap-4 border-t border-brand-800 px-6 py-4 lg:hidden">
           {navLinks.map((link) => (
             <Link
               key={link.href}
