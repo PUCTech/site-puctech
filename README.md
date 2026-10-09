@@ -253,7 +253,9 @@ Definidas em `app/globals.css`, dentro de `@theme inline`, e usadas como classes
 | `brand-200` | `#bae4fe` | Textos de destaque, "Tech" do logotipo e cartão de redes sociais      |
 | `paper`     | `#f0f4f9` | Cartões claros (números, equipe, valores, pop-up de projeto)          |
 
-Para mudar uma cor no site inteiro, altere o valor do token. O brilho do topo (nos `Hero.tsx` e nas páginas Sobre, Equipe, Projetos e Processo Seletivo) e a imagem de compartilhamento (`app/opengraph-image.tsx`) usam códigos de cor escritos diretamente no arquivo, então, se a paleta mudar, ajuste também esses pontos.
+O cartão da seção "Sobre" da home usa branco puro (`bg-white`), que não é um token da paleta.
+
+Para mudar uma cor no site inteiro, altere o valor do token. O brilho do topo (no `Hero.tsx` e nas páginas Sobre, Equipe, Projetos e Processo Seletivo) e a imagem de compartilhamento (`app/opengraph-image.tsx`) usam códigos de cor escritos diretamente no arquivo, então, se a paleta mudar, ajuste também esses pontos.
 
 A fonte é a **Geist** (e **Geist Mono**), carregada pelo `next/font` em `app/layout.tsx`.
 
@@ -261,7 +263,9 @@ O `globals.css` também define a máscara que esmaece as bordas dos carrosséis 
 
 ### Seções (`components/Section.tsx`)
 
-Quase todas as seções usam o componente `Section`, que define largura máxima, espaçamento, título e o "eyebrow" (o texto pequeno em maiúsculas acima do título). Propriedades:
+O componente `Section` define largura máxima, espaçamento, título e o "eyebrow" (o texto pequeno em maiúsculas acima do título). É usado em `Stats`, `ProjectsSection`, `Partners` e nas páginas Sobre, Equipe e Projetos. `Hero`, `About` e `Social`, e a página Processo Seletivo, têm marcação própria.
+
+Propriedades:
 
 | Propriedade | Função                                                                                 |
 | ----------- | -------------------------------------------------------------------------------------- |
@@ -270,13 +274,13 @@ Quase todas as seções usam o componente `Section`, que define largura máxima,
 | `title`     | Título da seção                                                                        |
 | `tone`      | `"default"` (fundo normal) ou `"alt"` (fundo mais claro, com linhas em cima e embaixo) |
 
-Para mudar o ritmo de fundos de uma página, adicione ou remova `tone="alt"` nos componentes.
+Para mudar o ritmo de fundos de uma página, adicione `tone="alt"` em uma `Section`. Hoje nenhuma seção usa essa opção.
 
 ### Ordem da home
 
 Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` → `Partners` → `Social`. Para reordenar ou remover uma seção, mude as linhas desse arquivo.
 
-Âncoras disponíveis: na home, `#projetos`, `#parceiros` e `#redes`; em `/sobre`, `#diferenca`, `#visao`, `#valores`, `#historia` e `#apoio`; em `/projetos`, `#areas` e `#projetos`.
+Âncoras disponíveis: na home, `#sobre`, `#projetos`, `#parceiros` e `#redes`; em `/sobre`, `#diferenca`, `#visao`, `#valores`, `#historia` e `#apoio`; em `/projetos`, `#areas` e `#projetos`.
 
 ---
 
@@ -288,7 +292,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 **`Hero.tsx`**: logo grande e o título de `hero`, sobre um brilho azul no topo.
 
-**`About.tsx`**: título e parágrafos de `about`, na home.
+**`About.tsx`**: cartão branco centralizado com o título e os parágrafos de `about` (`data/home.ts`). Texto entre `**dois asteriscos**` vira negrito.
 
 **`Stats.tsx`**: um cartão por item de `stats`. Os números sobem de 0 até o valor final quando a seção aparece na tela. Para quem usa "reduzir movimento" no sistema, o número final aparece direto, sem animação. Leitores de tela leem sempre o valor final.
 
