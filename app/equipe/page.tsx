@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import Section from "@/components/Section";
-import MemberCard, { membersGrid } from "@/components/team/MemberCard";
+import MemberCard, {
+  featuredGrid,
+  membersGrid,
+} from "@/components/team/MemberCard";
 import CurrentTeam from "@/components/team/CurrentTeam";
-import { advisors, founders } from "@/data/team";
+import {
+  advisors,
+  executive,
+  founders,
+  groupDescriptions,
+} from "@/data/team";
 
 export const metadata: Metadata = {
   title: "Equipe",
@@ -29,15 +37,15 @@ export default function EquipePage() {
         </div>
       </section>
 
-      <Section eyebrow="Orientação" title="Orientadores">
+      <Section title="Tutores" subtitle={groupDescriptions.tutores}>
         <div className={membersGrid}>
           {advisors.map((member, index) => (
-            <MemberCard key={index} member={member} role="Orientador(a)" />
+            <MemberCard key={index} member={member} role="Tutor(a)" />
           ))}
         </div>
       </Section>
 
-      <Section eyebrow="História" title="Fundadores">
+      <Section title="Fundadores" subtitle={groupDescriptions.fundadores}>
         <div className={membersGrid}>
           {founders.map((member, index) => (
             <MemberCard key={index} member={member} role="Fundador(a)" />
@@ -45,7 +53,22 @@ export default function EquipePage() {
         </div>
       </Section>
 
-      <Section eyebrow="Hoje" title="Equipe atual">
+      <Section
+        id="diretoria-executiva"
+        title="Diretoria Executiva"
+        subtitle={groupDescriptions.diretoriaExecutiva}
+      >
+        <div className={featuredGrid}>
+          {executive.map((member, index) => (
+            <MemberCard key={index} member={member} variant="highlight" />
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        title="Áreas Operacionais"
+        subtitle={groupDescriptions.areasOperacionais}
+      >
         <CurrentTeam />
       </Section>
     </main>

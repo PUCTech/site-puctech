@@ -8,7 +8,8 @@ import MemberCard, {
 import { areaInfo, members, type AreaId, type Member } from "@/data/team";
 
 type TabId = "geral" | AreaId;
-type Level = "president" | "member" | "trainee";
+
+type Level = "president" | "vice" | "member" | "trainee";
 
 const tabs: { id: TabId; label: string }[] = [
   { id: "geral", label: "Geral" },
@@ -24,6 +25,12 @@ const sections: {
   {
     level: "president",
     title: "Presidentes",
+    highlight: true,
+    grid: featuredGrid,
+  },
+  {
+    level: "vice",
+    title: "Vice-presidentes",
     highlight: true,
     grid: featuredGrid,
   },
@@ -44,54 +51,40 @@ const sections: {
 const labelOf = (id: AreaId) =>
   areaInfo.find((area) => area.id === id)?.label ?? id;
 
-function joinLabels(ids: AreaId[]) {
-  const labels = ids.map(labelOf);
-  if (labels.length <= 1) return labels.join("");
-  return `${labels.slice(0, -1).join(", ")} e ${labels[labels.length - 1]}`;
-}
-
-// Equipe atual: orientadores e fundadores têm suas próprias seções na página.
 const team = members.filter(
-  (member) =>
-    member.group === "presidente" ||
-    member.group === "vice-presidente" ||
-    member.group === "membro" ||
-    member.group === "trainee",
+  (member) => member.group === "membro" || member.group === "trainee",
 );
 
-// Áreas da pessoa: as de `areas` mais as que ela preside, sem repetir.
 const areasOf = (member: Member): AreaId[] =>
-  Array.from(new Set([...(member.areas ?? []), ...(member.presidentOf ?? [])]));
+  Array.from(
+    new Set([
+      ...(member.areas ?? []),
+      ...(member.presidentOf ?? []),
+      ...(member.viceOf ?? []),
+    ]),
+  );
 
-// Nível da pessoa dentro de uma aba. Quem preside só algumas áreas aparece como presidente nelas e como membro nas outras.
 function levelIn(member: Member, area: AreaId | undefined): Level {
   if (member.group === "trainee") return "trainee";
-  if (member.group === "presidente" || member.group === "vice-presidente") {
-    return "president";
-  }
-  const presides = area
-    ? Boolean(member.presidentOf?.includes(area))
-    : (member.presidentOf?.length ?? 0) > 0;
-  return presides ? "president" : "member";
+  if (!area) return "member";
+  if (member.presidentOf?.includes(area)) return "president";
+  if (member.viceOf?.includes(area)) return "vice";
+  return "member";
 }
 
 function roleIn(member: Member, area: AreaId | undefined): string {
   const level = levelIn(member, area);
+  if (level === "president") return "Presidente";
+  if (level === "vice") return "Vice-presidente";
   if (level === "trainee") return "Trainee";
-  if (level === "member") return "Membro";
-  if (member.group === "presidente") return "Presidente geral";
-  if (member.group === "vice-presidente") return "Vice-presidente";
-  if (area) return "Presidente";
-  return `Presidente de ${joinLabels(member.presidentOf ?? [])}`;
+  return "Membro";
 }
 
 export default function CurrentTeam() {
   const [active, setActive] = useState<TabId>("geral");
-
   const area = active === "geral" ? undefined : active;
   const areaDetails = areaInfo.find((item) => item.id === area);
 
-  // Na aba Geral entram todas, inclusive quem não tem área, uma única vez cada.
   const visible = area
     ? team.filter((member) => areasOf(member).includes(area))
     : team;

@@ -17,6 +17,7 @@ export type Member = {
   cargo?: string;
   areas?: AreaId[];
   presidentOf?: AreaId[];
+  viceOf?: AreaId[];
   photo?: string;
   linkedin?: string;
 };
@@ -59,8 +60,8 @@ export const members: Member[] = [
   { name: "René Lopes", group: "fundador", photo: "/equipe/rene-lopes.jpg", linkedin: "https://www.linkedin.com/in/ren%C3%A9-l-silva-06a293189/" },
 
   // Diretoria
-  { name: "Luís Augusto", group: "presidente", photo: "/equipe/luis-augusto.jpg", linkedin: "https://www.linkedin.com/in/lu%C3%ADs-augusto-coelho-de-souza-5b5324324/" },
-  { name: "Kauã Bezerra", group: "vice-presidente", photo: "/equipe/kaua-bezerra.jpg", linkedin: "https://www.linkedin.com/in/kau%C3%A3-bezerra-88a0921b0/" },
+  { name: "Luís Augusto", group: "presidente", cargo: "Presidente", photo: "/equipe/luis-augusto.jpg", linkedin: "https://www.linkedin.com/in/lu%C3%ADs-augusto-coelho-de-souza-5b5324324/" },
+  { name: "Kauã Bezerra", group: "vice-presidente", cargo: "Vice-presidente", photo: "/equipe/kaua-bezerra.jpg", linkedin: "https://www.linkedin.com/in/kau%C3%A3-bezerra-88a0921b0/" },
 
   // Membros
   { name: "Guilherme Coutinho", group: "membro", areas: ["eventos"], photo: "/equipe/guilherme-coutinho.jpg", linkedin: "https://www.linkedin.com/in/guicoutinho/" },
@@ -71,7 +72,7 @@ export const members: Member[] = [
   { name: "João Vitor", group: "membro", areas: ["eventos"], photo: "/equipe/joao-vitor.jpg", linkedin: "https://www.linkedin.com/in/jo%C3%A3o-vitor-quintella/" },
   { name: "Liam Lopes", group: "membro", photo: "/equipe/liam-lopes.jpg", linkedin: "https://www.linkedin.com/in/liam-lopes-8250b1214/" },
   { name: "Lorenzo", group: "membro", areas: ["pessoas"], photo: "/equipe/lorenzo.jpg", linkedin: "https://www.linkedin.com/in/lorenzo-cunha-032a9a3a7/" },
-  { name: "Rafaella Castro", group: "membro", areas: ["marketing"], photo: "/equipe/rafaella-castro.jpg", linkedin: "https://www.linkedin.com/in/rafaellazlima/" },
+  { name: "Rafaella Castro", group: "membro", viceOf: ["marketing"], photo: "/equipe/rafaella-castro.jpg", linkedin: "https://www.linkedin.com/in/rafaellazlima/" },
   { name: "Raul Kolaric", group: "membro", photo: "/equipe/raul-kolaric.jpg", linkedin: "https://www.linkedin.com/in/raulkolaric/" },
   { name: "Renato Corral", group: "membro", areas: ["eventos"], photo: "/equipe/renato-corral.jpg", linkedin: "https://www.linkedin.com/in/renatocorralsilva/" },
   { name: "Thierry", group: "membro", areas: ["eventos"], photo: "/equipe/thierry.jpg", linkedin: "https://www.linkedin.com/in/thierry-nadjarian-a33a4a347/" },
@@ -108,6 +109,9 @@ function validateTeam(list: Member[]) {
     if (member.group !== "membro" && member.presidentOf) {
       errors.push(`${who}: presidentOf só vale para group "membro".`);
     }
+    if (member.group !== "membro" && member.viceOf) {
+      errors.push(`${who}: viceOf só vale para group "membro".`);
+    }
   });
 
   if (errors.length > 0) {
@@ -128,3 +132,13 @@ export const strategic = members.filter(
 );
 export const trainees = members.filter((m) => m.group === "trainee");
 export const idealizers = members.filter((m) => m.group === "idealizador");
+export const groupDescriptions = {
+  tutores:
+    "Professores da PUC-SP que atuam como ponte entre a liga e a universidade, apoiando pedagogicamente nossas ações.",
+  fundadores:
+    "Estudantes que idealizaram e fundaram a PUC Tech, estruturando sua base organizacional e seus primeiros projetos.",
+  diretoriaExecutiva:
+    "Responsável pela gestão geral da liga, composta por presidente e vice-presidente.",
+  areasOperacionais:
+    "Coordenações que garantem o funcionamento e a comunicação da liga: Pessoas, Eventos e Marketing.",
+};

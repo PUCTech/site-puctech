@@ -1,10 +1,9 @@
 import Image from "next/image";
 import type { Member } from "@/data/team";
 
-export const membersGrid =
-  "grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,12.5rem)]";
-export const featuredGrid =
-  "grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(12rem,14rem))]";
+export const membersGrid = "flex flex-wrap justify-center gap-4";
+
+export const featuredGrid = "flex flex-wrap justify-center gap-4";
 
 type MemberCardProps = {
   member: Member;
@@ -32,11 +31,12 @@ export default function MemberCard({
   badge,
 }: MemberCardProps) {
   const highlight = variant === "highlight";
+  const title = member.cargo ?? role;
 
   return (
     <article
-      className={`relative flex flex-col items-center rounded-2xl border border-transparent px-3 py-4 text-center transition-colors hover:border-brand-500 ${
-        highlight ? "bg-brand-200" : "bg-paper"
+        className={`relative flex w-[calc(50%-0.5rem)] flex-col items-center rounded-2xl border border-transparent px-3 py-4 text-center transition-colors hover:border-brand-500 ${
+        highlight ? "bg-brand-200 sm:w-[14rem]" : "bg-paper sm:w-[12.5rem]"
       }`}
     >
       <div
@@ -74,7 +74,7 @@ export default function MemberCard({
       >
         {member.name}
       </h3>
-      {role && <p className="mt-0.5 text-sm text-brand-800">{role}</p>}
+      {title && <p className="mt-0.5 text-sm text-brand-800">{title}</p>}
 
       {badge && (
         <span
