@@ -17,31 +17,29 @@ const tabs: { id: TabId; label: string }[] = [
 ];
 
 const sections: {
-  level: Level;
+  key: string;
+  levels: Level[];
   title: string;
   highlight: boolean;
   grid: string;
 }[] = [
   {
-    level: "president",
-    title: "Presidentes",
+    key: "leaders",
+    levels: ["president", "vice"],
+    title: "Diretoria",
     highlight: true,
     grid: featuredGrid,
   },
   {
-    level: "vice",
-    title: "Vice-presidentes",
-    highlight: true,
-    grid: featuredGrid,
-  },
-  {
-    level: "member",
+    key: "member",
+    levels: ["member"],
     title: "Membros",
     highlight: false,
     grid: membersGrid,
   },
   {
-    level: "trainee",
+    key: "trainee",
+    levels: ["trainee"],
     title: "Trainees",
     highlight: false,
     grid: membersGrid,
@@ -135,19 +133,23 @@ export default function CurrentTeam() {
           <p className="text-brand-200/80">Ninguém por aqui ainda.</p>
         )}
 
-        {sections.map((section) => {
-          const people = visible.filter(
-            (member) => levelIn(member, area) === section.level,
-          );
+                {sections.map((section) => {
+          const people = visible
+            .filter((member) => section.levels.includes(levelIn(member, area)))
+            .sort(
+              (a, b) =>
+                section.levels.indexOf(levelIn(a, area)) -
+                section.levels.indexOf(levelIn(b, area)),
+            );
           if (people.length === 0) return null;
 
           return (
-            <div key={section.level}>
+            <div key={section.key}>
               <h3 className="text-xl font-semibold">{section.title}</h3>
               <div className={`mt-6 ${section.grid}`}>
                 {people.map((member, index) => (
                   <MemberCard
-                    key={`${active}-${section.level}-${index}`}
+                    key={`${active}-${section.key}-${index}`}
                     member={member}
                     role={roleIn(member, area)}
                     variant={section.highlight ? "highlight" : "default"}
