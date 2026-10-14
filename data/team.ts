@@ -135,10 +135,16 @@ export const idealizers = members.filter((m) => m.group === "idealizador");
 export const groupDescriptions = {
   tutores:
     "Professores da PUC-SP que atuam como ponte entre a liga e a universidade, apoiando pedagogicamente nossas ações.",
+  honorarios:
+    "Convidados externos que contribuem com sua experiência técnica, visão estratégica e apoio institucional.",
   fundadores:
     "Estudantes que idealizaram e fundaram a PUC Tech, estruturando sua base organizacional e seus primeiros projetos.",
   diretoriaExecutiva:
     "Responsável pela gestão geral da liga, composta por presidente e vice-presidente.",
+  diretoriasEstrategicas:
+    "Áreas focadas em ensino, pesquisa, extensão e desenvolvimento de projetos.",
   areasOperacionais:
     "Coordenações que garantem o funcionamento e a comunicação da liga: Pessoas, Eventos e Marketing.",
+  idealizadores:
+    "A PUC Tech surgiu em 2024 graças a diversos idealizadores que fizeram a diferença em sua história. Deixamos esta seção como um agradecimento a todos eles.",
 };

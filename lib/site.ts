@@ -13,7 +13,7 @@ export const siteConfig = {
     linkedin: "https://www.linkedin.com/company/puctechsp/",
     tiktok: "https://www.tiktok.com/@puctechsp",
     x: "https://x.com/puctechsp",
-    allLinks: "https://puctech.com.br/links",
+    allLinks: "",
   },
 };
 
