@@ -59,12 +59,13 @@ export default function SobrePage() {
       </Section>
 
       <Section id="valores" title={values.title}>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+       <ul className="flex flex-wrap justify-center gap-4">
           {values.items.map((value) => (
-            <li key={value.title} className="rounded-2xl bg-paper p-6">
-              <h3 className="text-lg font-semibold text-brand-950">
-                {value.title}
-              </h3>
+            <li
+              key={value.title}
+              className="w-full rounded-2xl bg-paper p-6 sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)]"
+            >
+              <h3 className="text-lg font-semibold text-brand-950">{value.title}</h3>
               <p className="mt-2 text-brand-800">{value.text}</p>
             </li>
           ))}

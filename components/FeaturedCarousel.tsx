@@ -2,11 +2,12 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-const INTERVAL = 5000; // tempo que cada item fica em destaque (ms)
+const INTERVAL = 4000; // tempo que cada item fica em destaque (ms)
 const TRANSITION = 700; // duração da animação para o lado (ms)
 const GAP = 0.14; // espaço entre os quadrados (em múltiplos da largura base)
 const OPACITIES = [1, 0.7, 0.45, 0.25, 0]; // por distância do centro
 const DEFAULT_SCALES = [1.6, 1, 0.9, 0.8, 0.7]; // por distância do centro
+const MAX_REACH = 3; // máximo de vizinhos visíveis de cada lado
 
 type FeaturedCarouselProps<T> = {
   items: T[];
@@ -85,6 +86,12 @@ export default function FeaturedCarousel<T>({
   const loop = Array.from({ length: copies }, () => items).flat();
   const active = items[state.position % count];
   const step = Math.abs(state.position - state.previous);
+  // Quantos vizinhos aparecem de cada lado sem repetir nenhum item.
+  const reachLeft = Math.min(Math.floor((count - 1) / 2), MAX_REACH);
+  const reachRight = Math.min(
+    count - 1 - Math.floor((count - 1) / 2),
+    MAX_REACH,
+  );
 
   return (
     <div
@@ -92,7 +99,13 @@ export default function FeaturedCarousel<T>({
         if (event.pointerType === "mouse") setHovered(true);
       }}
       onPointerLeave={() => setHovered(false)}
-      onFocus={() => setFocused(true)}
+      onFocus={(event) => {
+        // Só pausa para foco de teclado. O foco devolvido ao quadrado depois
+        // de fechar o pop-up (ou de um toque) não conta.
+        if ((event.target as HTMLElement).matches(":focus-visible")) {
+          setFocused(true);
+        }
+      }}
       onBlur={() => setFocused(false)}
     >
       <div aria-hidden>
@@ -112,15 +125,20 @@ export default function FeaturedCarousel<T>({
             // Quem "dá a volta" na lista é movido sem animação, fora da tela.
             const jumped = Math.abs(offset - previousOffset) > step;
             const distance = Math.abs(offset);
+            // Só aparece quem não repete nenhum item (veja reachLeft e reachRight).
+            const shown = offset >= -reachLeft && offset <= reachRight;
 
             const props = {
-              className:
-                "absolute left-1/2 top-1/2 overflow-hidden rounded-2xl bg-paper shadow-lg shadow-black/20",
+              className: `absolute left-1/2 top-1/2 overflow-hidden rounded-2xl bg-paper shadow-lg shadow-black/20 ${
+                shown ? "" : "pointer-events-none"
+              }`,
               style: {
                 width: "var(--tile)",
                 height: "calc(var(--tile) * var(--ratio))",
                 transform: `translate(-50%, -50%) translateX(calc(var(--tile) * ${unitsAt(offset, scales)})) scale(${scaleAt(distance)})`,
-                opacity: OPACITIES[Math.min(distance, OPACITIES.length - 1)],
+                opacity: shown
+                  ? OPACITIES[Math.min(distance, OPACITIES.length - 1)]
+                  : 0,
                 transition: jumped
                   ? "none"
                   : `transform ${TRANSITION}ms ease-in-out, opacity ${TRANSITION}ms ease-in-out`,

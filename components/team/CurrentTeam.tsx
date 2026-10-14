@@ -84,8 +84,11 @@ export default function CurrentTeam() {
   const areaDetails = areaInfo.find((item) => item.id === area);
 
   const visible = area
-    ? team.filter((member) => areasOf(member).includes(area))
-    : team;
+  ? team.filter((member) => areasOf(member).includes(area))
+  : // Na aba Geral, quem lidera uma área aparece só na aba da própria área.
+    team.filter(
+      (member) => !member.presidentOf?.length && !member.viceOf?.length,
+    );
 
   const badgeOf = (member: Member) =>
     area ? undefined : areasOf(member).map(labelOf).join(" · ") || undefined;

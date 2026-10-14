@@ -1,8 +1,6 @@
 import Link from "next/link";
-import ProjectsShowcase from "@/components/ProjectsShowcase";
 import Section from "@/components/Section";
 import { projectsIntro } from "@/data/home";
-import { projects } from "@/data/projects";
 
 export default function ProjectsSection() {
   return (
@@ -20,12 +18,6 @@ export default function ProjectsSection() {
           </li>
         ))}
       </ul>
-
-      {projects.length > 0 && (
-        <div className="mt-12">
-          <ProjectsShowcase projects={projects} />
-        </div>
-      )}
 
       <Link
         href="/projetos"

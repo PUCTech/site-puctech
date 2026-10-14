@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import Section from "@/components/Section";
 import { projectAreas, projects, projectsPage } from "@/data/projects";
@@ -30,14 +31,32 @@ export default function ProjetosPage() {
       <Section id="areas" title="Áreas de Atuação">
         <div className="grid gap-4 sm:grid-cols-2">
           {projectAreas.map((area, index) => (
-            <div key={area.title} className="rounded-2xl bg-paper p-6 md:p-8">
-              <p className="text-sm font-semibold text-brand-500">
-                {String(index + 1).padStart(2, "0")}
-              </p>
-              <h3 className="mt-3 text-xl font-semibold text-brand-950">
-                {area.title}
-              </h3>
-              <p className="mt-3 text-brand-800">{area.text}</p>
+            <div
+              key={area.title}
+              className="relative flex min-h-[20rem] flex-col justify-end overflow-hidden rounded-2xl bg-brand-900 p-6 md:p-8"
+            >
+              <Image
+                src={area.image}
+                alt=""
+                fill
+                sizes="(min-width: 1152px) 560px, (min-width: 640px) 50vw, 100vw"
+                loading={index < 2 ? "eager" : "lazy"}
+                className="object-cover"
+                style={{ objectPosition: area.position }}
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-linear-to-t from-brand-950 via-brand-950/60 to-transparent"
+              />
+              <div className="relative">
+                <p className="text-sm font-semibold text-brand-200">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <h3 className="mt-2 text-xl font-semibold text-white">
+                  {area.title}
+                </h3>
+                <p className="mt-2 text-white/85">{area.text}</p>
+              </div>
             </div>
           ))}
         </div>

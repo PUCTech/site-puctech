@@ -50,3 +50,17 @@ body {
     animation: none;
   }
 }
+
+/* Faixa de parceiros: rola sem parar. A lista é duplicada, então andar metade da largura fecha o ciclo sem "pulo". */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
