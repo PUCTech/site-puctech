@@ -26,7 +26,7 @@ const sections: {
   {
     key: "leaders",
     levels: ["president", "vice"],
-    title: "Diretoria",
+    title: "Coordenação",
     highlight: true,
     grid: featuredGrid,
   },
@@ -49,6 +49,7 @@ const sections: {
 const labelOf = (id: AreaId) =>
   areaInfo.find((area) => area.id === id)?.label ?? id;
 
+// Só membros e trainees. Presidente e vice gerais ficam na Diretoria Executiva.
 const team = members.filter(
   (member) => member.group === "membro" || member.group === "trainee",
 );
@@ -62,6 +63,8 @@ const areasOf = (member: Member): AreaId[] =>
     ]),
   );
 
+// Na aba Geral (area indefinida) todo mundo é "membro" ou "trainee".
+// Na aba de uma área, quem lidera essa área vai para a Coordenação.
 function levelIn(member: Member, area: AreaId | undefined): Level {
   if (member.group === "trainee") return "trainee";
   if (!area) return "member";
@@ -72,8 +75,8 @@ function levelIn(member: Member, area: AreaId | undefined): Level {
 
 function roleIn(member: Member, area: AreaId | undefined): string {
   const level = levelIn(member, area);
-  if (level === "president") return "Presidente";
-  if (level === "vice") return "Vice-presidente";
+  if (level === "president") return "Coordenador(a)";
+  if (level === "vice") return "Vice-coordenador(a)";
   if (level === "trainee") return "Trainee";
   return "Membro";
 }
@@ -84,11 +87,8 @@ export default function CurrentTeam() {
   const areaDetails = areaInfo.find((item) => item.id === area);
 
   const visible = area
-  ? team.filter((member) => areasOf(member).includes(area))
-  : // Na aba Geral, quem lidera uma área aparece só na aba da própria área.
-    team.filter(
-      (member) => !member.presidentOf?.length && !member.viceOf?.length,
-    );
+    ? team.filter((member) => areasOf(member).includes(area))
+    : team;
 
   const badgeOf = (member: Member) =>
     area ? undefined : areasOf(member).map(labelOf).join(" · ") || undefined;
@@ -136,7 +136,7 @@ export default function CurrentTeam() {
           <p className="text-brand-200/80">Ninguém por aqui ainda.</p>
         )}
 
-                {sections.map((section) => {
+        {sections.map((section) => {
           const people = visible
             .filter((member) => section.levels.includes(levelIn(member, area)))
             .sort(
@@ -144,15 +144,16 @@ export default function CurrentTeam() {
                 section.levels.indexOf(levelIn(a, area)) -
                 section.levels.indexOf(levelIn(b, area)),
             );
+
           if (people.length === 0) return null;
 
           return (
             <div key={section.key}>
               <h3 className="text-xl font-semibold">{section.title}</h3>
               <div className={`mt-6 ${section.grid}`}>
-                {people.map((member, index) => (
+                {people.map((member) => (
                   <MemberCard
-                    key={`${active}-${section.key}-${index}`}
+                    key={`${active}-${member.name}`}
                     member={member}
                     role={roleIn(member, area)}
                     variant={section.highlight ? "highlight" : "default"}

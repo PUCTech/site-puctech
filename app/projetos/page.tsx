@@ -29,21 +29,22 @@ export default function ProjetosPage() {
       </section>
 
       <Section id="areas" title="Áreas de Atuação">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {projectAreas.map((area, index) => (
             <div
               key={area.title}
-              className="relative flex min-h-[20rem] flex-col justify-end overflow-hidden rounded-2xl bg-brand-900 p-6 md:p-8"
+              className="relative flex min-h-[15rem] flex-col justify-end overflow-hidden rounded-2xl bg-brand-900 p-5 md:p-6 xl:min-h-[26rem]"
             >
               <Image
                 src={area.image}
                 alt=""
                 fill
-                sizes="(min-width: 1152px) 560px, (min-width: 640px) 50vw, 100vw"
+                sizes="(min-width: 1280px) 264px, (min-width: 640px) 50vw, 100vw"
                 loading={index < 2 ? "eager" : "lazy"}
                 className="object-cover"
                 style={{ objectPosition: area.position }}
               />
+              {/* Degradê escuro embaixo: garante a leitura do texto sobre qualquer foto. */}
               <div
                 aria-hidden
                 className="absolute inset-0 bg-linear-to-t from-brand-950 via-brand-950/60 to-transparent"
@@ -52,10 +53,10 @@ export default function ProjetosPage() {
                 <p className="text-sm font-semibold text-brand-200">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h3 className="mt-2 text-xl font-semibold text-white">
+                <h3 className="mt-1 text-lg font-semibold text-white">
                   {area.title}
                 </h3>
-                <p className="mt-2 text-white/85">{area.text}</p>
+                <p className="mt-2 text-sm text-white/85">{area.text}</p>
               </div>
             </div>
           ))}

@@ -60,31 +60,33 @@ function MemberGroup({
 export default function EquipePage() {
   return (
     <main>
-      {/* Em telas grandes a altura acompanha a largura (proporção 7:5), então o chão abaixo dos pés é cortado. */}
-      <section className="relative h-[38rem] overflow-hidden md:h-[36rem] lg:aspect-[7/5] lg:h-auto lg:max-h-[44rem]">
-        <Image
-          src="/equipe/grupo-puctech.jpg"
-          alt=""
-          fill
-          sizes="100vw"
-          loading="eager"
-          className="object-cover object-top"
-        />
-        {/* Camadas escuras: deixam o texto legível e fundem a foto com o resto da página. */}
-        <div aria-hidden className="absolute inset-0 bg-brand-950/70" />
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-linear-to-b from-transparent from-75% to-brand-950"
-        />
-        {/* Texto colado no topo, para ficar acima das cabeças da foto. */}
-        <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 pt-12 text-center md:pt-16">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-            Nossa equipe
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-brand-200/90 sm:text-lg md:mt-6">
-            As pessoas que constroem a PucTech todos os dias, da orientação
-            acadêmica aos estudantes que fazem a liga acontecer.
-          </p>
+      <section className="overflow-hidden">
+        {/* A largura máxima (62rem) mantém a proporção 7:5 e centraliza a foto em telas grandes. */}
+        <div className="hero-fade-x relative mx-auto h-[38rem] max-w-[62rem] md:h-[36rem] lg:aspect-[8/5] lg:h-auto">
+          <Image
+            src="/equipe/grupo-puctech.jpg"
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 992px, 100vw"
+            loading="eager"
+            className="object-cover object-top"
+          />
+          {/* Camadas escuras: deixam o texto legível e fundem a foto com o resto da página. */}
+          <div aria-hidden className="absolute inset-0 bg-brand-950/70" />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-linear-to-b from-transparent from-75% to-brand-950"
+          />
+          {/* Texto colado no topo, para ficar acima das cabeças da foto. */}
+          <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 pt-12 text-center md:pt-16">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              Nossa equipe
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-brand-200/90 sm:text-lg md:mt-6">
+              As pessoas que constroem a PucTech todos os dias, da orientação
+              acadêmica aos estudantes que fazem a liga acontecer.
+            </p>
+          </div>
         </div>
       </section>
 
