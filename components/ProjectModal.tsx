@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useId, useRef } from "react";
-import { projectStatuses, type Project } from "@/data/projects";
+import ProjectDetails from "@/components/ProjectDetails";
+import type { Project } from "@/data/projects";
 
 type ProjectModalProps = {
   project: Project | null;
@@ -16,7 +16,7 @@ export default function ProjectModal({
   onClose,
 }: ProjectModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
-  // Id gerado: a página tem mais de um pop-up (carrossel e grade), então não pode ser fixo.
+  // Id gerado: a página tem mais de um pop-up (carrossel e galeria), então não pode ser fixo.
   const titleId = useId();
 
   // O <dialog> nativo já cuida do ESC, do foco preso dentro do pop-up e do fundo.
@@ -41,14 +41,6 @@ export default function ProjectModal({
       body.style.paddingRight = previousPadding;
     };
   }, [open]);
-
-  const statusLabel = projectStatuses.find(
-    (item) => item.id === project?.status,
-  )?.label;
-
-  const meta = project
-    ? [project.period, project.area, statusLabel].filter(Boolean).join(" · ")
-    : "";
 
   return (
     <dialog
@@ -83,94 +75,13 @@ export default function ProjectModal({
             </svg>
           </button>
 
-          {project.image && (
-            <div className="relative aspect-video w-full bg-brand-800">
-              <Image
-                src={project.image}
-                alt={`Imagem do projeto ${project.title}`}
-                fill
-                sizes="(min-width: 768px) 736px, 92vw"
-                className="object-cover"
-              />
-            </div>
-          )}
-
-          <div className="space-y-6 p-6 md:p-8">
-            <div className={project.image ? "" : "pr-12"}>
-              {meta && (
-                <p className="text-sm font-medium uppercase tracking-widest text-brand-500">
-                  {meta}
-                </p>
-              )}
-              <h2 id={titleId} className="mt-1 text-2xl font-bold md:text-3xl">
-                {project.title}
-              </h2>
-            </div>
-
-            <p className="whitespace-pre-line text-lg leading-relaxed text-brand-800">
-              {project.description}
-            </p>
-
-            {project.tech && project.tech.length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-widest text-brand-500">
-                  Stacks
-                </h3>
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {project.tech.map((item) => (
-                    <li
-                      key={item}
-                      className="rounded-full bg-brand-200 px-3 py-1 text-sm font-medium text-brand-800"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {project.objective && (
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-widest text-brand-500">
-                  Objetivo e escopo
-                </h3>
-                <p className="mt-2 whitespace-pre-line text-brand-800">
-                  {project.objective}
-                </p>
-              </div>
-            )}
-
-            {project.results && (
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-widest text-brand-500">
-                  Resultados e aprendizados
-                </h3>
-                <p className="mt-2 whitespace-pre-line text-brand-800">
-                  {project.results}
-                </p>
-              </div>
-            )}
-
-            {project.team && project.team.length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-widest text-brand-500">
-                  Equipe
-                </h3>
-                <p className="mt-2 text-brand-800">{project.team.join(", ")}</p>
-              </div>
-            )}
-
-            {project.repo && (
-              <a
-                href={project.repo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-brand-950 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-800"
-              >
-                Ver repositório ↗
-              </a>
-            )}
-          </div>
+          <ProjectDetails
+            project={project}
+            titleId={titleId}
+            titleAs="h2"
+            reserveCloseSpace
+            showPageLink
+          />
         </div>
       )}
     </dialog>
