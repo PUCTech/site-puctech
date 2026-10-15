@@ -145,6 +145,8 @@ export const groupDescriptions = {
     "Áreas focadas em ensino, pesquisa, extensão e desenvolvimento de projetos.",
   areasOperacionais:
     "Coordenações que garantem o funcionamento e a comunicação da liga: Pessoas, Eventos e Marketing.",
+  trainees:
+    "Novos membros em formação, que participam de um programa de imersão e desenvolvimento prático dentro da liga.",
   idealizadores:
     "A PUC Tech surgiu em 2024 graças a diversos idealizadores que fizeram a diferença em sua história. Deixamos esta seção como um agradecimento a todos eles.",
 };
