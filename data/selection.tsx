@@ -12,7 +12,7 @@ export const prepare = {
   title: "Como se preparar",
   text: "Para se adiantar, recomendamos o curso **CS50 de Harvard**. Ele vai te dar base em diversos conteúdos que abordamos na liga, permitindo que você participe dos nossos projetos e iniciativas!",
   linkLabel: "Conhecer o CS50",
-  linkUrl: "https://cs50.harvard.edu/x/",
+  linkUrl: "https://www.edx.org/learn/computer-science/harvard-university-cs50-s-introduction-to-computer-science",
 };
 
 // Botão do processo seletivo. Enquanto `applyUrl` estiver vazio, o botão aparece
