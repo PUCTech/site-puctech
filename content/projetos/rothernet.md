@@ -4,7 +4,7 @@ summary: "Restaurante virtual com agente de IA que atende o cliente por voz, em 
 area: "Inteligência Artificial"
 status: "concluido"
 order: 3
-tech: [Unity, Python, FastAPI, WebSockets, LangChain, ChromaDB, OpenAI, Whisper, SQLAlchemy, PostgreSQL, Supabase, Railway]
+tech: [Unity, Python, FastAPI, WebSockets, LangChain, ChromaDB, Whisper, SQLAlchemy, PostgreSQL]
 team:
   - "@schnekenberg"
   - "@GaiaOcean"
@@ -15,10 +15,16 @@ repo: "https://github.com/schnekenberg/puctech_rothernet"
 
 ## Descrição
 
-O Rothernet simula o atendimento de um restaurante com um agente virtual de IA e Realidade Mista. O cliente conversa por voz com o assistente, que entende pedidos, responde perguntas sobre o cardápio e as regras da casa e devolve a resposta em áudio, em português.
-
-É um dos projetos iniciais (First Steps) da PUC Tech.
+O Rothernet é um restaurante virtual com atendimento por voz. O cliente conversa com um assistente de IA, que entende o pedido, responde dúvidas e devolve a resposta em áudio, em português.
 
 ## Objetivo e escopo
 
-Criar um atendimento automatizado e amigável por voz: a fala do cliente é transcrita (Whisper), a IA responde com base nos documentos do restaurante (RAG com LangChain e ChromaDB), a resposta vira áudio e cada cliente mantém seu histórico de conversa e de pedidos a partir de um User ID.
+O cliente grava um áudio no front-end feito em Unity. O Whisper transcreve a fala e o sistema captura os dados do cliente e do pedido.
+
+A IA responde com base em documentos que descrevem o cardápio e as regras do restaurante (técnica de RAG, com LangChain, ChromaDB e um modelo da OpenAI). A resposta vira áudio por síntese de voz e volta pelo back-end em FastAPI, via WebSockets.
+
+Cada cliente tem um User ID, que dá acesso ao histórico de conversa e de pedidos, guardados no banco com SQLAlchemy.
+
+## Resultados e aprendizados
+
+O projeto roda em nuvem, no Railway.

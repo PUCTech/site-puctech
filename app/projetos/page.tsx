@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import Section from "@/components/Section";
-import { projectAreas, projects, projectsPage } from "@/data/projects";
-import ProjectsGallery from "@/components/ProjectsGallery";
+import { projectAreas, projectsPage } from "@/data/projects";
+import { getProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Projetos",
@@ -12,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default function ProjetosPage() {
+  const projects = getProjects();
+
   return (
     <main>
       <section className="relative overflow-hidden">
@@ -41,7 +43,7 @@ export default function ProjetosPage() {
                 alt=""
                 fill
                 sizes="(min-width: 1280px) 264px, (min-width: 640px) 50vw, 100vw"
-                loading={index < 2 ? "eager" : "lazy"}
+                loading="eager"
                 className="object-cover"
                 style={{ objectPosition: area.position }}
               />
@@ -72,11 +74,6 @@ export default function ProjetosPage() {
             Em breve, os projetos da PUC Tech vão aparecer aqui.
           </p>
         )}
-              {projects.length > 0 && (
-        <Section id="todos-os-projetos" title="Todos os projetos">
-          <ProjectsGallery projects={projects} />
-        </Section>
-      )}
       </Section>
     </main>
   );

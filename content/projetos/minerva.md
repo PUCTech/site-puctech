@@ -1,10 +1,11 @@
 ---
 title: "Minerva"
+image: "/projetos/minerva.png"
 summary: "Aplicativo para organizar a vida acadêmica: disciplinas, notas, faltas, tarefas e arquivos."
 area: "Engenharia de Software"
 status: "concluido"
 order: 2
-tech: [Java, Spring, Python, Streamlit, PostgreSQL, H2, JWT, Docker, Figma, Diagrams.net]
+tech: [Java, Spring, Python, Streamlit, PostgreSQL, H2, JWT, Docker]
 team:
   - "Kauã Bezerra Brito"
   - "Luis Augusto Coelho de Souza"
@@ -14,14 +15,16 @@ repo: "https://github.com/Luis-coelho30/minerva-app"
 
 ## Descrição
 
-O Minerva nasceu para ajudar o estudante universitário a planejar melhor a rotina acadêmica. Inspirado na deusa da sabedoria, reúne em um único espaço disciplinas, conteúdos, notas, faltas e arquivos.
+O Minerva é um aplicativo para o estudante universitário reunir a vida acadêmica em um lugar só: disciplinas, notas, faltas, tarefas e arquivos. A ideia veio de um problema comum na faculdade, a dificuldade de planejar o tempo.
 
-É uma solução de estudantes para estudantes, pensada para a experiência real do universitário brasileiro, e foi feita no programa First Steps da PUC Tech.
+Foi feito no First Steps, programa da PUC Tech, pensando na rotina do universitário brasileiro.
 
 ## Objetivo e escopo
 
-Combater a desorganização acadêmica com gestão de disciplinas (créditos, carga horária e média necessária), controle de notas com pesos e média em tempo real, controle de faltas com o limite calculado pela carga horária, agenda de tarefas, provas e prazos e gestão de arquivos.
+Cada disciplina é cadastrada com créditos, carga horária e a média necessária. As notas entram com pesos e a média é calculada na hora. As faltas são registradas e o app mostra quantas ainda restam até o limite, calculado pela carga horária.
+
+Há também um calendário para tarefas, provas e prazos, e uma seção para arquivos.
 
 ## Resultados e aprendizados
 
-Versão de produção publicada na nuvem, com back-end em Spring, front-end em Streamlit e autenticação por JWT.
+O app está publicado na nuvem, com back-end em Spring, interface em Streamlit e autenticação por JWT.

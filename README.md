@@ -24,9 +24,8 @@ Requer Node.js 20.9 ou superior (exigência do Next.js 16).
 | -------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------- |
 | `/`                  | `app/page.tsx`                     | Home com hero, sobre, números, projetos (áreas), parceiros e redes sociais                   |
 | `/sobre`             | `app/sobre/page.tsx`               | Diferença da liga, visão, valores, história e apoio institucional                            |
-| `/equipe`            | `app/equipe/page.tsx`              | Foto da equipe, introdução, tutores, fundadores, diretorias, áreas operacionais (com abas)   |
+| `/equipe`            | `app/equipe/page.tsx`              | Foto da equipe, introdução com os níveis da liga, tutores, fundadores, diretoria e áreas operacionais (com abas) |
 | `/projetos`          | `app/projetos/page.tsx`            | Áreas de atuação, carrossel de projetos e galeria com filtros (área e status)                |
-| `/projetos/[slug]`   | `app/projetos/[slug]/page.tsx`     | Página de cada projeto, gerada a partir de um arquivo `.md`                                  |
 | `/processo-seletivo` | `app/processo-seletivo/page.tsx`   | Data do próximo processo, como se preparar e botão de inscrição                              |
 | `/links`             | `app/links/page.tsx`               | Redes sociais da liga (é o "Nossos links" do rodapé e da home)                               |
 
@@ -37,13 +36,13 @@ Requer Node.js 20.9 ou superior (exigência do Next.js 16).
 - Contagem animada nos números da home, que começa quando a seção aparece na tela.
 - Faixa de parceiros que rola sem parar (a lista é duplicada para o ciclo fechar sem "pulo").
 - Carrossel de projetos com botões de anterior/próximo. Troca sozinho a cada 4 segundos, reinicia o tempo a cada clique e pausa com o mouse, o foco do teclado ou o pop-up aberto.
-- Pop-up com os detalhes de cada projeto (com botão para abrir a página própria do projeto).
+- Pop-up com os detalhes de cada projeto (descrição, stacks, objetivo, resultados, equipe e link do repositório).
 - Galeria "Todos os projetos" com botão **Filtros**, que abre os filtros de **Área** e **Status**.
-- Projetos escritos em arquivos `.md` (um por projeto), cada um com sua página em `/projetos/nome-do-arquivo`.
+- Projetos escritos em arquivos `.md` (um por projeto), lidos e conferidos no build.
 - Abas na seção de áreas operacionais da página de equipe: **Geral**, **Marketing**, **Eventos** e **Pessoas**.
 - Botão de inscrição do processo seletivo que fica desativado ("em breve") até o link existir.
 - Acessibilidade: quem usa "reduzir movimento" no sistema vê grades estáticas no lugar dos carrosséis e da faixa de parceiros, e o número final direto nos números; o carrossel de projetos tem uma lista alternativa para teclado e leitor de tela; o pop-up usa o `<dialog>` nativo (ESC, foco preso e fundo travado).
-- SEO: título e descrição por página (e por projeto), imagem de prévia ao compartilhar o link, favicon, `sitemap.xml` (inclui as páginas dos projetos) e `robots.txt`.
+- SEO: título e descrição por página, imagem de prévia ao compartilhar o link, favicon, `sitemap.xml` e `robots.txt`.
 - Cabeçalhos de segurança configurados em `next.config.ts` (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`).
 
 ---
@@ -57,7 +56,6 @@ app/
 ├── sobre/page.tsx              Página "Sobre nós"
 ├── equipe/page.tsx             Página da equipe
 ├── projetos/page.tsx           Página de projetos
-├── projetos/[slug]/page.tsx    Página de cada projeto
 ├── processo-seletivo/page.tsx  Página do processo seletivo
 ├── links/page.tsx              Página de links (redes sociais)
 ├── globals.css                 Paleta de cores e estilos globais
@@ -77,7 +75,7 @@ components/
 ├── ProjectsShowcase.tsx        Carrossel de projetos + grade (reduzir movimento) + pop-up
 ├── ProjectsGallery.tsx         Galeria "Todos os projetos" com filtros + pop-up
 ├── ProjectTile.tsx             Quadrado de um projeto (capa e título)
-├── ProjectDetails.tsx          Conteúdo completo de um projeto (pop-up e página)
+├── ProjectDetails.tsx          Conteúdo de um projeto, mostrado dentro do pop-up
 ├── ProjectModal.tsx            Pop-up com os detalhes de um projeto
 ├── Partners.tsx                Seção "Parceiros"
 ├── PartnersCarousel.tsx        Faixa de logos dos parceiros que rola sem parar
@@ -135,7 +133,7 @@ A regra geral: **o conteúdo fica em `content/`, `data/` e `lib/site.ts`; a apar
 | Orientadores, fundadores, diretoria e membros                  | `data/team.ts` → `members`                           |
 | Descrição de cada grupo da equipe                              | `data/team.ts` → `groupDescriptions`                 |
 | Áreas operacionais (abas)                                      | `data/team.ts` → `areaInfo`                          |
-| Texto de introdução da página de equipe                        | `app/equipe/page.tsx`                                |
+| Texto e cards de introdução da página de equipe                | `app/equipe/page.tsx` (lista `levels`)               |
 | Links da página /links                                         | `data/links.ts`                                      |
 | Links do Instagram, LinkedIn, TikTok, X e "Nossos links"       | `lib/site.ts` → `siteConfig.links`                   |
 | Itens do menu (topo e rodapé)                                  | `lib/site.ts` → `navLinks`                           |
@@ -159,14 +157,14 @@ Em `data/home.ts`, `about.ts`, `selection.tsx`, `team.ts` e `links.ts`, para adi
 
 ### `content/projetos/` (projetos)
 
-Cada projeto é um arquivo `.md`. O nome do arquivo vira o endereço da página: `content/projetos/careon.md` aparece em `/projetos/careon`. Use letras minúsculas, sem acento e com hífen no lugar de espaço.
+Cada projeto é um arquivo `.md`. O nome do arquivo só identifica o projeto: use letras minúsculas, sem acento e com hífen no lugar de espaço (ex.: `meu-projeto.md`).
 
 **Para adicionar um projeto:**
 
 1. Copie `content/projetos/_modelo.md` e renomeie (ex.: `meu-projeto.md`).
 2. Preencha o cabeçalho (entre os `---`) e as seções do texto.
 3. Se tiver capa, coloque a imagem em `public/projetos/` e informe `image: "/projetos/meu-projeto.jpg"`.
-4. Pronto: ele aparece no carrossel, na galeria, no sitemap e ganha a própria página.
+4. Pronto: ele aparece no carrossel e na galeria.
 
 Arquivos que começam com `_` são ignorados pelo site (é o caso do modelo).
 
@@ -208,13 +206,24 @@ Texto dos resultados.
 | `area`    | Uma das quatro áreas de `projectAreas`, escrita exatamente igual (outro valor gera erro no build)   |
 | `status`  | `"em-andamento"` ou `"concluido"` (usado no filtro; sem status, o projeto some ao filtrar por ele)  |
 | `period`  | Período, ex.: `"2026.1"` (**sempre entre aspas**)                                                   |
-| `image`   | Capa, ex.: `"/projetos/nome-do-projeto.jpg"` (arquivo em `public/projetos/`)                        |
-| `tech`    | Stacks e ferramentas, ex.: `[Python, React, AWS]`                                                   |
+| `image`   | Capa, ex.: `"/projetos/nome-do-projeto.jpg"` (arquivo em `public/projetos/`). Aparece nos cards do carrossel e da galeria, não no pop-up |
+| `tech`    | Stacks, ex.: `[Python, React, AWS]` (veja a observação abaixo)                                      |
 | `team`    | Lista com a equipe envolvida (um nome por linha, com `-`)                                           |
 | `repo`    | Link do repositório ou da publicação (vira o botão "Ver repositório")                               |
 | `order`   | Número que define a posição no carrossel e na galeria (menor aparece primeiro). Sem `order`, o projeto vai para o fim, em ordem alfabética |
 
 **Seções do texto** (títulos exatos, nesta ordem): `## Descrição` (obrigatória), `## Objetivo e escopo` e `## Resultados e aprendizados`. Cada seção é opcional, menos a descrição. O texto é simples: uma linha em branco separa os parágrafos, e listas, negrito e links não são formatados.
+
+**Boas práticas para os textos:** escreva a partir do README do repositório do projeto, com frases diretas: o que o projeto faz, como foi feito e o que ficou pronto. Não inclua números, pesquisas ou afirmações que você não consiga conferir.
+
+**Stacks (`tech`):** liste só linguagens, frameworks, bibliotecas e bancos de dados. Fica de fora o que é hospedagem, provedor ou técnica genérica (por exemplo Render, Railway, Supabase, "APIs REST" ou "Web Scraping").
+
+**Capas (`image`):**
+
+- Proporção 4:3 (por exemplo, 1600×1200), com o conteúdo importante no centro.
+- Deixe livre o quarto de baixo da imagem, porque o título do projeto aparece sobre ela.
+- Prefira JPG ou WebP, com até uns 300 KB.
+- Sem `image`, o card mostra um degradê azul.
 
 **Cuidados com o cabeçalho:**
 
@@ -223,7 +232,7 @@ Texto dos resultados.
 
 Se algo estiver errado, o build falha com uma mensagem dizendo qual arquivo e qual campo têm o problema. Se não houver nenhum projeto, o carrossel e a galeria não aparecem e a página `/projetos` mostra "Em breve, os projetos da PUC Tech vão aparecer aqui."
 
-O pop-up mostra apenas os campos preenchidos, e a página do projeto também.
+O pop-up mostra apenas os campos preenchidos.
 
 ### `data/projects.ts`
 
@@ -294,7 +303,7 @@ Toda a equipe fica em uma lista só, `members`, uma linha por pessoa. Para adici
 | `"trainee"`               | Áreas Operacionais                     |
 | `"idealizador"`           | Idealizadores                          |
 
-Grupos sem ninguém não aparecem na página (hoje é o caso de Membros Honorários, Diretorias Estratégicas e Idealizadores).
+Grupos sem ninguém não aparecem na página (hoje é o caso de Membros Honorários, Diretorias Estratégicas e Idealizadores). Se alguém for cadastrado em Membros Honorários ou Diretorias Estratégicas, a seção aparece na página, mas esses dois grupos não têm card na introdução (veja `levels`, em `app/equipe/page.tsx`).
 
 Quem coordena uma área já pertence a ela, não precisa repetir em `areas`. Quem é fundador (ou orientador) e também faz parte da equipe atual ganha duas linhas, uma de cada `group`.
 
@@ -312,7 +321,7 @@ O arquivo confere a lista a cada build. Se algo estiver errado (por exemplo, `ar
 | `members`           | Seção "Áreas Operacionais" (via `CurrentTeam`)   |
 | `idealizers`        | Seção "Idealizadores"                            |
 | `areaInfo`          | Abas e descrições das áreas                      |
-| `groupDescriptions` | Subtítulo de cada seção e lista da introdução    |
+| `groupDescriptions` | Subtítulo de cada seção e texto dos cards da introdução |
 
 **Como as "Áreas Operacionais" são organizadas:** só membros e trainees (a diretoria tem seção própria). Há uma aba **Geral** e uma aba por área. Na aba Geral aparecem **Membros** e **Trainees**, com as áreas em uma etiqueta. Nas abas de área aparecem até três blocos: **Coordenação** (quem tem `presidentOf` ou `viceOf` daquela área, em destaque), **Membros** e **Trainees**. Aba sem ninguém mostra "Ninguém por aqui ainda."
 
@@ -332,7 +341,7 @@ Concentra o que é compartilhado pelo site inteiro:
 
 ### `lib/projects.ts`
 
-Lê os arquivos de `content/projetos/`, confere os campos e entrega a lista de projetos (`getProjects`) e um projeto pelo nome do arquivo (`getProject`). Só funciona no servidor (durante o build), por isso os componentes que rodam no navegador recebem os projetos por parâmetro.
+Lê os arquivos de `content/projetos/` (com a biblioteca `gray-matter`), confere os campos e entrega a lista de projetos (`getProjects`). Só funciona no servidor (durante o build), por isso os componentes que rodam no navegador recebem os projetos por parâmetro.
 
 ---
 
@@ -345,11 +354,11 @@ Definidas em `app/globals.css`, dentro de `@theme inline`, e usadas como classes
 | Token       | Cor       | Onde aparece                                                          |
 | ----------- | --------- | --------------------------------------------------------------------- |
 | `brand-950` | `#020d2b` | Fundo do site                                                         |
-| `brand-900` | `#081a3e` | Faixas alternadas, cartões escuros e gradientes                       |
+| `brand-900` | `#081a3e` | Faixas alternadas, cartões escuros, gradientes e o pop-up de projeto  |
 | `brand-800` | `#143966` | Bordas, textos sobre fundo claro e brilho dos topos                   |
 | `brand-500` | `#2b6fac` | Números de destaque, botões e hover dos cartões                       |
-| `brand-200` | `#bae4fe` | Textos de destaque, "Tech" do logotipo e cartão de redes sociais      |
-| `paper`     | `#f0f4f9` | Cartões claros (números, equipe, valores, pop-up e página de projeto) |
+| `brand-200` | `#bae4fe` | Textos de destaque, "Tech" do logotipo, botões do pop-up e cartão de redes sociais |
+| `paper`     | `#f0f4f9` | Cartões claros (números, equipe e valores)                            |
 
 O cartão da seção "Sobre" da home usa branco puro (`bg-white`), que não é um token da paleta.
 
@@ -366,7 +375,7 @@ O `globals.css` também define:
 
 ### Seções (`components/Section.tsx`)
 
-O componente `Section` define largura máxima, espaçamento, título, subtítulo e o "eyebrow" (o texto pequeno em maiúsculas acima do título). É usado em `Stats`, `ProjectsSection`, `Partners` e nas páginas Sobre, Equipe e Projetos. `Hero`, `About` e `Social`, a seção "História" de `/sobre` e as páginas Processo Seletivo, Links e de cada projeto têm marcação própria.
+O componente `Section` define largura máxima, espaçamento, título, subtítulo e o "eyebrow" (o texto pequeno em maiúsculas acima do título). É usado em `Stats`, `ProjectsSection`, `Partners` e nas páginas Sobre, Equipe e Projetos. `Hero`, `About` e `Social`, a seção "História" de `/sobre`, a introdução de `/equipe` e as páginas Processo Seletivo e Links têm marcação própria.
 
 Propriedades:
 
@@ -388,7 +397,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 - Home: `#sobre`, `#projetos`, `#parceiros` e `#redes`.
 - `/sobre`: `#diferenca`, `#visao`, `#valores`, `#historia` e `#apoio`.
-- `/equipe`: `#conheca-os-membros`, `#tutores`, `#honorarios`, `#fundadores`, `#diretoria-executiva`, `#diretorias-estrategicas`, `#areas-operacionais` e `#idealizadores`.
+- `/equipe`: `#conheca-os-membros` (a introdução), `#tutores`, `#honorarios`, `#fundadores`, `#diretoria-executiva`, `#diretorias-estrategicas`, `#areas-operacionais` e `#idealizadores`.
 - `/projetos`: `#areas`, `#projetos` e `#todos-os-projetos`.
 
 ---
@@ -413,9 +422,9 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 **`ProjectTile.tsx`**: o quadrado de um projeto (capa e título). Sem `image`, aparece um degradê azul.
 
-**`ProjectDetails.tsx`**: o conteúdo completo de um projeto (capa, período, área e status, descrição, stacks, objetivo, resultados, equipe e botões). É usado no pop-up e na página `/projetos/[slug]`, então os dois sempre mostram a mesma coisa.
+**`ProjectDetails.tsx`**: o conteúdo de um projeto, sem capa: período, área e status, descrição, stacks, objetivo, resultados, equipe e o botão "Ver repositório". Só mostra os campos preenchidos.
 
-**`ProjectModal.tsx`**: pop-up que envolve o `ProjectDetails`. Usa o `<dialog>` nativo (ESC fecha, o foco fica preso dentro), trava a rolagem da página enquanto está aberto e também fecha ao clicar no fundo escuro. Tem o botão "Abrir página do projeto".
+**`ProjectModal.tsx`**: pop-up escuro (`brand-900`, com borda) que envolve o `ProjectDetails`. Usa o `<dialog>` nativo (ESC fecha, o foco fica preso dentro), trava a rolagem da página enquanto está aberto e também fecha ao clicar no fundo escuro ou no botão "X".
 
 **`Partners.tsx`**: texto de `partnersIntro` e o `PartnersCarousel` com os logos. Há também uma lista invisível para leitores de tela e, para quem usa "reduzir movimento", uma grade estática no lugar da faixa.
 
@@ -435,11 +444,9 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 ## Páginas em detalhe
 
-**`/equipe`**: foto do grupo no topo (`public/equipe/grupo-puctech.jpg`), a introdução "Conheça nossos membros" (com a lista dos níveis da liga, gerada a partir de `groupDescriptions`) e uma seção para cada grupo de `team.ts`, na ordem: Tutores, Membros Honorários, Fundadores, Diretoria Executiva, Diretorias Estratégicas, Áreas Operacionais e Idealizadores.
+**`/equipe`**: foto do grupo no topo (`public/equipe/grupo-puctech.jpg`), uma introdução (texto sobre a comunidade e cards, sem link, com os níveis da liga: Tutores, Fundadores, Diretoria Executiva, Áreas Operacionais e Trainees) e uma seção para cada grupo de `team.ts`, na ordem: Tutores, Membros Honorários, Fundadores, Diretoria Executiva, Diretorias Estratégicas, Áreas Operacionais e Idealizadores. Os cards da introdução ficam na lista `levels`, em `app/equipe/page.tsx`, e o último card é centralizado.
 
-**`/projetos`**: título e introdução, "Áreas de Atuação" (quatro cartões com foto), "Nossos projetos" (carrossel) e "Todos os projetos" (galeria com filtros).
-
-**`/projetos/[slug]`**: gerada para cada arquivo de `content/projetos/`. Mostra o projeto em um cartão claro, com o link "Todos os projetos" para voltar. Um endereço que não corresponde a nenhum projeto mostra a página 404.
+**`/projetos`**: título e introdução, "Áreas de Atuação" (quatro cartões com foto), "Nossos projetos" (carrossel) e "Todos os projetos" (galeria com filtros). Cada projeto abre em um pop-up.
 
 **`/links`**: logo, slogan e um botão para cada item de `data/links.ts`.
 
@@ -451,10 +458,9 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 | ------------------------- | -------------------------------------------------------------------------------------------------- |
 | `app/layout.tsx`          | Título padrão, modelo `"%s \| PUC Tech"`, descrição, idioma `pt-BR` e cartão de compartilhamento    |
 | `app/*/page.tsx`          | Cada página (menos a home) define o próprio `metadata` com título e descrição                       |
-| `app/projetos/[slug]`     | Título e descrição de cada projeto (o resumo vira a descrição)                                      |
 | `app/opengraph-image.tsx` | Gera a imagem de prévia (fundo azul com "PUCTech" e o slogan) que aparece ao compartilhar o link   |
 | `app/icon.png`            | Favicon da aba do navegador                                                                        |
-| `app/sitemap.ts`          | Lista as páginas do site e as páginas dos projetos para o Google                                    |
+| `app/sitemap.ts`          | Lista as páginas do site para o Google                                                             |
 | `app/robots.ts`           | Libera os buscadores e aponta para o sitemap                                                       |
 
 ---
