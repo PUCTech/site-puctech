@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
-import type { Project } from "@/data/projects";
+import { useEffect, useId, useRef } from "react";
+import { projectStatuses, type Project } from "@/data/projects";
 
 type ProjectModalProps = {
   project: Project | null;
@@ -16,6 +16,8 @@ export default function ProjectModal({
   onClose,
 }: ProjectModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  // Id gerado: a página tem mais de um pop-up (carrossel e grade), então não pode ser fixo.
+  const titleId = useId();
 
   // O <dialog> nativo já cuida do ESC, do foco preso dentro do pop-up e do fundo.
   useEffect(() => {
@@ -40,8 +42,12 @@ export default function ProjectModal({
     };
   }, [open]);
 
+  const statusLabel = projectStatuses.find(
+    (item) => item.id === project?.status,
+  )?.label;
+
   const meta = project
-    ? [project.period, project.area].filter(Boolean).join(" · ")
+    ? [project.period, project.area, statusLabel].filter(Boolean).join(" · ")
     : "";
 
   return (
@@ -52,7 +58,7 @@ export default function ProjectModal({
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
-      aria-labelledby="project-modal-title"
+      aria-labelledby={titleId}
       className="project-dialog m-auto max-h-[90vh] w-[min(92vw,46rem)] overflow-y-auto rounded-2xl bg-paper p-0 text-brand-950 backdrop:bg-brand-950/80 backdrop:backdrop-blur-sm"
     >
       {project && (
@@ -96,10 +102,7 @@ export default function ProjectModal({
                   {meta}
                 </p>
               )}
-              <h2
-                id="project-modal-title"
-                className="mt-1 text-2xl font-bold md:text-3xl"
-              >
+              <h2 id={titleId} className="mt-1 text-2xl font-bold md:text-3xl">
                 {project.title}
               </h2>
             </div>

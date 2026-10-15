@@ -10,6 +10,7 @@
 //   summary     → resumo breve, 1 ou 2 frases (aparece embaixo do carrossel)
 //   period      → período, ex.: "2026.1"
 //   area        → uma das 4 áreas de atuação (veja `projectAreas`)
+//   status      → "em-andamento" ou "concluido" (usado no filtro de projetos)
 //   tech        → stacks e ferramentas, ex.: ["Python", "React", "AWS"]
 //   team        → equipe envolvida
 //   objective   → objetivo e escopo
@@ -53,6 +54,14 @@ export const projectAreas = [
 
 export type ProjectArea = (typeof projectAreas)[number]["title"];
 
+// `id` é o valor guardado em cada projeto; `label` é o texto exibido no site.
+export const projectStatuses = [
+  { id: "em-andamento", label: "Em andamento" },
+  { id: "concluido", label: "Concluído" },
+] as const;
+
+export type ProjectStatus = (typeof projectStatuses)[number]["id"];
+
 export type Project = {
   title: string;
   description: string;
@@ -60,6 +69,7 @@ export type Project = {
   summary?: string;
   period?: string;
   area?: ProjectArea;
+  status?: ProjectStatus;
   tech?: string[];
   team?: string[];
   objective?: string;
@@ -73,6 +83,7 @@ export const projects: Project[] = [
     summary:
       "Aplicativo de gestão de saúde rotineira: remédios, compromissos de saúde e consulta de preços.",
     area: "Engenharia de Software",
+    status: "concluido",
     description:
       "O CareOn ajuda a organizar a saúde no dia a dia. No app é possível cadastrar remédios, cadastrar compromissos de saúde (como exames e cirurgias), marcar os remédios já tomados e pesquisar o preço de remédios na Drogasil.\n\nOs preços vêm do site da farmácia e podem variar. Projeto desenvolvido em equipe, com foco no aprendizado prático.",
     tech: [
@@ -99,6 +110,7 @@ export const projects: Project[] = [
     summary:
       "Aplicativo para organizar a vida acadêmica: disciplinas, notas, faltas, tarefas e arquivos.",
     area: "Engenharia de Software",
+    status: "concluido",
     description:
       "O Minerva nasceu para ajudar o estudante universitário a planejar melhor a rotina acadêmica. Inspirado na deusa da sabedoria, reúne em um único espaço disciplinas, conteúdos, notas, faltas e arquivos.\n\nÉ uma solução de estudantes para estudantes, pensada para a experiência real do universitário brasileiro, e foi feita no programa First Steps da PUC Tech.",
     tech: [
@@ -129,6 +141,7 @@ export const projects: Project[] = [
     summary:
       "Restaurante virtual com agente de IA que atende o cliente por voz, em português.",
     area: "Inteligência Artificial",
+    status: "concluido",
     description:
       "O Rothernet simula o atendimento de um restaurante com um agente virtual de IA e Realidade Mista. O cliente conversa por voz com o assistente, que entende pedidos, responde perguntas sobre o cardápio e as regras da casa e devolve a resposta em áudio, em português.\n\nÉ um dos projetos iniciais (First Steps) da PUC Tech.",
     tech: [

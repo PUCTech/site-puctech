@@ -72,7 +72,7 @@ export const members: Member[] = [
   { name: "João Vitor", group: "membro", areas: ["eventos"], photo: "/equipe/joao-vitor.jpg", linkedin: "https://www.linkedin.com/in/jo%C3%A3o-vitor-quintella/" },
   { name: "Liam Lopes", group: "membro", photo: "/equipe/liam-lopes.jpg", linkedin: "https://www.linkedin.com/in/liam-lopes-8250b1214/" },
   { name: "Lorenzo", group: "membro", areas: ["pessoas", "eventos"], photo: "/equipe/lorenzo.jpg", linkedin: "https://www.linkedin.com/in/lorenzo-cunha-032a9a3a7/" },
-  { name: "Rafaella Castro", group: "membro", viceOf: ["marketing"], photo: "/equipe/rafaella-castro.jpg", linkedin: "https://www.linkedin.com/in/rafaellazlima/" },
+  { name: "Rafaella Lima", group: "membro", viceOf: ["marketing"], photo: "/equipe/rafaella-castro.jpg", linkedin: "https://www.linkedin.com/in/rafaellazlima/" },
   { name: "Raul Kolaric", group: "membro", areas: ["eventos"], photo: "/equipe/raul-kolaric.jpg", linkedin: "https://www.linkedin.com/in/raulkolaric/" },
   { name: "Renato Corral", group: "membro", areas: ["eventos"], photo: "/equipe/renato-corral.jpg", linkedin: "https://www.linkedin.com/in/renatocorralsilva/" },
   { name: "Thierry", group: "membro", areas: ["eventos"], photo: "/equipe/thierry.jpg", linkedin: "https://www.linkedin.com/in/thierry-nadjarian-a33a4a347/" },

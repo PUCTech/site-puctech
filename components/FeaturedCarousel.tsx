@@ -9,6 +9,9 @@ const OPACITIES = [1, 0.7, 0.45, 0.25, 0]; // por distância do centro
 const DEFAULT_SCALES = [1.6, 1, 0.9, 0.8, 0.7]; // por distância do centro
 const MAX_REACH = 3; // máximo de vizinhos visíveis de cada lado
 
+const arrowButton =
+  "pointer-events-auto inline-flex size-11 items-center justify-center rounded-full border border-brand-800 bg-brand-950/80 text-white backdrop-blur transition-colors hover:border-brand-200 hover:text-brand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200";
+
 type FeaturedCarouselProps<T> = {
   items: T[];
   /** Nome do item (legenda, leitores de tela e lista de teclado). */
@@ -25,6 +28,9 @@ type FeaturedCarouselProps<T> = {
   sizeClass: string;
   /** Tamanho por distância do centro: o primeiro número é o do destaque. */
   scales?: number[];
+  /** Textos dos botões laterais (leitores de tela). */
+  prevLabel?: string;
+  nextLabel?: string;
 };
 
 // Quanto o quadrado se afasta do centro, em múltiplos da largura base.
@@ -56,6 +62,8 @@ export default function FeaturedCarousel<T>({
   paused = false,
   sizeClass,
   scales = DEFAULT_SCALES,
+  prevLabel = "Anterior",
+  nextLabel = "Próximo",
 }: FeaturedCarouselProps<T>) {
   const count = items.length;
   const animated = count > 1;
@@ -64,9 +72,10 @@ export default function FeaturedCarousel<T>({
   const [focused, setFocused] = useState(false);
   const stopped = paused || hovered || focused;
 
+  // Avança sozinho. O tempo recomeça a cada troca, inclusive nas feitas pelos botões.
   useEffect(() => {
     if (!animated || stopped) return;
-    const id = setInterval(
+    const id = setTimeout(
       () =>
         setState((current) => ({
           previous: current.position,
@@ -74,17 +83,25 @@ export default function FeaturedCarousel<T>({
         })),
       INTERVAL,
     );
-    return () => clearInterval(id);
-  }, [animated, stopped]);
+    return () => clearTimeout(id);
+  }, [animated, stopped, state.position]);
 
   if (count === 0) return null;
 
+  const go = (delta: number) =>
+    setState((current) => ({
+      previous: current.position,
+      position: current.position + delta,
+    }));
+
   const scaleAt = (distance: number) =>
     scales[Math.min(distance, scales.length - 1)];
+  const areaHeight = `calc(var(--tile) * var(--ratio) * ${scales[0] + 0.3})`;
   // A lista se repete para o ciclo nunca acabar (o "pulo" acontece fora da tela).
   const copies = animated ? Math.max(3, Math.ceil(11 / count)) : 1;
   const loop = Array.from({ length: copies }, () => items).flat();
-  const active = items[state.position % count];
+  // A posição pode ficar negativa ao voltar, então o resto é normalizado.
+  const active = items[((state.position % count) + count) % count];
   const step = Math.abs(state.position - state.previous);
   // Quantos vizinhos aparecem de cada lado sem repetir nenhum item.
   const reachLeft = Math.min(Math.floor((count - 1) / 2), MAX_REACH);
@@ -95,6 +112,7 @@ export default function FeaturedCarousel<T>({
 
   return (
     <div
+      className={`relative ${sizeClass}`}
       onPointerEnter={(event) => {
         if (event.pointerType === "mouse") setHovered(true);
       }}
@@ -110,10 +128,8 @@ export default function FeaturedCarousel<T>({
     >
       <div aria-hidden>
         <div
-          className={`carousel-mask relative overflow-hidden ${sizeClass}`}
-          style={{
-            height: `calc(var(--tile) * var(--ratio) * ${scales[0] + 0.3})`,
-          }}
+          className="carousel-mask relative overflow-hidden"
+          style={{ height: areaHeight }}
         >
           {loop.map((item, index) => {
             const offset = animated
@@ -166,6 +182,55 @@ export default function FeaturedCarousel<T>({
 
         {renderCaption?.(active)}
       </div>
+
+      {/* Botões laterais: ficam fora do aria-hidden para funcionar com teclado e leitor de tela. */}
+      {animated && (
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between px-1 sm:px-2"
+          style={{ height: areaHeight }}
+        >
+          <button
+            type="button"
+            aria-label={prevLabel}
+            onClick={() => go(-1)}
+            className={arrowButton}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label={nextLabel}
+            onClick={() => go(1)}
+            className={arrowButton}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Quem navega pelo teclado ou usa leitor de tela escolhe por esta lista. */}
       {onSelect && (

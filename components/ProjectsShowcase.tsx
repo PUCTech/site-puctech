@@ -1,32 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import FeaturedCarousel from "@/components/FeaturedCarousel";
 import ProjectModal from "@/components/ProjectModal";
+import ProjectTile from "@/components/ProjectTile";
 import type { Project } from "@/data/projects";
-
-function ProjectTile({ project }: { project: Project }) {
-  return (
-    <div className="relative size-full bg-linear-to-br from-brand-800 to-brand-900 text-left">
-      {project.image && (
-        <Image
-          src={project.image}
-          alt=""
-          fill
-          sizes="(min-width: 640px) 320px, 240px"
-          loading="eager"
-          className="object-cover"
-        />
-      )}
-      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-brand-950/90 via-brand-950/50 to-transparent px-3 pb-3 pt-10">
-        <p className="line-clamp-2 text-sm font-semibold text-white">
-          {project.title}
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export default function ProjectsShowcase({
   projects,
@@ -51,6 +29,8 @@ export default function ProjectsShowcase({
           getName={(project) => project.title}
           onSelect={select}
           paused={open}
+          prevLabel="Projeto anterior"
+          nextLabel="Próximo projeto"
           sizeClass="[--tile:11rem] [--ratio:0.75] sm:[--tile:14rem]"
           scales={[1.35, 1, 0.88, 0.76, 0.64]}
           renderTile={(project) => <ProjectTile project={project} />}

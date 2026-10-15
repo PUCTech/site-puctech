@@ -3,6 +3,7 @@ import Image from "next/image";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
 import Section from "@/components/Section";
 import { projectAreas, projects, projectsPage } from "@/data/projects";
+import ProjectsGallery from "@/components/ProjectsGallery";
 
 export const metadata: Metadata = {
   title: "Projetos",
@@ -71,6 +72,11 @@ export default function ProjetosPage() {
             Em breve, os projetos da PUC Tech vão aparecer aqui.
           </p>
         )}
+              {projects.length > 0 && (
+        <Section id="todos-os-projetos" title="Todos os projetos">
+          <ProjectsGallery projects={projects} />
+        </Section>
+      )}
       </Section>
     </main>
   );
