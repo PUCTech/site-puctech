@@ -25,7 +25,7 @@ Requer Node.js 20.9 ou superior (exigência do Next.js 16).
 | `/`                  | `app/page.tsx`                     | Home com hero, sobre, números, projetos (áreas), parceiros e redes sociais                   |
 | `/sobre`             | `app/sobre/page.tsx`               | Diferença da liga, visão, valores, história e apoio institucional                            |
 | `/equipe`            | `app/equipe/page.tsx`              | Foto da equipe, introdução com os níveis da liga, tutores, fundadores, diretoria e áreas operacionais (com abas) |
-| `/projetos`          | `app/projetos/page.tsx`            | Áreas de atuação, carrossel de projetos e galeria com filtros (área e status)                |
+| `/projetos`          | `app/projetos/page.tsx`            | Áreas de atuação e a seção de projetos (filtros, carrossel e lista completa)                 |
 | `/processo-seletivo` | `app/processo-seletivo/page.tsx`   | Data do próximo processo, como se preparar e botão de inscrição                              |
 | `/links`             | `app/links/page.tsx`               | Redes sociais da liga (é o "Nossos links" do rodapé e da home)                               |
 
@@ -36,12 +36,13 @@ Requer Node.js 20.9 ou superior (exigência do Next.js 16).
 - Contagem animada nos números da home, que começa quando a seção aparece na tela.
 - Faixa de parceiros que rola sem parar (a lista é duplicada para o ciclo fechar sem "pulo").
 - Carrossel de projetos com botões de anterior/próximo. Troca sozinho a cada 4 segundos, reinicia o tempo a cada clique e pausa com o mouse, o foco do teclado ou o pop-up aberto.
+- Botão **Filtros** acima do carrossel, com os filtros de **Área** e **Status**, e contador de projetos. Os filtros valem para o carrossel e para a lista.
+- Botão **Ver todos os projetos**, que abre a lista completa (respeitando os filtros) abaixo do carrossel.
 - Pop-up com os detalhes de cada projeto (descrição, stacks, objetivo, resultados, equipe e link do repositório).
-- Galeria "Todos os projetos" com botão **Filtros**, que abre os filtros de **Área** e **Status**.
 - Projetos escritos em arquivos `.md` (um por projeto), lidos e conferidos no build.
 - Abas na seção de áreas operacionais da página de equipe: **Geral**, **Marketing**, **Eventos** e **Pessoas**.
 - Botão de inscrição do processo seletivo que fica desativado ("em breve") até o link existir.
-- Acessibilidade: quem usa "reduzir movimento" no sistema vê grades estáticas no lugar dos carrosséis e da faixa de parceiros, e o número final direto nos números; o carrossel de projetos tem uma lista alternativa para teclado e leitor de tela; o pop-up usa o `<dialog>` nativo (ESC, foco preso e fundo travado).
+- Acessibilidade: quem usa "reduzir movimento" no sistema vê a lista de projetos sempre aberta no lugar do carrossel, uma grade estática no lugar da faixa de parceiros e o número final direto nos números; o carrossel de projetos tem uma lista alternativa para teclado e leitor de tela; o pop-up usa o `<dialog>` nativo (ESC, foco preso e fundo travado).
 - SEO: título e descrição por página, imagem de prévia ao compartilhar o link, favicon, `sitemap.xml` e `robots.txt`.
 - Cabeçalhos de segurança configurados em `next.config.ts` (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` e `Permissions-Policy`).
 
@@ -72,8 +73,7 @@ components/
 ├── About.tsx                   Seção "Sobre" da home
 ├── Stats.tsx                   Seção de números (com a animação de contagem)
 ├── ProjectsSection.tsx         Seção "Projetos" da home (texto e áreas)
-├── ProjectsShowcase.tsx        Carrossel de projetos + grade (reduzir movimento) + pop-up
-├── ProjectsGallery.tsx         Galeria "Todos os projetos" com filtros + pop-up
+├── ProjectsShowcase.tsx        Filtros, carrossel de projetos, lista completa e pop-up
 ├── ProjectTile.tsx             Quadrado de um projeto (capa e título)
 ├── ProjectDetails.tsx          Conteúdo de um projeto, mostrado dentro do pop-up
 ├── ProjectModal.tsx            Pop-up com os detalhes de um projeto
@@ -128,6 +128,7 @@ A regra geral: **o conteúdo fica em `content/`, `data/` e `lib/site.ts`; a apar
 | Título e introdução da página de projetos                      | `data/projects.ts` → `projectsPage`                  |
 | Áreas de atuação dos projetos                                  | `data/projects.ts` → `projectAreas`                  |
 | Opções do filtro de status                                     | `data/projects.ts` → `projectStatuses`               |
+| Textos dos botões "Filtros" e "Ver todos os projetos"          | `components/ProjectsShowcase.tsx`                    |
 | Abrir o processo seletivo (link do formulário)                 | `data/selection.tsx` → `apply.applyUrl`              |
 | Data e textos do processo seletivo                             | `data/selection.tsx`                                 |
 | Orientadores, fundadores, diretoria e membros                  | `data/team.ts` → `members`                           |
@@ -164,7 +165,7 @@ Cada projeto é um arquivo `.md`. O nome do arquivo só identifica o projeto: us
 1. Copie `content/projetos/_modelo.md` e renomeie (ex.: `meu-projeto.md`).
 2. Preencha o cabeçalho (entre os `---`) e as seções do texto.
 3. Se tiver capa, coloque a imagem em `public/projetos/` e informe `image: "/projetos/meu-projeto.jpg"`.
-4. Pronto: ele aparece no carrossel e na galeria.
+4. Pronto: ele aparece no carrossel e na lista completa.
 
 Arquivos que começam com `_` são ignorados pelo site (é o caso do modelo).
 
@@ -206,11 +207,11 @@ Texto dos resultados.
 | `area`    | Uma das quatro áreas de `projectAreas`, escrita exatamente igual (outro valor gera erro no build)   |
 | `status`  | `"em-andamento"` ou `"concluido"` (usado no filtro; sem status, o projeto some ao filtrar por ele)  |
 | `period`  | Período, ex.: `"2026.1"` (**sempre entre aspas**)                                                   |
-| `image`   | Capa, ex.: `"/projetos/nome-do-projeto.jpg"` (arquivo em `public/projetos/`). Aparece nos cards do carrossel e da galeria, não no pop-up |
+| `image`   | Capa, ex.: `"/projetos/nome-do-projeto.jpg"` (arquivo em `public/projetos/`). Aparece nos cards do carrossel e da lista, não no pop-up |
 | `tech`    | Stacks, ex.: `[Python, React, AWS]` (veja a observação abaixo)                                      |
 | `team`    | Lista com a equipe envolvida (um nome por linha, com `-`)                                           |
 | `repo`    | Link do repositório ou da publicação (vira o botão "Ver repositório")                               |
-| `order`   | Número que define a posição no carrossel e na galeria (menor aparece primeiro). Sem `order`, o projeto vai para o fim, em ordem alfabética |
+| `order`   | Número que define a posição no carrossel e na lista (menor aparece primeiro). Sem `order`, o projeto vai para o fim, em ordem alfabética |
 
 **Seções do texto** (títulos exatos, nesta ordem): `## Descrição` (obrigatória), `## Objetivo e escopo` e `## Resultados e aprendizados`. Cada seção é opcional, menos a descrição. O texto é simples: uma linha em branco separa os parágrafos, e listas, negrito e links não são formatados.
 
@@ -230,7 +231,7 @@ Texto dos resultados.
 - Use aspas em textos que tenham `:` ou comecem com `@` (ex.: `"@usuario"`). Sem aspas, o arquivo dá erro.
 - `period` sem aspas vira número (`2026.10` viraria `2026.1`). Escreva `"2026.1"`.
 
-Se algo estiver errado, o build falha com uma mensagem dizendo qual arquivo e qual campo têm o problema. Se não houver nenhum projeto, o carrossel e a galeria não aparecem e a página `/projetos` mostra "Em breve, os projetos da PUC Tech vão aparecer aqui."
+Se algo estiver errado, o build falha com uma mensagem dizendo qual arquivo e qual campo têm o problema. Se não houver nenhum projeto, a seção mostra "Em breve, os projetos da PUC Tech vão aparecer aqui."
 
 O pop-up mostra apenas os campos preenchidos.
 
@@ -398,7 +399,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 - Home: `#sobre`, `#projetos`, `#parceiros` e `#redes`.
 - `/sobre`: `#diferenca`, `#visao`, `#valores`, `#historia` e `#apoio`.
 - `/equipe`: `#conheca-os-membros` (a introdução), `#tutores`, `#honorarios`, `#fundadores`, `#diretoria-executiva`, `#diretorias-estrategicas`, `#areas-operacionais` e `#idealizadores`.
-- `/projetos`: `#areas`, `#projetos` e `#todos-os-projetos`.
+- `/projetos`: `#areas` e `#projetos`.
 
 ---
 
@@ -416,9 +417,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 **`ProjectsSection.tsx`**: texto de `projectsIntro`, as quatro áreas de atuação (cartões com foto, de `projectAreas`) e o botão "Conheça nossos projetos", que leva a `/projetos`.
 
-**`ProjectsShowcase.tsx`**: mostra os projetos no `FeaturedCarousel` (capa, com o título e o resumo do item em destaque embaixo). Para quem usa "reduzir movimento", vira uma grade de botões. Clicar em um projeto abre o `ProjectModal`.
-
-**`ProjectsGallery.tsx`**: seção "Todos os projetos". Mostra todos os projetos em grade, com o contador ("3 projetos") e o botão **Filtros**, que abre os campos **Área** e **Status**. Os dois filtros funcionam juntos; "Limpar filtros" aparece quando há algum ativo. Clicar em um projeto abre o `ProjectModal`.
+**`ProjectsShowcase.tsx`**: a seção de projetos da página `/projetos`. No topo ficam o botão **Filtros** (que abre os campos **Área** e **Status**, com o número de filtros ativos e "Limpar filtros") e o contador de projetos ("3 projetos"). Abaixo vem o `FeaturedCarousel` (capa, com o título e o resumo do item em destaque embaixo) e o botão **Ver todos os projetos**, que abre e fecha a lista completa em grade. Os filtros valem para o carrossel e para a lista, e os dois filtros funcionam juntos. Para quem usa "reduzir movimento", o carrossel e o botão não aparecem e a lista fica sempre aberta. Clicar em um projeto abre o `ProjectModal`.
 
 **`ProjectTile.tsx`**: o quadrado de um projeto (capa e título). Sem `image`, aparece um degradê azul.
 
@@ -446,7 +445,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 **`/equipe`**: foto do grupo no topo (`public/equipe/grupo-puctech.jpg`), uma introdução (texto sobre a comunidade e cards, sem link, com os níveis da liga: Tutores, Fundadores, Diretoria Executiva, Áreas Operacionais e Trainees) e uma seção para cada grupo de `team.ts`, na ordem: Tutores, Membros Honorários, Fundadores, Diretoria Executiva, Diretorias Estratégicas, Áreas Operacionais e Idealizadores. Os cards da introdução ficam na lista `levels`, em `app/equipe/page.tsx`, e o último card é centralizado.
 
-**`/projetos`**: título e introdução, "Áreas de Atuação" (quatro cartões com foto), "Nossos projetos" (carrossel) e "Todos os projetos" (galeria com filtros). Cada projeto abre em um pop-up.
+**`/projetos`**: título e introdução, "Áreas de Atuação" (quatro cartões com foto) e "Nossos projetos" (filtros, carrossel e lista completa). Cada projeto abre em um pop-up.
 
 **`/links`**: logo, slogan e um botão para cada item de `data/links.ts`.
 
