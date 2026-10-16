@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import AsciiLogo from "@/components/AsciiLogo";
 import { CdLink, Stage, withBold } from "@/components/Section";
 import { socials } from "@/components/SocialIcons";
@@ -15,9 +16,29 @@ import {
 import { projectAreas } from "@/data/projects";
 import { selectionPage } from "@/data/selection";
 
-// Seções soltas na página, sem caixas: tipografia grande, espaço e poucas linhas.
-const display =
-  "font-display text-4xl font-bold tracking-[-0.035em] text-balance md:text-6xl md:leading-[1.02]";
+// Todas as seções seguem o mesmo ritmo: título, texto logo abaixo e o conteúdo.
+const gap = "py-14 md:py-20";
+
+function Heading({
+  title,
+  href,
+  children,
+}: {
+  title: string;
+  href?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="max-w-[62ch]">
+      <h2 className="text-3xl font-bold tracking-[-0.03em] text-balance md:text-5xl md:leading-[1.05]">
+        {title}
+      </h2>
+      <div className="mt-4 space-y-3 text-lg leading-relaxed text-muted">{children}</div>
+      {href && <CdLink href={href} className="mt-5" />}
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <main>
@@ -33,16 +54,16 @@ export default function Home() {
         </AsciiLogo>
       </section>
 
-      {/* Números: logo abaixo da abertura, soltos na página. */}
-      <Stage className="pb-20 md:pb-28">
+      {/* Números: logo abaixo da abertura. */}
+      <Stage className={gap}>
         <h2 className="sr-only">Nossos números</h2>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-10 border-t border-border pt-10 sm:grid-cols-3 lg:grid-cols-5">
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border pt-10 sm:grid-cols-3 lg:grid-cols-5">
           {stats.map((stat) => (
             <div key={stat.label} className="flex flex-col-reverse justify-end">
-              <dt className="mt-2 max-w-[18ch] text-[15px] leading-snug text-muted">
+              <dt className="mt-1 max-w-[18ch] text-sm leading-snug text-muted">
                 {stat.label}
               </dt>
-              <dd className="font-display text-6xl font-bold tracking-[-0.045em] md:text-7xl">
+              <dd className="text-5xl font-bold tracking-[-0.04em] md:text-6xl">
                 {stat.value}
                 <span className="text-accent">{stat.suffix}</span>
               </dd>
@@ -51,36 +72,22 @@ export default function Home() {
         </dl>
       </Stage>
 
-      {/* Sobre */}
-      <Stage id="sobre" className="py-20 md:py-28">
-        <div className="grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-5">
-            <h2 className={display}>{about.title}</h2>
-            <CdLink href="/sobre" className="mt-6" />
-          </div>
-          <div className="space-y-6 text-lg leading-relaxed text-muted md:text-xl lg:col-span-7">
-            {about.paragraphs.map((text) => (
-              <p key={text}>{withBold(text)}</p>
-            ))}
-          </div>
-        </div>
+      <Stage id="sobre" className={gap}>
+        <Heading title={about.title} href="/sobre">
+          {about.paragraphs.map((text) => (
+            <p key={text}>{withBold(text)}</p>
+          ))}
+        </Heading>
       </Stage>
 
-      {/* Projetos */}
-      <Stage id="projetos" className="py-20 md:py-28">
-        <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
-          <h2 className={`${display} lg:col-span-5`}>Projetos</h2>
-          <div className="lg:col-span-7">
-            <p className="max-w-[56ch] text-lg leading-relaxed text-muted md:text-xl">
-              {projectsIntro.text}
-            </p>
-            <CdLink href="/projetos" className="mt-6" />
-          </div>
-        </div>
-        <ul className="mt-14 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-6">
+      <Stage id="projetos" className={gap}>
+        <Heading title="Projetos" href="/projetos">
+          <p>{projectsIntro.text}</p>
+        </Heading>
+        <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
           {projectAreas.map((area) => (
             <li key={area.title}>
-              <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-ink">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink">
                 <Image
                   src={area.image}
                   alt=""
@@ -90,9 +97,7 @@ export default function Home() {
                   style={{ objectPosition: area.position }}
                 />
               </div>
-              <p className="mt-4 font-display text-lg font-bold leading-tight md:text-xl">
-                {area.title}
-              </p>
+              <p className="mt-3 font-semibold leading-snug">{area.title}</p>
             </li>
           ))}
         </ul>
@@ -102,11 +107,11 @@ export default function Home() {
       <Stage className="bg-accent">
         <Link
           href="/processo-seletivo"
-          className="group flex flex-col gap-6 py-16 md:flex-row md:items-end md:justify-between md:py-20"
+          className="group flex flex-col gap-4 py-14 md:flex-row md:items-end md:justify-between md:py-16"
         >
           <span>
-            <span className="block text-lg font-medium">{selectionPage.badge}</span>
-            <span className="mt-2 block font-display text-5xl font-bold tracking-[-0.04em] md:text-7xl">
+            <span className="block font-medium">{selectionPage.badge}</span>
+            <span className="mt-1 block text-4xl font-bold tracking-[-0.035em] md:text-6xl">
               {selectionPage.title}
             </span>
           </span>
@@ -116,51 +121,45 @@ export default function Home() {
         </Link>
       </Stage>
 
-      {/* Parceiros */}
-      <Stage id="parceiros" className="py-20 md:py-28">
-        <div className="grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-5">
-            <h2 className={display}>{partnersIntro.title}</h2>
-            <div className="mt-6 space-y-1 text-lg leading-relaxed text-muted">
-              {partnersIntro.paragraphs.map((text) => (
-                <p key={text}>{text}</p>
-              ))}
-            </div>
-          </div>
-          <ul className="grid grid-cols-3 gap-x-6 gap-y-8 sm:grid-cols-4 lg:col-span-7 lg:self-center">
-            {partners.map((partner) => (
-              <li key={partner.name} className="flex flex-col items-center gap-3 text-center">
-                {partner.logo ? (
-                  <Image
-                    src={partner.logo}
-                    alt=""
-                    width={96}
-                    height={96}
-                    className="size-20 rounded-xl object-cover md:size-24"
-                  />
-                ) : null}
-                <span className="text-sm text-muted">{partner.name}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <Stage id="parceiros" className={gap}>
+        <Heading title={partnersIntro.title}>
+          {partnersIntro.paragraphs.map((text) => (
+            <p key={text}>{text}</p>
+          ))}
+        </Heading>
+        <ul className="mt-10 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
+          {partners.map((partner) => (
+            <li key={partner.name} className="flex flex-col items-start gap-3">
+              {partner.logo && (
+                <Image
+                  src={partner.logo}
+                  alt=""
+                  width={96}
+                  height={96}
+                  className="size-20 rounded-xl object-cover md:size-24"
+                />
+              )}
+              <span className="text-sm text-muted">{partner.name}</span>
+            </li>
+          ))}
+        </ul>
       </Stage>
 
-      {/* Redes */}
-      <Stage id="redes" className="py-20 md:py-28">
-        <h2 className={display}>{socialIntro.title}</h2>
-        <p className="mt-4 text-lg font-semibold">{socialIntro.tagline}</p>
-        <p className="mt-1 max-w-[56ch] text-lg leading-relaxed text-muted">{socialIntro.text}</p>
-        <ul className="mt-12 flex flex-wrap gap-x-10 gap-y-5">
+      <Stage id="redes" className={gap}>
+        <Heading title={socialIntro.title}>
+          <p className="font-semibold text-ink">{socialIntro.tagline}</p>
+          <p>{socialIntro.text}</p>
+        </Heading>
+        <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
           {socials.map(({ label, href, Icon }) => (
             <li key={label}>
               <a
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-3 font-display text-2xl font-bold tracking-[-0.02em] md:text-3xl"
+                className="group inline-flex items-center gap-2.5 text-xl font-semibold md:text-2xl"
               >
-                <Icon className="size-6 text-accent-ink" />
+                <Icon className="size-5 text-accent-ink" />
                 <span className="underline decoration-transparent decoration-2 underline-offset-8 transition-colors group-hover:decoration-accent">
                   {label}
                 </span>
