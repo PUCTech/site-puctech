@@ -52,12 +52,12 @@ export default function Stats() {
   return (
     <dl
       ref={ref}
-      className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border pt-10 sm:grid-cols-3 lg:grid-cols-5"
+      className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-5"
     >
       {stats.map((stat, index) => (
         <div key={stat.label} className="flex flex-col-reverse justify-end">
-          <dt className="mt-1 max-w-[18ch] text-sm leading-snug text-muted">{stat.label}</dt>
-          <dd className="text-5xl font-bold tracking-[-0.04em] tabular-nums md:text-6xl">
+          <dt className="mt-1.5 max-w-[20ch] text-[15px] leading-snug text-muted">{stat.label}</dt>
+          <dd className="text-4xl font-bold tracking-[-0.03em] tabular-nums md:text-[2.75rem] md:leading-none">
             <span className="sr-only">
               {stat.value}
               {stat.suffix}

@@ -55,8 +55,8 @@ export default function Home() {
         </AsciiLogo>
       </section>
 
-      {/* Números: logo abaixo da abertura. */}
-      <Stage className={gap}>
+      {/* Números: colados na abertura (sem espaço extra em cima, a chuva já dá o respiro). */}
+      <Stage className="pb-14 md:pb-20">
         <h2 className="sr-only">Nossos números</h2>
         <Stats />
       </Stage>
