@@ -5,24 +5,37 @@
 // e devolve a grade inteira (largura × altura), com " " nas células vazias.
 
 /**
- * Grade de um quadro. `style` (opcional) muda o visual de cada célula:
- * 0 = normal, DIM = esmaecida, INVERSE = invertida (fundo ciano, como as barras do htop).
+ * Grade de um quadro. `style` (opcional) muda o visual de cada célula. Os tons
+ * de opacidade dão profundidade: 0 = cheio (100%), SOFT (65%), DIM (35%), FAINT (15%).
+ * INVERSE = invertida (fundo ciano, como as barras do htop).
  */
 export type Grid = string[] & { style?: Uint8Array };
 export const DIM = 1;
 export const INVERSE = 2;
+export const SOFT = 3;
+export const FAINT = 4;
 
 export type Frame = (t: number, dt: number) => Grid;
 export type Scene = { command: string; make: (w: number, h: number, cellRatio: number) => Frame };
 
-const blank = (w: number, h: number) => new Array<string>(w * h).fill(" ");
+const blank = (w: number, h: number): Grid => new Array<string>(w * h).fill(" ");
 
-/** Escreve um texto na grade, cortando o que sair dela. */
-function write(cells: string[], w: number, h: number, x: number, y: number, text: string) {
+/** Marca o tom de uma célula (cria o mapa de estilos na primeira vez). */
+function tint(cells: Grid, i: number, tone: number) {
+  cells.style ??= new Uint8Array(cells.length);
+  cells.style[i] = tone;
+}
+
+/** Escreve um texto na grade, cortando o que sair dela, opcionalmente num tom. */
+function write(cells: Grid, w: number, h: number, x: number, y: number, text: string, tone = 0) {
   if (y < 0 || y >= h) return;
   for (let k = 0; k < text.length; k++) {
     const col = x + k;
-    if (col >= 0 && col < w && text[k] !== " ") cells[y * w + col] = text[k];
+    if (col < 0 || col >= w) continue;
+    const i = y * w + col;
+    if (text[k] !== " ") cells[i] = text[k];
+    // O invertido pinta também os espaços (o fundo ciano é contínuo).
+    if (tone && (text[k] !== " " || tone === INVERSE)) tint(cells, i, tone);
   }
 }
 
@@ -65,6 +78,9 @@ const donut: Scene["make"] = (w, h, cellRatio) => {
         if (L > 0 && ooz > zbuf[i]) {
           zbuf[i] = ooz;
           cells[i] = SHADES[Math.min(SHADES.length - 1, Math.floor(L * 8))];
+          // A parte menos iluminada também fica mais transparente: dá volume.
+          const tone = L < 0.25 ? FAINT : L < 0.5 ? DIM : L < 0.75 ? SOFT : 0;
+          if (tone) tint(cells, i, tone);
         }
       }
     }
@@ -102,8 +118,12 @@ const life: Scene["make"] = (w, h) => {
       alive = next;
       age = nextAge;
     }
-    // Célula recém-nascida é "o"; as mais velhas ficam mais cheias.
-    return Array.from(alive, (a, i) => (a ? (age[i] < 2 ? "o" : age[i] < 6 ? "O" : "@") : " "));
+    // Célula recém-nascida é "o" e quase transparente; as mais velhas ficam cheias.
+    const cells: Grid = Array.from(alive, (a, i) => (a ? (age[i] < 2 ? "o" : age[i] < 6 ? "O" : "@") : " "));
+    alive.forEach((a, i) => {
+      if (a && age[i] < 6) tint(cells, i, age[i] < 2 ? DIM : SOFT);
+    });
+    return cells;
   };
 };
 
@@ -140,9 +160,10 @@ const sl: Scene["make"] = (w, h) => {
     write(cells, w, h, x, top + TRAIN.length, WHEELS[Math.floor(t * 8) % WHEELS.length]);
     // Fumaça saindo da chaminé e ficando para trás.
     const puffs = ["(  )", "( )", "()", "o", "."];
+    const tones = [SOFT, SOFT, DIM, FAINT, FAINT]; // some aos poucos
     for (let k = 0; k < puffs.length; k++) {
       const drift = Math.floor((t * 6 + k * 2) % 10);
-      write(cells, w, h, x + 6 + k * 4 + drift, top - 1 - Math.min(k, 2), puffs[k]);
+      write(cells, w, h, x + 6 + k * 4 + drift, top - 1 - Math.min(k, 2), puffs[k], tones[k]);
     }
     return cells;
   };
@@ -197,9 +218,9 @@ const pong: Scene["make"] = (w, h) => {
     }
 
     const cells = blank(w, h);
-    for (let y = 1; y < h; y += 2) write(cells, w, h, Math.floor(w / 2), y, ":");
-    write(cells, w, h, Math.floor(w / 2) - 4, 1, `${score[0]}`);
-    write(cells, w, h, Math.floor(w / 2) + 4, 1, `${score[1]}`);
+    for (let y = 1; y < h; y += 2) write(cells, w, h, Math.floor(w / 2), y, ":", FAINT);
+    write(cells, w, h, Math.floor(w / 2) - 4, 1, `${score[0]}`, SOFT);
+    write(cells, w, h, Math.floor(w / 2) + 4, 1, `${score[1]}`, SOFT);
     for (let k = 0; k < PADDLE; k++) {
       write(cells, w, h, 2, Math.round(left.y - PADDLE / 2 + k), "#");
       write(cells, w, h, w - 3, Math.round(right.y - PADDLE / 2 + k), "#");
@@ -240,7 +261,10 @@ const cowsay: Scene["make"] = (w, h) => {
     const x = Math.floor((w - width) / 2);
     const y = Math.max(2, Math.floor((h - art.length) / 2));
     const cells = blank(w, h);
-    art.forEach((row, k) => write(cells, w, h, x, y + k, row));
+    art.forEach((row, k) => write(cells, w, h, x, y + k, row, k === 0 || k === 2 ? DIM : k === 1 ? 0 : SOFT));
+    // As bordas "<" e ">" do balão também ficam atrás.
+    write(cells, w, h, x, y + 1, "<", DIM);
+    write(cells, w, h, x + moo.length + 3, y + 1, ">", DIM);
     return cells;
   };
 };
@@ -345,15 +369,10 @@ const htop: Scene["make"] = (w, h) => {
       cursor++;
     }
 
-    const cells: Grid = blank(w, h);
-    const style = new Uint8Array(w * h);
-    cells.style = style;
+    const cells = blank(w, h);
     const x0 = 1;
     const W = w - 2;
-    const put = (x: number, y: number, text: string, mode = 0) => {
-      write(cells, w, h, x, y, text);
-      if (mode) for (let k = 0; k < text.length; k++) if (x + k < w && y < h) style[y * w + x + k] = mode;
-    };
+    const put = (x: number, y: number, text: string, tone = 0) => write(cells, w, h, x, y, text, tone);
 
     // Medidor: "  0[||||||||        34.2%]", com o valor por cima da barra, no fim.
     const meter = (x: number, y: number, width: number, label: string, frac: number, text: string) => {
@@ -417,7 +436,8 @@ const htop: Scene["make"] = (w, h) => {
         put(x0, y, line, INVERSE);
         return;
       }
-      put(x0, y, line);
+      // Processos quase parados ficam um pouco atrás, para a lista ter profundidade.
+      put(x0, y, line, p.cpu < 0.5 ? SOFT : 0);
       // Como no htop: o caminho do programa fica apagado e o nome dele em destaque.
       const at = row(fields).length;
       const path = p.cmd.split(" ")[0];
@@ -475,7 +495,12 @@ const neofetch: Scene["make"] = (w, h) => {
     const y = Math.max(3, Math.floor((h - info.length) / 2));
     art.forEach((row, k) => write(cells, w, h, x, y + k, row));
     // As linhas de informação aparecem uma a uma.
-    info.slice(0, Math.floor(t * 6)).forEach((row, k) => write(cells, w, h, x + 32, y + k, row));
+    info.slice(0, Math.floor(t * 6)).forEach((row, k) => {
+      const colon = row.indexOf(": ");
+      if (colon < 0) return write(cells, w, h, x + 32, y + k, row, row.startsWith("-") ? DIM : 0);
+      write(cells, w, h, x + 32, y + k, row.slice(0, colon + 1));
+      write(cells, w, h, x + 34 + colon, y + k, row.slice(colon + 2), SOFT);
+    });
     return cells;
   };
 };
@@ -513,7 +538,11 @@ const gitlog: Scene["make"] = (w, h) => {
     const offset = Math.floor(t * 5);
     for (let r = 3; r < h; r++) {
       const line = lines[(r - 3 + offset) % lines.length];
-      write(cells, w, h, x, r, line);
+      const graph = line.match(/^[|\\/* ]+/)?.[0] ?? "";
+      write(cells, w, h, x, r, graph, DIM);
+      const rest = line.slice(graph.length);
+      write(cells, w, h, x + graph.length, r, rest.slice(0, 7), SOFT);
+      write(cells, w, h, x + graph.length + 7, r, rest.slice(7));
     }
     return cells;
   };
@@ -531,13 +560,16 @@ const npm: Scene["make"] = (w, h) => {
     const width = Math.min(w - 4, 70);
     const x = Math.floor((w - width) / 2);
     const y = Math.max(3, Math.floor(h / 2) - 4);
-    steps.slice(0, Math.floor(t * 1.5)).forEach((row, k) => write(cells, w, h, x, y + k, row.slice(0, width)));
+    steps.slice(0, Math.floor(t * 1.5)).forEach((row, k) => write(cells, w, h, x, y + k, row.slice(0, width), DIM));
     const p = Math.min(1, t / 5.5);
     const size = width - 10;
-    write(cells, w, h, x, y + 4, `[${"#".repeat(Math.round(p * size)).padEnd(size, ".")}] ${Math.round(p * 100)}%`);
+    const done = Math.round(p * size);
+    write(cells, w, h, x, y + 4, `[${"#".repeat(done)}`);
+    write(cells, w, h, x + 1 + done, y + 4, ".".repeat(size - done), FAINT);
+    write(cells, w, h, x + 1 + size, y + 4, `] ${Math.round(p * 100)}%`);
     if (p >= 1) {
       write(cells, w, h, x, y + 6, "added 1337 packages in 6s");
-      write(cells, w, h, x, y + 7, "node_modules: 2.4 GB (maior que o universo observável)");
+      write(cells, w, h, x, y + 7, "node_modules: 2.4 GB (maior que o universo observável)", SOFT);
     }
     return cells;
   };
@@ -566,9 +598,10 @@ export function withPrompt(
 ): Frame {
   return (t, dt) => {
     const cells = frame(t, dt);
-    const typed = `$ ${command.slice(0, Math.floor(t * 14))}`;
+    const typed = command.slice(0, Math.floor(t * 14));
     const cursor = Math.floor(t * 2) % 2 === 0 ? "_" : "";
-    write(cells, w, h, x, y, typed + cursor);
+    write(cells, w, h, x, y, "$", DIM);
+    write(cells, w, h, x + 2, y, typed + cursor);
     return cells;
   };
 }
