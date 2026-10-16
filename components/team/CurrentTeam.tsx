@@ -111,7 +111,7 @@ export default function CurrentTeam() {
             onClick={() => setActive(tab.id)}
             className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
               active === tab.id
-                ? "bg-ink text-white"
+                ? "bg-ink text-paper"
                 : "text-muted hover:text-ink"
             }`}
           >

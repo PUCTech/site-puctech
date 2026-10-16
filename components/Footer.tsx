@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import Link from "next/link";
 import { socials } from "@/components/SocialIcons";
 import { container } from "@/components/Section";
@@ -10,7 +10,7 @@ export default function Footer() {
     <footer className="mt-16 border-t border-border">
       <div className={`${container} flex flex-col gap-6 py-8 md:flex-row md:items-center md:justify-between`}>
         <Link href="/" aria-label="PUC Tech, página inicial" className="shrink-0">
-          <Image src="/logo-puctech-ink.svg" alt="" width={310} height={82} className="h-6 w-auto" />
+          <Logo className="h-6 w-auto" alt="" />
         </Link>
 
         <nav aria-label="Rodapé" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">

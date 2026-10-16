@@ -95,7 +95,7 @@ export default function ProjectDetails({
             href={project.repo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-on-accent transition-colors hover:bg-ink hover:text-paper"
           >
             Ver repositório ↗
           </a>

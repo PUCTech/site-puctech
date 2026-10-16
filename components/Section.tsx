@@ -5,9 +5,9 @@ export const container = "mx-auto w-full max-w-6xl px-5 sm:px-6";
 
 export const button = {
   base: "inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[15px] font-semibold transition-colors",
-  primary: "bg-accent text-ink hover:bg-ink hover:text-white",
-  dark: "bg-ink text-white hover:bg-accent hover:text-ink",
-  outline: "border border-border bg-white text-ink hover:border-ink",
+  primary: "bg-accent text-on-accent hover:bg-ink hover:text-paper",
+  dark: "bg-ink text-paper hover:bg-accent hover:text-on-accent",
+  outline: "border border-border bg-paper text-ink hover:border-ink",
 };
 
 export const h2 =

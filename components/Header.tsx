@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -33,8 +34,8 @@ export default function Header() {
     <header
       className={`sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out ${
         scrolled || open
-          ? "border-border/80 bg-white/80 backdrop-blur-md"
-          : "border-transparent bg-white"
+          ? "border-border/80 bg-paper/80 backdrop-blur-md"
+          : "border-transparent bg-paper"
       }`}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
@@ -43,14 +44,7 @@ export default function Header() {
           className="flex items-center"
           onClick={() => setOpen(false)}
         >
-          <Image
-            src="/logo-puctech-ink.svg"
-            alt="Logo da PUC Tech"
-            width={310}
-            height={82}
-            loading="eager"
-            className="h-7 w-auto"
-          />
+          <Logo className="h-7 w-auto" alt="Logo da PUC Tech" eager />
         </Link>
         {/* Processo Seletivo fica fora: no desktop ele é o botão da direita. */}
         <nav className="hidden items-center gap-1 text-[15px] lg:flex">
@@ -66,40 +60,42 @@ export default function Header() {
           ))}
         </nav>
 
-        <Link
-          href="/processo-seletivo"
-          className="hidden justify-self-end rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-white lg:inline-flex"
-        >
-          Processo Seletivo
-        </Link>
-
-        <button
-          type="button"
-          className="inline-flex size-10 items-center justify-center rounded-full border border-border lg:hidden"
-          aria-label="Abrir menu"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
+        <div className="flex items-center gap-2 justify-self-end">
+          <ThemeToggle />
+          <Link
+            href="/processo-seletivo"
+            className="hidden rounded-full bg-accent px-4 py-2 text-sm font-semibold text-on-accent transition-colors hover:bg-ink hover:text-paper lg:inline-flex"
           >
-            {open ? (
-              <path d="M6 6l12 12M18 6L6 18" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            )}
-          </svg>
-        </button>
+            Processo Seletivo
+          </Link>
+          <button
+            type="button"
+            className="inline-flex size-10 items-center justify-center rounded-full border border-border lg:hidden"
+            aria-label="Abrir menu"
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              {open ? (
+                <path d="M6 6l12 12M18 6L6 18" />
+              ) : (
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-border bg-white px-5 py-4 lg:hidden">
+        <nav className="flex flex-col gap-1 border-t border-border bg-paper px-5 py-4 lg:hidden">
           {navLinks.map((link) => (
             <Link
               key={link.href}

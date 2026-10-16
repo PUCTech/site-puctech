@@ -39,7 +39,7 @@ export default function MemberCard({
       {/* Sem caixa: só a foto. Quem tem destaque ganha um anel ciano. */}
       <div
         className={`relative aspect-square overflow-hidden rounded-2xl bg-surface ${
-          highlight ? "ring-4 ring-accent ring-offset-4 ring-offset-white" : ""
+          highlight ? "ring-4 ring-accent ring-offset-4 ring-offset-paper" : ""
         }`}
       >
         {member.photo ? (

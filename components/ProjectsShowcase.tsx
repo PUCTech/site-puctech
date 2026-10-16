@@ -14,7 +14,7 @@ import {
 
 const option = (active: boolean) =>
   `rounded-full px-3.5 py-1.5 text-left text-sm font-medium transition-colors ${
-    active ? "bg-ink text-white" : "bg-surface text-muted hover:text-ink"
+    active ? "bg-ink text-paper" : "bg-surface text-muted hover:text-ink"
   }`;
 
 // Filtro de escolha única, com "" = sem filtro.

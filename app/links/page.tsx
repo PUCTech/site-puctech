@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import Link from "next/link";
 import {
   GithubIcon,
@@ -26,14 +26,14 @@ const icons = {
 };
 
 const card =
-  "group flex w-full items-center gap-4 rounded-full border border-border bg-white py-2.5 pr-6 pl-2.5 text-left transition-colors";
+  "group flex w-full items-center gap-4 rounded-full border border-border bg-paper py-2.5 pr-6 pl-2.5 text-left transition-colors";
 
 function LinkContent({ item, arrow }: { item: LinkItem; arrow?: string }) {
   const Icon = icons[item.icon ?? "link"];
 
   return (
     <>
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-ink">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
         <Icon className="size-5" />
       </span>
       <span className="min-w-0 flex-1">
@@ -98,14 +98,7 @@ export default function LinksPage() {
     <main className="relative overflow-hidden">
       <div className="relative mx-auto flex max-w-xl flex-col items-center px-6 py-16 text-center md:py-24">
         <h1>
-          <Image
-            src="/logo-puctech-ink.svg"
-            alt="PUC Tech"
-            width={310}
-            height={82}
-            loading="eager"
-            className="h-auto w-56 sm:w-64"
-          />
+          <Logo className="h-auto w-56 sm:w-64" alt="PUC Tech" eager />
         </h1>
         <p className="mt-4 text-balance text-muted">
           {linksPage.tagline}

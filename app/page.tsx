@@ -59,7 +59,7 @@ export default function Home() {
         <AsciiLogo className="absolute inset-0">
           <h1>
             <span className="sr-only">PUC Tech: </span>
-            <span className="inline-block rounded-full bg-white px-4 py-1.5 text-base font-medium tracking-[-0.01em] text-balance text-muted md:text-xl">
+            <span className="inline-block rounded-full bg-paper px-4 py-1.5 text-base font-medium tracking-[-0.01em] text-balance text-muted md:text-xl">
               {hero.title}
             </span>
           </h1>
@@ -98,7 +98,7 @@ export default function Home() {
       </Stage>
 
       {/* Processo seletivo: a única faixa de cor da home. */}
-      <Stage className="bg-accent">
+      <Stage className="bg-accent text-on-accent">
         <Reveal>
           <Link
             href="/processo-seletivo"
@@ -110,7 +110,7 @@ export default function Home() {
                 {selectionPage.title}
               </span>
             </span>
-            <span className="font-mono text-sm underline decoration-ink/30 underline-offset-4 group-hover:decoration-ink">
+            <span className="font-mono text-sm underline decoration-on-accent/30 underline-offset-4 group-hover:decoration-on-accent">
               cd /processo-seletivo
             </span>
           </Link>

@@ -6,7 +6,7 @@ export default function ProjectTile({ project }: { project: Project }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-ink">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-[#04142f]">
         {project.image ? (
           <Image
             src={project.image}

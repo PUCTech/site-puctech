@@ -51,7 +51,7 @@ export default function ProjectModal({
         if (event.target === event.currentTarget) onClose();
       }}
       aria-labelledby={titleId}
-      className="project-dialog m-auto max-h-[90vh] w-[min(92vw,46rem)] overflow-y-auto rounded-[2rem] bg-white p-0 text-ink backdrop:bg-ink/40 backdrop:backdrop-blur-sm"
+      className="project-dialog m-auto max-h-[90vh] w-[min(92vw,46rem)] overflow-y-auto rounded-[2rem] bg-paper p-0 text-ink backdrop:bg-ink/40 backdrop:backdrop-blur-sm"
     >
       {project && (
         <div className="relative">

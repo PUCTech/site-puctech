@@ -1,20 +1,52 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Cores do tema claro e do escuro: o botão no cabeçalho troca a classe .dark no <html>. */
+:root {
+  --paper: #ffffff;
+  --ink: #04142f;
+  --muted: #4a5b72;
+  --accent-ink: #00799a;
+  --surface: #eef6f9;
+  --border: #dbe5eb;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #050d1a;
+  --ink: #e6eef5;
+  --muted: #93a3b8;
+  --accent-ink: #4fe0ff;
+  --surface: #0d1a2c;
+  --border: #1a2a40;
+  color-scheme: dark;
+}
+
 @theme inline {
-  --color-ink: #04142f;
-  --color-muted: #4a5b72;
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
   --color-accent: #01d4ff;
-  --color-accent-ink: #00799a;
-  --color-surface: #eef6f9;
-  --color-border: #dbe5eb;
+  --color-on-accent: #04142f; /* texto sobre o ciano: escuro nos dois temas */
+  --color-accent-ink: var(--accent-ink);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
 
   --font-sans: var(--font-figtree);
   --font-display: var(--font-figtree);
 }
 
 body {
-  background: #ffffff;
-  color: var(--color-ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Troca de tema: a página inteira faz um fade suave (View Transitions). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 500ms;
+  animation-timing-function: ease-in-out;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -25,7 +57,7 @@ body {
 
 ::selection {
   background: var(--color-accent);
-  color: var(--color-ink);
+  color: var(--color-on-accent);
 }
 
 /* Entrada das seções ao rolar (componente Reveal): sobe 16px e aparece, devagar. */
