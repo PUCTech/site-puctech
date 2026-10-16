@@ -28,15 +28,6 @@ export default function Social() {
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <a
-              href={siteConfig.links.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={button}
-            >
-              <InstagramIcon />
-              Instagram
-            </a>
-            <a
               href={siteConfig.links.linkedin}
               target="_blank"
               rel="noopener noreferrer"
@@ -44,6 +35,15 @@ export default function Social() {
             >
               <LinkedinIcon />
               LinkedIn
+            </a>
+            <a
+              href={siteConfig.links.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={button}
+            >
+              <InstagramIcon />
+              Instagram
             </a>
             <a
               href={siteConfig.links.tiktok}

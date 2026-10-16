@@ -1,4 +1,4 @@
-# PUC Tech | Site da Liga Acadêmica de Tecnologia da PUC-SP
+# PUC Tech | Site da Liga de Ciência e Tecnologia da PUC-SP
 
 Site institucional da PUC Tech, publicado em <https://www.puctech.com.br/>
 
@@ -102,7 +102,8 @@ lib/
 └── projects.ts                 Lê e confere os arquivos de content/projetos (só no servidor)
 
 public/
-├── logo.png                    Logo da liga (header, hero e /links)
+├── logo-puctech.svg            Logotipo da liga (header, hero e /links)
+├── logo.png                    Ícone quadrado da liga (não é mais usado nas páginas; fica de reserva)
 ├── equipe/                     Fotos dos membros e a foto do grupo (grupo-puctech.jpg)
 ├── parceiros/                  Logos dos parceiros
 └── projetos/                   Capas dos projetos (e, em areas/, as fotos das áreas de atuação)
@@ -135,8 +136,12 @@ A regra geral: **o conteúdo fica em `content/`, `data/` e `lib/site.ts`; a apar
 | Descrição de cada grupo da equipe                              | `data/team.ts` → `groupDescriptions`                 |
 | Áreas operacionais (abas)                                      | `data/team.ts` → `areaInfo`                          |
 | Texto e cards de introdução da página de equipe                | `app/equipe/page.tsx` (lista `levels`)               |
-| Links da página /links                                         | `data/links.ts`                                      |
-| Links do Instagram, LinkedIn, TikTok, X e "Nossos links"       | `lib/site.ts` → `siteConfig.links`                   |
+| Links da página /links (e a ordem deles)                       | `data/links.ts`                                      |
+| Endereços do LinkedIn, Instagram, TikTok, X e "Nossos links"   | `lib/site.ts` → `siteConfig.links`                   |
+| Ordem dos botões de redes no rodapé                            | `components/Footer.tsx` (coluna "Redes")             |
+| Ordem dos botões de redes na seção da home                     | `components/Social.tsx`                              |
+| Logo do site (header, hero e /links)                           | `public/logo-puctech.svg`                            |
+| Tamanho do logo no header, no hero ou em /links                | `components/Header.tsx`, `components/Hero.tsx` ou `app/links/page.tsx` (classe `h-`/`w-` do `<Image>`) |
 | Itens do menu (topo e rodapé)                                  | `lib/site.ts` → `navLinks`                           |
 | Descrição que aparece no rodapé                                | `lib/site.ts` → `siteConfig.description`             |
 | Cores do site                                                  | `app/globals.css`                                    |
@@ -330,7 +335,7 @@ O arquivo confere a lista a cada build. Se algo estiver errado (por exemplo, `ar
 
 ### `data/links.ts`
 
-Lista dos links da página `/links`. Campos de cada link: `label` (texto do botão), `href` (endereço), `description` (texto menor, opcional) e `icon` (`"instagram"`, `"linkedin"`, `"tiktok"`, `"x"` ou `"link"`). Se `href` começar com `/`, é uma página do site; se estiver vazio, o botão aparece desativado com "em breve".
+Lista dos links da página `/links`. A ordem da lista é a ordem na página (hoje: LinkedIn, Instagram, TikTok e X). Campos de cada link: `label` (texto do botão), `href` (endereço), `description` (texto menor, opcional) e `icon` (`"instagram"`, `"linkedin"`, `"tiktok"`, `"x"` ou `"link"`). Se `href` começar com `/`, é uma página do site; se estiver vazio, o botão aparece desativado com "em breve".
 
 ### `lib/site.ts`
 
@@ -338,7 +343,7 @@ Concentra o que é compartilhado pelo site inteiro:
 
 - `siteConfig.name`, `description` e `links` (`instagram`, `linkedin`, `tiktok`, `x` e `allLinks`, que aponta para a página `/links`).
 - `siteConfig.url`: endereço público do site, usado no sitemap, no `robots.txt` e na imagem de compartilhamento. Vem da variável `NEXT_PUBLIC_SITE_URL` e, se ela não existir, do endereço de produção que a Vercel fornece. Em desenvolvimento local, usa `http://localhost:3000`.
-- `navLinks`: lista de `{ label, href }` usada no menu do header e na coluna "Navegação" do footer. Hoje: Home, Sobre Nós, Membros, Projetos e Processo Seletivo.
+- `navLinks`: lista de `{ label, href }` usada no menu do header e na coluna "Navegação" do footer. Hoje: Home, Sobre Nós, Equipe, Projetos e Processo Seletivo.
 
 ### `lib/projects.ts`
 
@@ -347,6 +352,10 @@ Lê os arquivos de `content/projetos/` (com a biblioteca `gray-matter`), confere
 ---
 
 ## Aparência
+
+### Logo
+
+O logotipo da liga é o arquivo `public/logo-puctech.svg` (só o texto "PUC Tech", com degradê). Ele aparece no header (`components/Header.tsx`), no topo da home (`components/Hero.tsx`) e na página `/links` (`app/links/page.tsx`). O tamanho é definido pelas classes `h-` e `w-` do `<Image>` em cada um desses arquivos. O rodapé ainda mostra "PUCTech" escrito com texto e CSS, não o SVG.
 
 ### Cores e fontes
 
@@ -358,12 +367,12 @@ Definidas em `app/globals.css`, dentro de `@theme inline`, e usadas como classes
 | `brand-900` | `#081a3e` | Faixas alternadas, cartões escuros, gradientes e o pop-up de projeto  |
 | `brand-800` | `#143966` | Bordas, textos sobre fundo claro e brilho dos topos                   |
 | `brand-500` | `#2b6fac` | Números de destaque, botões e hover dos cartões                       |
-| `brand-200` | `#bae4fe` | Textos de destaque, "Tech" do logotipo, botões do pop-up e cartão de redes sociais |
+| `brand-200` | `#bae4fe` | Textos de destaque, "Tech" do logotipo do rodapé, botões do pop-up e cartão de redes sociais |
 | `paper`     | `#f0f4f9` | Cartões claros (números, equipe e valores)                            |
 
 O cartão da seção "Sobre" da home usa branco puro (`bg-white`), que não é um token da paleta.
 
-Para mudar uma cor no site inteiro, altere o valor do token. O brilho do topo (no `Hero.tsx` e nas páginas Sobre, Projetos, Processo Seletivo e Links) e a imagem de compartilhamento (`app/opengraph-image.tsx`) usam códigos de cor escritos diretamente no arquivo, então, se a paleta mudar, ajuste também esses pontos.
+Para mudar uma cor no site inteiro, altere o valor do token. O brilho do topo (no `Hero.tsx` e nas páginas Sobre, Projetos, Processo Seletivo e Links) e a imagem de compartilhamento (`app/opengraph-image.tsx`) usam códigos de cor escritos diretamente no arquivo, então, se a paleta mudar, ajuste também esses pontos. As cores do logo ficam dentro do próprio `logo-puctech.svg`.
 
 A fonte é a **Geist** (e **Geist Mono**), carregada pelo `next/font` em `app/layout.tsx`.
 
@@ -405,11 +414,11 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 ## Cada componente em detalhe
 
-**`Header.tsx`**: logo + nome, links de `navLinks` e menu em forma de ícone no celular. A página atual aparece em branco, em negrito e com uma barra azul-clara embaixo; as demais ficam mais apagadas.
+**`Header.tsx`**: logotipo em SVG (`public/logo-puctech.svg`), links de `navLinks` e menu em forma de ícone no celular. A página atual aparece em branco, em negrito e com uma barra azul-clara embaixo; as demais ficam mais apagadas.
 
-**`Footer.tsx`**: logo, descrição, colunas "Navegação" (de `navLinks`) e "Redes" (Instagram, LinkedIn, TikTok, X e "Nossos links", de `siteConfig.links`) e o copyright, cujo ano é atualizado automaticamente.
+**`Footer.tsx`**: nome "PUCTech" (em texto), descrição, colunas "Navegação" (de `navLinks`) e "Redes" (LinkedIn, Instagram, TikTok, X e "Nossos links", de `siteConfig.links`) e o copyright, cujo ano é atualizado automaticamente. Os botões de redes são escritos um a um no componente, então a ordem deles é a do arquivo.
 
-**`Hero.tsx`**: logo grande e o título de `hero`, sobre um brilho azul no topo.
+**`Hero.tsx`**: logotipo grande em SVG e o título de `hero`, sobre um brilho azul no topo.
 
 **`About.tsx`**: cartão branco centralizado com o título e os parágrafos de `about` (`data/home.ts`). Texto entre `**dois asteriscos**` vira negrito.
 
@@ -431,7 +440,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 **`FeaturedCarousel.tsx`**: carrossel genérico, usado pelos projetos. A cada 4 segundos o item seguinte vai para o centro e os vizinhos diminuem e esmaecem. Tem botões de anterior e próximo (que reiniciam o tempo) e pausa com o mouse, com o foco do teclado dentro dele e quando o pop-up está aberto. Recebe os itens, como desenhar cada quadrado (`renderTile`), a legenda (`renderCaption`), uma função de clique (`onSelect`), o tamanho (`sizeClass`), as escalas (`scales`) e os textos dos botões (`prevLabel` e `nextLabel`). Com `onSelect`, oferece uma lista de botões para navegação por teclado.
 
-**`Social.tsx`**: cartão claro com o texto de `socialIntro` e um botão para cada rede de `siteConfig.links`.
+**`Social.tsx`**: cartão claro com o texto de `socialIntro` e um botão para cada rede de `siteConfig.links` (LinkedIn, Instagram, TikTok, X e "Nossos links"). Como no rodapé, os botões são escritos um a um, então a ordem é a do arquivo.
 
 **`SocialIcons.tsx`**: ícones em SVG (Instagram, LinkedIn, TikTok, X e link).
 
@@ -443,11 +452,11 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 ## Páginas em detalhe
 
-**`/equipe`**: foto do grupo no topo (`public/equipe/grupo-puctech.jpg`), uma introdução (texto sobre a comunidade e cards, sem link, com os níveis da liga: Tutores, Fundadores, Diretoria Executiva, Áreas Operacionais e Trainees) e uma seção para cada grupo de `team.ts`, na ordem: Tutores, Membros Honorários, Fundadores, Diretoria Executiva, Diretorias Estratégicas, Áreas Operacionais e Idealizadores. Os cards da introdução ficam na lista `levels`, em `app/equipe/page.tsx`, e o último card é centralizado.
+**`/equipe`**: foto do grupo no topo (`public/equipe/grupo-puctech.jpg`) com o título "Equipe", uma introdução (texto sobre a comunidade e cards, sem link, com os níveis da liga: Tutores, Fundadores, Diretoria Executiva, Áreas Operacionais e Trainees) e uma seção para cada grupo de `team.ts`, na ordem: Tutores, Membros Honorários, Fundadores, Diretoria Executiva, Diretorias Estratégicas, Áreas Operacionais e Idealizadores. Os cards da introdução ficam na lista `levels`, em `app/equipe/page.tsx`, e o último card é centralizado.
 
 **`/projetos`**: título e introdução, "Áreas de Atuação" (quatro cartões com foto) e "Nossos projetos" (filtros, carrossel e lista completa). Cada projeto abre em um pop-up.
 
-**`/links`**: logo, slogan e um botão para cada item de `data/links.ts`.
+**`/links`**: logotipo em SVG, slogan e um botão para cada item de `data/links.ts`, na ordem da lista.
 
 ---
 

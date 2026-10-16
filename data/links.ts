@@ -28,16 +28,16 @@ export const linksPage = {
 
 export const links: LinkItem[] = [
   {
-    label: "Instagram",
-    description: "@puctechsp",
-    href: siteConfig.links.instagram,
-    icon: "instagram",
-  },
-  {
     label: "LinkedIn",
     description: "PUC Tech",
     href: siteConfig.links.linkedin,
     icon: "linkedin",
+  },
+  {
+    label: "Instagram",
+    description: "@puctechsp",
+    href: siteConfig.links.instagram,
+    icon: "instagram",
   },
   {
     label: "TikTok",
@@ -51,7 +51,7 @@ export const links: LinkItem[] = [
     href: siteConfig.links.x,
     icon: "x",
   },
+];
   // Exemplos para quando existirem:
   // { label: "Comunidade no WhatsApp", href: "https://chat.whatsapp.com/...", icon: "link" },
   // { label: "Fale com a gente", description: "contato@...", href: "mailto:contato@..." },
-];

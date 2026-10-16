@@ -42,17 +42,6 @@ export default function Footer() {
             <li className="font-semibold">Redes</li>
             <li>
               <a
-                href={siteConfig.links.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLink}
-              >
-                <InstagramIcon className="size-4" />
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a
                 href={siteConfig.links.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -60,6 +49,17 @@ export default function Footer() {
               >
                 <LinkedinIcon className="size-4" />
                 LinkedIn
+              </a>
+            </li>
+            <li>
+              <a
+                href={siteConfig.links.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialLink}
+              >
+                <InstagramIcon className="size-4" />
+                Instagram
               </a>
             </li>
             <li>
@@ -73,7 +73,7 @@ export default function Footer() {
                 TikTok
               </a>
             </li>
-                        <li>
+            <li>
               <a
                 href={siteConfig.links.x}
                 target="_blank"
