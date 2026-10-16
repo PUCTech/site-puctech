@@ -53,7 +53,7 @@ export default function Stats() {
   return (
     <dl
       ref={ref}
-      className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:items-end lg:gap-x-10"
+      className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-8"
     >
       {stats.map((stat, index) => {
         const lead = index === 0;
@@ -61,7 +61,9 @@ export default function Stats() {
           <div
             key={stat.label}
             className={`flex flex-col-reverse justify-end ${
-              lead ? "col-span-2 lg:col-span-5 lg:row-span-2 lg:self-center" : "lg:col-span-3"
+              // No desktop o destaque ocupa as duas linhas e se estica até a altura delas:
+              // o topo do 50 alinha com o do 10/20 e a base do rótulo com a do 15.
+              lead ? "col-span-2 lg:col-span-5 lg:row-span-2 lg:justify-between" : "lg:col-span-3"
             }`}
           >
             <dt
@@ -74,10 +76,10 @@ export default function Stats() {
               {stat.label}
             </dt>
             <dd
-              className={`font-bold leading-none ${
+              className={`font-bold ${
                 lead
-                  ? "text-[6rem] tracking-[-0.05em] md:text-[9rem]"
-                  : "text-5xl tracking-[-0.035em] md:text-6xl"
+                  ? "text-[6rem] leading-[0.78] tracking-[-0.05em] md:text-[10rem]"
+                  : "text-5xl leading-[0.78] tracking-[-0.035em]"
               }`}
             >
               <span className="sr-only">
