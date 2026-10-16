@@ -24,7 +24,7 @@ Requer Node.js 20.9 ou superior (exigência do Next.js 16).
 | -------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------- |
 | `/`                  | `app/page.tsx`                     | Home com hero, sobre, números, projetos (áreas), parceiros e redes sociais                   |
 | `/sobre`             | `app/sobre/page.tsx`               | Diferença da liga, visão, valores, história e apoio institucional                            |
-| `/equipe`            | `app/equipe/page.tsx`              | Foto da equipe, introdução com os níveis da liga, tutores, fundadores, diretoria e áreas operacionais (com abas) |
+| `/equipe`            | `app/equipe/page.tsx`              | Foto da equipe, introdução, tutores, fundadores, diretoria e áreas operacionais (com abas)   |
 | `/projetos`          | `app/projetos/page.tsx`            | Áreas de atuação e a seção de projetos (filtros, carrossel e lista completa)                 |
 | `/processo-seletivo` | `app/processo-seletivo/page.tsx`   | Data do próximo processo, como se preparar e botão de inscrição                              |
 | `/links`             | `app/links/page.tsx`               | Redes sociais da liga (é o "Nossos links" do rodapé e da home)                               |
@@ -135,7 +135,7 @@ A regra geral: **o conteúdo fica em `content/`, `data/` e `lib/site.ts`; a apar
 | Orientadores, fundadores, diretoria e membros                  | `data/team.ts` → `members`                           |
 | Descrição de cada grupo da equipe                              | `data/team.ts` → `groupDescriptions`                 |
 | Áreas operacionais (abas)                                      | `data/team.ts` → `areaInfo`                          |
-| Texto e cards de introdução da página de equipe                | `app/equipe/page.tsx` (lista `levels`)               |
+| Texto de introdução da página de equipe                        | `app/equipe/page.tsx`                                |
 | Links da página /links (e a ordem deles)                       | `data/links.ts`                                      |
 | Endereços do LinkedIn, Instagram, TikTok, X e "Nossos links"   | `lib/site.ts` → `siteConfig.links`                   |
 | Ordem dos botões de redes no rodapé                            | `components/Footer.tsx` (coluna "Redes")             |
@@ -309,7 +309,7 @@ Toda a equipe fica em uma lista só, `members`, uma linha por pessoa. Para adici
 | `"trainee"`               | Áreas Operacionais                     |
 | `"idealizador"`           | Idealizadores                          |
 
-Grupos sem ninguém não aparecem na página (hoje é o caso de Membros Honorários, Diretorias Estratégicas e Idealizadores). Se alguém for cadastrado em Membros Honorários ou Diretorias Estratégicas, a seção aparece na página, mas esses dois grupos não têm card na introdução (veja `levels`, em `app/equipe/page.tsx`).
+Grupos sem ninguém não aparecem na página (hoje é o caso de Membros Honorários, Diretorias Estratégicas e Idealizadores). Se alguém for cadastrado em Membros Honorários ou Diretorias Estratégicas, a seção aparece na página.
 
 Quem coordena uma área já pertence a ela, não precisa repetir em `areas`. Quem é fundador (ou orientador) e também faz parte da equipe atual ganha duas linhas, uma de cada `group`.
 
@@ -327,7 +327,7 @@ O arquivo confere a lista a cada build. Se algo estiver errado (por exemplo, `ar
 | `members`           | Seção "Áreas Operacionais" (via `CurrentTeam`)   |
 | `idealizers`        | Seção "Idealizadores"                            |
 | `areaInfo`          | Abas e descrições das áreas                      |
-| `groupDescriptions` | Subtítulo de cada seção e texto dos cards da introdução |
+| `groupDescriptions` | Subtítulo de cada seção                          |
 
 **Como as "Áreas Operacionais" são organizadas:** só membros e trainees (a diretoria tem seção própria). Há uma aba **Geral** e uma aba por área. Na aba Geral aparecem **Membros** e **Trainees**, com as áreas em uma etiqueta. Nas abas de área aparecem até três blocos: **Coordenação** (quem tem `presidentOf` ou `viceOf` daquela área, em destaque), **Membros** e **Trainees**. Aba sem ninguém mostra "Ninguém por aqui ainda."
 
@@ -452,7 +452,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 ## Páginas em detalhe
 
-**`/equipe`**: foto do grupo no topo (`public/equipe/grupo-puctech.jpg`) com o título "Equipe", uma introdução (texto sobre a comunidade e cards, sem link, com os níveis da liga: Tutores, Fundadores, Diretoria Executiva, Áreas Operacionais e Trainees) e uma seção para cada grupo de `team.ts`, na ordem: Tutores, Membros Honorários, Fundadores, Diretoria Executiva, Diretorias Estratégicas, Áreas Operacionais e Idealizadores. Os cards da introdução ficam na lista `levels`, em `app/equipe/page.tsx`, e o último card é centralizado.
+**`/equipe`**: foto do grupo no topo (`public/equipe/grupo-puctech.jpg`) com o título "Equipe", um parágrafo de introdução sobre a comunidade e uma seção para cada grupo de `team.ts`, na ordem: Tutores, Membros Honorários, Fundadores, Diretoria Executiva, Diretorias Estratégicas, Áreas Operacionais e Idealizadores.
 
 **`/projetos`**: título e introdução, "Áreas de Atuação" (quatro cartões com foto) e "Nossos projetos" (filtros, carrossel e lista completa). Cada projeto abre em um pop-up.
 
