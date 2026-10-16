@@ -27,7 +27,7 @@ Requer Node.js 20.9 ou superior (exigência do Next.js 16).
 | `/equipe`            | `app/equipe/page.tsx`              | Foto da equipe, introdução, tutores, fundadores, diretoria e áreas operacionais (com abas)   |
 | `/projetos`          | `app/projetos/page.tsx`            | Áreas de atuação e a seção de projetos (filtros, carrossel e lista completa)                 |
 | `/processo-seletivo` | `app/processo-seletivo/page.tsx`   | Data do próximo processo, como se preparar e botão de inscrição                              |
-| `/links`             | `app/links/page.tsx`               | Redes sociais da liga (é o "Nossos links" do rodapé e da home)                               |
+| `/links`             | `app/links/page.tsx`               | GitHub e redes sociais da liga (é o "Nossos links" do rodapé e da home)                      |
 
 **Elementos presentes em todas as páginas:** header fixo no topo (com menu responsivo e destaque da página atual) e footer.
 
@@ -58,7 +58,7 @@ app/
 ├── equipe/page.tsx             Página da equipe
 ├── projetos/page.tsx           Página de projetos
 ├── processo-seletivo/page.tsx  Página do processo seletivo
-├── links/page.tsx              Página de links (redes sociais)
+├── links/page.tsx              Página de links (GitHub e redes sociais)
 ├── globals.css                 Paleta de cores e estilos globais
 ├── icon.png                    Favicon
 ├── opengraph-image.tsx         Gera a imagem de prévia ao compartilhar o link
@@ -81,7 +81,7 @@ components/
 ├── PartnersCarousel.tsx        Faixa de logos dos parceiros que rola sem parar
 ├── FeaturedCarousel.tsx        Carrossel com destaque no centro (usado pelos projetos)
 ├── Social.tsx                  Seção "Acompanhe nossas redes sociais"
-├── SocialIcons.tsx             Ícones das redes (Instagram, LinkedIn, TikTok, X, link)
+├── SocialIcons.tsx             Ícones (GitHub, Instagram, LinkedIn, TikTok, X, link)
 └── team/
     ├── MemberCard.tsx          Cartão de um membro (normal ou em destaque)
     └── CurrentTeam.tsx         Abas e listas das "Áreas Operacionais"
@@ -137,9 +137,10 @@ A regra geral: **o conteúdo fica em `content/`, `data/` e `lib/site.ts`; a apar
 | Áreas operacionais (abas)                                      | `data/team.ts` → `areaInfo`                          |
 | Texto de introdução da página de equipe                        | `app/equipe/page.tsx`                                |
 | Links da página /links (e a ordem deles)                       | `data/links.ts`                                      |
-| Endereços do LinkedIn, Instagram, TikTok, X e "Nossos links"   | `lib/site.ts` → `siteConfig.links`                   |
+| Endereços do GitHub, LinkedIn, Instagram, TikTok, X e "Nossos links" | `lib/site.ts` → `siteConfig.links`             |
 | Ordem dos botões de redes no rodapé                            | `components/Footer.tsx` (coluna "Redes")             |
 | Ordem dos botões de redes na seção da home                     | `components/Social.tsx`                              |
+| Adicionar o ícone de uma nova rede                             | `components/SocialIcons.tsx` (e `LinkIconId` em `data/links.ts`) |
 | Logo do site (header, hero e /links)                           | `public/logo-puctech.svg`                            |
 | Tamanho do logo no header, no hero ou em /links                | `components/Header.tsx`, `components/Hero.tsx` ou `app/links/page.tsx` (classe `h-`/`w-` do `<Image>`) |
 | Itens do menu (topo e rodapé)                                  | `lib/site.ts` → `navLinks`                           |
@@ -335,13 +336,15 @@ O arquivo confere a lista a cada build. Se algo estiver errado (por exemplo, `ar
 
 ### `data/links.ts`
 
-Lista dos links da página `/links`. A ordem da lista é a ordem na página (hoje: LinkedIn, Instagram, TikTok e X). Campos de cada link: `label` (texto do botão), `href` (endereço), `description` (texto menor, opcional) e `icon` (`"instagram"`, `"linkedin"`, `"tiktok"`, `"x"` ou `"link"`). Se `href` começar com `/`, é uma página do site; se estiver vazio, o botão aparece desativado com "em breve".
+Lista dos links da página `/links`. A ordem da lista é a ordem na página (hoje: GitHub, LinkedIn, Instagram, TikTok e X). Campos de cada link: `label` (texto do botão), `href` (endereço), `description` (texto menor, opcional) e `icon` (`"github"`, `"instagram"`, `"linkedin"`, `"tiktok"`, `"x"` ou `"link"`). Se `href` começar com `/`, é uma página do site; se estiver vazio, o botão aparece desativado com "em breve".
+
+Para usar um ícone novo, crie o componente em `components/SocialIcons.tsx`, acrescente o nome em `LinkIconId` (neste arquivo) e no objeto `icons` de `app/links/page.tsx`.
 
 ### `lib/site.ts`
 
 Concentra o que é compartilhado pelo site inteiro:
 
-- `siteConfig.name`, `description` e `links` (`instagram`, `linkedin`, `tiktok`, `x` e `allLinks`, que aponta para a página `/links`).
+- `siteConfig.name`, `description` e `links` (`github`, `instagram`, `linkedin`, `tiktok`, `x` e `allLinks`, que aponta para a página `/links`).
 - `siteConfig.url`: endereço público do site, usado no sitemap, no `robots.txt` e na imagem de compartilhamento. Vem da variável `NEXT_PUBLIC_SITE_URL` e, se ela não existir, do endereço de produção que a Vercel fornece. Em desenvolvimento local, usa `http://localhost:3000`.
 - `navLinks`: lista de `{ label, href }` usada no menu do header e na coluna "Navegação" do footer. Hoje: Home, Sobre Nós, Equipe, Projetos e Processo Seletivo.
 
@@ -416,7 +419,7 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 **`Header.tsx`**: logotipo em SVG (`public/logo-puctech.svg`), links de `navLinks` e menu em forma de ícone no celular. A página atual aparece em branco, em negrito e com uma barra azul-clara embaixo; as demais ficam mais apagadas.
 
-**`Footer.tsx`**: nome "PUCTech" (em texto), descrição, colunas "Navegação" (de `navLinks`) e "Redes" (LinkedIn, Instagram, TikTok, X e "Nossos links", de `siteConfig.links`) e o copyright, cujo ano é atualizado automaticamente. Os botões de redes são escritos um a um no componente, então a ordem deles é a do arquivo.
+**`Footer.tsx`**: nome "PUCTech" (em texto), descrição, colunas "Navegação" (de `navLinks`) e "Redes" (GitHub, LinkedIn, Instagram, TikTok, X e "Nossos links", de `siteConfig.links`) e o copyright, cujo ano é atualizado automaticamente. Os botões de redes são escritos um a um no componente, então a ordem deles é a do arquivo.
 
 **`Hero.tsx`**: logotipo grande em SVG e o título de `hero`, sobre um brilho azul no topo.
 
@@ -440,9 +443,9 @@ Está em `app/page.tsx`: `Hero` → `About` → `Stats` → `ProjectsSection` �
 
 **`FeaturedCarousel.tsx`**: carrossel genérico, usado pelos projetos. A cada 4 segundos o item seguinte vai para o centro e os vizinhos diminuem e esmaecem. Tem botões de anterior e próximo (que reiniciam o tempo) e pausa com o mouse, com o foco do teclado dentro dele e quando o pop-up está aberto. Recebe os itens, como desenhar cada quadrado (`renderTile`), a legenda (`renderCaption`), uma função de clique (`onSelect`), o tamanho (`sizeClass`), as escalas (`scales`) e os textos dos botões (`prevLabel` e `nextLabel`). Com `onSelect`, oferece uma lista de botões para navegação por teclado.
 
-**`Social.tsx`**: cartão claro com o texto de `socialIntro` e um botão para cada rede de `siteConfig.links` (LinkedIn, Instagram, TikTok, X e "Nossos links"). Como no rodapé, os botões são escritos um a um, então a ordem é a do arquivo.
+**`Social.tsx`**: cartão claro com o texto de `socialIntro` e um botão para cada rede de `siteConfig.links` (GitHub, LinkedIn, Instagram, TikTok, X e "Nossos links"). Como no rodapé, os botões são escritos um a um, então a ordem é a do arquivo.
 
-**`SocialIcons.tsx`**: ícones em SVG (Instagram, LinkedIn, TikTok, X e link).
+**`SocialIcons.tsx`**: ícones em SVG (GitHub, Instagram, LinkedIn, TikTok, X e link).
 
 **`team/MemberCard.tsx`**: cartão de uma pessoa. Aceita `variant="highlight"` (usado para diretoria e coordenação: foto maior e fundo em destaque), `role` (texto abaixo do nome, que o `cargo` da pessoa substitui) e `badge` (etiqueta com a área, usada na aba Geral). Quando há LinkedIn, o cartão inteiro é clicável.
 
