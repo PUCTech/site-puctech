@@ -17,6 +17,12 @@ body {
   color: var(--color-ink);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 ::selection {
   background: var(--color-accent);
   color: var(--color-ink);

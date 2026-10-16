@@ -76,14 +76,14 @@ export default function Home() {
         <Reveal delay={150}>
           <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
             {projectAreas.map((area) => (
-              <li key={area.title}>
+              <li key={area.title} className="group">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink">
                   <Image
                     src={area.image}
                     alt=""
                     fill
                     sizes="(min-width: 1024px) 270px, 50vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
                     style={{ objectPosition: area.position }}
                   />
                 </div>

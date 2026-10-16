@@ -294,12 +294,17 @@ export default function AsciiLogo({
       <pre ref={dimRef} aria-hidden className={`${layer} opacity-30`} />
       <pre ref={brightRef} aria-hidden className={layer} />
       {children && (
-        // Antes de medir as letras, fica numa posição aproximada.
+        // Fica invisível até as letras serem medidas e então aparece já no lugar
+        // (sem pular de posição). Sem JavaScript, o <noscript> mostra o título.
         <div
-          className="absolute inset-x-0 px-5 text-center"
-          style={{ top: below === null ? "62%" : below + 24 }}
+          data-hero-title
+          className="absolute inset-x-0 px-5 text-center transition-opacity duration-1000 ease-out motion-reduce:transition-none"
+          style={{ top: below === null ? "62%" : below + 24, opacity: below === null ? 0 : 1 }}
         >
           {children}
+          <noscript>
+            <style>{"[data-hero-title]{opacity:1!important}"}</style>
+          </noscript>
         </div>
       )}
     </div>
