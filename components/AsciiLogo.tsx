@@ -75,7 +75,7 @@ const layerOf = (tone: number) => (tone === SOFT ? 1 : tone === DIM ? 2 : tone =
 const escapeHtml = (text: string) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-/** Camada invertida: trechos marcados viram <span> com fundo ciano; o resto, espaços. */
+/** Camada invertida: trechos marcados viram <span> com fundo (azul-escuro no claro, ciano no escuro); o resto, espaços. */
 function inverseHtml(cells: string[], inverse: Uint8Array, cols: number, rows: number) {
   if (!inverse.includes(1)) return "";
   const out: string[] = [];
@@ -91,7 +91,7 @@ function inverseHtml(cells: string[], inverse: Uint8Array, cols: number, rows: n
       }
       let run = "";
       while (c < cols && inverse[r * cols + c]) run += cells[r * cols + c++];
-      line += `<span class="bg-accent text-on-accent">${escapeHtml(run)}</span>`;
+      line += `<span class="bg-ink text-paper dark:bg-accent dark:text-on-accent">${escapeHtml(run)}</span>`;
     }
     out.push(line);
   }
@@ -369,7 +369,7 @@ export default function AsciiLogo({
   }, []);
 
   const layer =
-    "pointer-events-none absolute inset-0 m-0 select-none overflow-hidden whitespace-pre font-mono text-[7px] leading-none text-accent sm:text-[9px]";
+    "pointer-events-none absolute inset-0 m-0 select-none overflow-hidden whitespace-pre font-mono text-[7px] leading-none text-ink sm:text-[9px] dark:text-accent";
   return (
     <div ref={boxRef} className={`overflow-hidden ${className}`}>
       {/* Só para medir o tamanho de um caractere. */}
