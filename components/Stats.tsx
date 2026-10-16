@@ -49,26 +49,49 @@ export default function Stats() {
     return Math.round(value * ease(Math.min(Math.max(t, 0), 1)));
   };
 
+  // O primeiro número (estudantes que passaram pela liga) é o destaque.
   return (
     <dl
       ref={ref}
-      className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-5"
+      className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:items-end lg:gap-x-10"
     >
-      {stats.map((stat, index) => (
-        <div key={stat.label} className="flex flex-col-reverse justify-end">
-          <dt className="mt-1.5 max-w-[20ch] text-[15px] leading-snug text-muted">{stat.label}</dt>
-          <dd className="text-4xl font-bold tracking-[-0.03em] tabular-nums md:text-[2.75rem] md:leading-none">
-            <span className="sr-only">
-              {stat.value}
-              {stat.suffix}
-            </span>
-            <span aria-hidden>
-              {valueAt(stat.value, index)}
-              <span className="text-accent">{stat.suffix}</span>
-            </span>
-          </dd>
-        </div>
-      ))}
+      {stats.map((stat, index) => {
+        const lead = index === 0;
+        return (
+          <div
+            key={stat.label}
+            className={`flex flex-col-reverse justify-end ${
+              lead ? "col-span-2 lg:col-span-5 lg:row-span-2 lg:self-center" : "lg:col-span-3"
+            }`}
+          >
+            <dt
+              className={`leading-snug text-balance ${
+                lead
+                  ? "mt-3 max-w-[24ch] text-xl font-medium text-ink md:text-2xl"
+                  : "mt-2 max-w-[20ch] text-base text-muted"
+              }`}
+            >
+              {stat.label}
+            </dt>
+            <dd
+              className={`font-bold tabular-nums leading-none ${
+                lead
+                  ? "text-[6rem] tracking-[-0.05em] md:text-[9rem]"
+                  : "text-5xl tracking-[-0.035em] md:text-6xl"
+              }`}
+            >
+              <span className="sr-only">
+                {stat.value}
+                {stat.suffix}
+              </span>
+              <span aria-hidden>
+                {valueAt(stat.value, index)}
+                <span className="text-accent">{stat.suffix}</span>
+              </span>
+            </dd>
+          </div>
+        );
+      })}
     </dl>
   );
 }
