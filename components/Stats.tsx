@@ -74,7 +74,7 @@ export default function Stats() {
               {stat.label}
             </dt>
             <dd
-              className={`font-bold tabular-nums leading-none ${
+              className={`font-bold leading-none ${
                 lead
                   ? "text-[6rem] tracking-[-0.05em] md:text-[9rem]"
                   : "text-5xl tracking-[-0.035em] md:text-6xl"
