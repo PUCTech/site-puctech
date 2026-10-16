@@ -22,6 +22,19 @@ body {
   color: var(--color-ink);
 }
 
+/* Entrada das seções ao rolar (componente Reveal): sobe 16px e aparece, devagar. */
+[data-reveal] {
+  transition:
+    opacity 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+}
+
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: none;
+}
+
 /* Pop-up de projeto: entrada suave. */
 @keyframes dialog-in {
   from {

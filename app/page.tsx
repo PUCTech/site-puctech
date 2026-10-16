@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import AsciiLogo from "@/components/AsciiLogo";
+import Reveal from "@/components/Reveal";
 import Stats from "@/components/Stats";
 import { CdLink, Stage, withBold } from "@/components/Section";
 import { socials } from "@/components/SocialIcons";
@@ -29,13 +30,13 @@ function Heading({
   children: ReactNode;
 }) {
   return (
-    <div className="max-w-[62ch]">
+    <Reveal className="max-w-[62ch]">
       <h2 className="text-3xl font-bold tracking-[-0.03em] text-balance md:text-5xl md:leading-[1.05]">
         {title}
       </h2>
       <div className="mt-4 space-y-3 text-lg leading-relaxed text-muted">{children}</div>
       {href && <CdLink href={href} className="mt-5" />}
-    </div>
+    </Reveal>
   );
 }
 
@@ -72,41 +73,45 @@ export default function Home() {
         <Heading title="Projetos" href="/projetos">
           <p>{projectsIntro.text}</p>
         </Heading>
-        <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
-          {projectAreas.map((area) => (
-            <li key={area.title}>
-              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink">
-                <Image
-                  src={area.image}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 270px, 50vw"
-                  className="object-cover"
-                  style={{ objectPosition: area.position }}
-                />
-              </div>
-              <p className="mt-3 font-semibold leading-snug">{area.title}</p>
-            </li>
-          ))}
-        </ul>
+        <Reveal delay={150}>
+          <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
+            {projectAreas.map((area) => (
+              <li key={area.title}>
+                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink">
+                  <Image
+                    src={area.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 270px, 50vw"
+                    className="object-cover"
+                    style={{ objectPosition: area.position }}
+                  />
+                </div>
+                <p className="mt-3 font-semibold leading-snug">{area.title}</p>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </Stage>
 
       {/* Processo seletivo: a única faixa de cor da home. */}
       <Stage className="bg-accent">
-        <Link
-          href="/processo-seletivo"
-          className="group flex flex-col gap-4 py-14 md:flex-row md:items-end md:justify-between md:py-16"
-        >
-          <span>
-            <span className="block font-medium">{selectionPage.badge}</span>
-            <span className="mt-1 block text-4xl font-bold tracking-[-0.035em] md:text-6xl">
-              {selectionPage.title}
+        <Reveal>
+          <Link
+            href="/processo-seletivo"
+            className="group flex flex-col gap-4 py-14 md:flex-row md:items-end md:justify-between md:py-16"
+          >
+            <span>
+              <span className="block font-medium">{selectionPage.badge}</span>
+              <span className="mt-1 block text-4xl font-bold tracking-[-0.035em] md:text-6xl">
+                {selectionPage.title}
+              </span>
             </span>
-          </span>
-          <span className="font-mono text-sm underline decoration-ink/30 underline-offset-4 group-hover:decoration-ink">
-            cd /processo-seletivo
-          </span>
-        </Link>
+            <span className="font-mono text-sm underline decoration-ink/30 underline-offset-4 group-hover:decoration-ink">
+              cd /processo-seletivo
+            </span>
+          </Link>
+        </Reveal>
       </Stage>
 
       <Stage id="parceiros" className={gap}>
@@ -115,22 +120,24 @@ export default function Home() {
             <p key={text}>{text}</p>
           ))}
         </Heading>
-        <ul className="mt-10 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
-          {partners.map((partner) => (
-            <li key={partner.name} className="flex flex-col items-start gap-3">
-              {partner.logo && (
-                <Image
-                  src={partner.logo}
-                  alt=""
-                  width={96}
-                  height={96}
-                  className="size-20 rounded-xl object-cover md:size-24"
-                />
-              )}
-              <span className="text-sm text-muted">{partner.name}</span>
-            </li>
-          ))}
-        </ul>
+        <Reveal delay={150}>
+          <ul className="mt-10 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
+            {partners.map((partner) => (
+              <li key={partner.name} className="flex flex-col items-start gap-3">
+                {partner.logo && (
+                  <Image
+                    src={partner.logo}
+                    alt=""
+                    width={96}
+                    height={96}
+                    className="size-20 rounded-xl object-cover md:size-24"
+                  />
+                )}
+                <span className="text-sm text-muted">{partner.name}</span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </Stage>
 
       <Stage id="redes" className={gap}>
@@ -138,23 +145,25 @@ export default function Home() {
           <p className="font-semibold text-ink">{socialIntro.tagline}</p>
           <p>{socialIntro.text}</p>
         </Heading>
-        <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
-          {socials.map(({ label, href, Icon }) => (
-            <li key={label}>
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2.5 text-xl font-semibold md:text-2xl"
-              >
-                <Icon className="size-5 text-accent-ink" />
-                <span className="underline decoration-transparent decoration-2 underline-offset-8 transition-colors group-hover:decoration-accent">
-                  {label}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <Reveal delay={150}>
+          <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
+            {socials.map(({ label, href, Icon }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-2.5 text-xl font-semibold md:text-2xl"
+                >
+                  <Icon className="size-5 text-accent-ink" />
+                  <span className="underline decoration-transparent decoration-2 underline-offset-8 transition-colors group-hover:decoration-accent">
+                    {label}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </Stage>
     </main>
   );
