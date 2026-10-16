@@ -10,12 +10,12 @@ export default function Hero() {
       />
       <div className="relative mx-auto flex max-w-5xl flex-col items-center px-6 py-20 text-center md:py-28">
         <Image
-          src="/logo.png"
+          src="/logo-puctech.svg"
           alt="Logo da PUC Tech"
-          width={112}
-          height={112}
+          width={310}
+          height={82}
           loading="eager"
-          className="rounded-3xl"
+          className="h-auto w-64 sm:w-80"
         />
         <h1 className="mt-8 text-balance text-3xl font-bold tracking-tight sm:text-5xl">
           {hero.title}

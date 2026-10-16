@@ -20,7 +20,7 @@ export const siteConfig = {
 export const navLinks = [
   { label: "Home", href: "/" },
   { label: "Sobre Nós", href: "/sobre" },
-  { label: "Membros", href: "/equipe" },
+  { label: "Equipe", href: "/equipe" },
   { label: "Projetos", href: "/projetos" },
   { label: "Processo Seletivo", href: "/processo-seletivo" },
 ];

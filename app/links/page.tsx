@@ -99,21 +99,20 @@ export default function LinksPage() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_50%_0%,#143966_0%,transparent_100%)] opacity-70"
       />
       <div className="relative mx-auto flex max-w-xl flex-col items-center px-6 py-16 text-center md:py-24">
-        <Image
-          src="/logo.png"
-          alt="Logo da PUC Tech"
-          width={96}
-          height={96}
-          loading="eager"
-          className="rounded-3xl"
-        />
-        <h1 className="mt-6 text-3xl font-bold tracking-tight">
-          PUC<span className="font-light italic text-brand-200">Tech</span>
+        <h1>
+          <Image
+            src="/logo-puctech.svg"
+            alt="PUC Tech"
+            width={310}
+            height={82}
+            loading="eager"
+            className="h-auto w-56 sm:w-64"
+          />
         </h1>
-        <p className="mt-2 text-balance text-brand-200/90">
+        <p className="mt-4 text-balance text-brand-200/90">
           {linksPage.tagline}
         </p>
-
+        
         <ul className="mt-10 flex w-full flex-col gap-3">
           {links.map((item) => (
             <li key={item.label}>

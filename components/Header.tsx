@@ -25,21 +25,18 @@ export default function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Link
           href="/"
-          className="flex items-center gap-3"
+          className="flex items-center"
           onClick={() => setOpen(false)}
         >
           <Image
-            src="/logo.png"
+            src="/logo-puctech.svg"
             alt="Logo da PUC Tech"
-            width={36}
-            height={36}
-            className="rounded-lg"
+            width={310}
+            height={82}
+            loading="eager"
+            className="h-8 w-auto"
           />
-          <span className="text-lg font-bold">
-            PUC<span className="font-light italic text-brand-200">Tech</span>
-          </span>
         </Link>
-
         <nav className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <Link

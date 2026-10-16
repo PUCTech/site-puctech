@@ -20,7 +20,7 @@ import {
 export const metadata: Metadata = {
   title: "Equipe",
   description:
-    "Conheça os orientadores, fundadores e a equipe atual da PucTech, Liga Acadêmica de Tecnologia da PUC-SP.",
+    "Conheça os tutores, fundadores e a equipe atual da PUC Tech, a primeira liga de ciência e tecnologia da PUC-SP.",
 };
 
 // Níveis da estrutura da liga, na ordem em que aparecem na introdução.
@@ -89,10 +89,10 @@ export default function EquipePage() {
           {/* Texto colado no topo, para ficar acima das cabeças da foto. */}
           <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 pt-12 text-center md:pt-16">
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Nossa equipe
+              Equipe
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base text-brand-200/90 sm:text-lg md:mt-6">
-              As pessoas que constroem a PucTech todos os dias, da orientação
+              As pessoas que constroem a PUC Tech todos os dias, da orientação
               acadêmica aos estudantes que fazem a liga acontecer.
             </p>
           </div>
