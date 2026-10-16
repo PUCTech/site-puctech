@@ -1,0 +1,243 @@
+"use client";
+
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { container } from "@/components/Section";
+
+// "PUCTech" em ASCII com uma chuva estilo Matrix: cada coluna tem uma gota de
+// caracteres caindo. Quando a gota passa pela parte de uma letra, aquele trecho
+// fica revelado. Depois a chuva continua fraquinha, atrás das letras.
+
+const TEXT = "PUCTech";
+const SHADES = ".:-=+*#%@"; // do traço mais fino (borda da letra) ao mais cheio
+// Só ASCII: caracteres como os japoneses ocupam duas colunas e desalinham a grade.
+const RAIN = "0123456789ABCDEFXYZ$+-*/=%<>{}[]|!?#&";
+const FRAME_MS = 1000 / 30;
+const SAMPLES = 4; // subamostras por célula, para suavizar as bordas das letras
+
+type Drop = { y: number; speed: number; trail: number };
+
+/** Cobertura (0 a 1) de cada célula da grade pelo texto. */
+function rasterize(
+  cols: number,
+  rows: number,
+  maxCols: number,
+  cellRatio: number,
+  family: string,
+) {
+  const w = cols * SAMPLES;
+  const h = rows * SAMPLES;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return new Float32Array(cols * rows);
+
+  // Cada célula é mais alta que larga, então o texto é achatado na vertical
+  // para parecer proporcional na tela.
+  ctx.font = `800 100px ${family}`;
+  const textWidth = ctx.measureText(TEXT).width;
+  const size = Math.min(
+    (maxCols * SAMPLES * 100) / textWidth, // até a largura do conteúdo da página
+    (h * 0.42) / cellRatio, // e até 42% da altura
+  );
+  ctx.font = `800 ${size}px ${family}`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.setTransform(1, 0, 0, cellRatio, w / 2, h * 0.45);
+  ctx.fillText(TEXT, 0, 0);
+
+  const alpha = ctx.getImageData(0, 0, w, h).data;
+  const coverage = new Float32Array(cols * rows);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = ((y / SAMPLES) | 0) * cols + ((x / SAMPLES) | 0);
+      coverage[i] += alpha[(y * w + x) * 4 + 3] / 255 / (SAMPLES * SAMPLES);
+    }
+  }
+  return coverage;
+}
+
+const pick = (chars: string) => chars[(Math.random() * chars.length) | 0];
+
+/** Precisa de uma caixa com tamanho e posição (ex.: className="absolute inset-0"). */
+export default function AsciiLogo({
+  className = "relative h-96",
+  children,
+}: {
+  className?: string;
+  /** Fica centralizado logo abaixo das letras. */
+  children?: ReactNode;
+}) {
+  const boxRef = useRef<HTMLDivElement>(null);
+  const brightRef = useRef<HTMLPreElement>(null);
+  const dimRef = useRef<HTMLPreElement>(null);
+  const probeRef = useRef<HTMLSpanElement>(null);
+  const widthRef = useRef<HTMLDivElement>(null);
+  const [below, setBelow] = useState<number | null>(null);
+
+  useEffect(() => {
+    const box = boxRef.current;
+    const probe = probeRef.current;
+    if (!box || !probe) return;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let frame = 0;
+    let visible = true;
+    let cancelled = false;
+    let setup: (() => void) | null = null;
+
+    document.fonts.ready.then(() => {
+      if (cancelled) return;
+      const family =
+        getComputedStyle(document.documentElement).getPropertyValue("--font-bricolage").trim() ||
+        "sans-serif";
+
+      let cols = 0;
+      let rows = 0;
+      let letters: string[] = []; // caractere final de cada célula ("" = fora das letras)
+      let glyphs: string[] = []; // caracteres da chuva, trocados aos poucos
+      let reveal = new Float32Array(0); // até que linha cada coluna já foi revelada
+      let drops: Drop[] = [];
+      let last = 0;
+
+      const draw = (dt: number) => {
+        const bright = new Array<string>(cols * rows).fill(" ");
+        const dim = new Array<string>(cols * rows).fill(" ");
+
+        // A chuva troca alguns caracteres a cada quadro, como no terminal.
+        for (let k = 0; k < cols * rows * 0.01; k++) {
+          glyphs[(Math.random() * glyphs.length) | 0] = pick(RAIN);
+        }
+
+        if (!reduce) {
+          for (let c = 0; c < cols; c++) {
+            const drop = drops[c];
+            drop.y += drop.speed * dt;
+            reveal[c] = Math.max(reveal[c], drop.y);
+            const head = Math.floor(drop.y);
+
+            for (let r = Math.max(0, head - drop.trail); r <= head && r < rows; r++) {
+              const i = r * cols + c;
+              if (r === head) bright[i] = glyphs[i];
+              else dim[i] = glyphs[i];
+            }
+
+            // Saiu pela parte de baixo: volta lá para cima, mais devagar e espaçada.
+            if (head - drop.trail > rows) {
+              drop.y = -Math.random() * rows * 1.5;
+              drop.speed = 10 + Math.random() * 20;
+            }
+          }
+        }
+
+        for (let i = 0; i < letters.length; i++) {
+          if (letters[i] && ((i / cols) | 0) <= reveal[i % cols]) {
+            bright[i] = letters[i];
+            dim[i] = " ";
+          }
+        }
+
+        const join = (cells: string[]) => {
+          const out: string[] = [];
+          for (let r = 0; r < rows; r++) out.push(cells.slice(r * cols, (r + 1) * cols).join(""));
+          return out.join("\n");
+        };
+        if (brightRef.current) brightRef.current.textContent = join(bright);
+        if (dimRef.current) dimRef.current.textContent = join(dim);
+      };
+
+      setup = () => {
+        // Mede o caractere de verdade: a grade cobre a caixa inteira.
+        const rect = probe.getBoundingClientRect();
+        const charW = rect.width / 10;
+        const charH = rect.height;
+        cols = Math.max(1, Math.floor(box.clientWidth / charW));
+        rows = Math.max(1, Math.floor(box.clientHeight / charH));
+        // As letras ocupam a mesma largura do conteúdo do resto da página.
+        const content = widthRef.current;
+        const style = content && getComputedStyle(content);
+        const contentWidth = style
+          ? content.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+          : box.clientWidth * 0.8;
+        const coverage = rasterize(cols, rows, contentWidth / charW, charW / charH, family);
+        let lastRow = 0;
+        coverage.forEach((c, i) => {
+          if (c >= 0.12) lastRow = Math.max(lastRow, (i / cols) | 0);
+        });
+        setBelow((lastRow + 1) * charH);
+        letters = Array.from(coverage, (c) =>
+          c < 0.12 ? "" : SHADES[Math.min(SHADES.length - 1, Math.floor(c * SHADES.length))],
+        );
+        glyphs = Array.from({ length: cols * rows }, () => pick(RAIN));
+        reveal = new Float32Array(cols).fill(reduce ? rows : -1);
+        // A primeira gota de cada coluna começa acima da tela, em alturas diferentes.
+        drops = Array.from({ length: cols }, () => ({
+          y: -Math.random() * rows * 0.8,
+          speed: 18 + Math.random() * 30,
+          trail: 6 + ((Math.random() * 18) | 0),
+        }));
+        last = performance.now();
+        draw(0);
+      };
+
+      setup();
+      if (reduce) return;
+
+      const tick = (now: number) => {
+        if (visible && now - last >= FRAME_MS) {
+          // Limita o salto de tempo (aba em segundo plano, por exemplo).
+          draw(Math.min((now - last) / 1000, 0.1));
+          last = now;
+        }
+        frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    });
+
+    // Recalcula a grade quando a caixa muda de tamanho.
+    let resizeTimer = 0;
+    const resize = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => setup?.(), 150);
+    });
+    resize.observe(box);
+
+    // Fora da tela, não desenha.
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+    });
+    io.observe(box);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      clearTimeout(resizeTimer);
+      resize.disconnect();
+      io.disconnect();
+    };
+  }, []);
+
+  const layer =
+    "absolute inset-0 m-0 overflow-hidden whitespace-pre font-mono text-[7px] leading-none text-accent sm:text-[9px]";
+  return (
+    <div ref={boxRef} className={`overflow-hidden ${className}`}>
+      {/* Só para medir o tamanho de um caractere. */}
+      <span ref={probeRef} aria-hidden className={`${layer} invisible inset-auto`}>
+        0000000000
+      </span>
+      {/* Só para medir a largura do conteúdo da página. */}
+      <div ref={widthRef} className={`${container} invisible h-0`} />
+      <pre ref={dimRef} aria-hidden className={`${layer} opacity-30`} />
+      <pre ref={brightRef} aria-hidden className={layer} />
+      {children && (
+        // Antes de medir as letras, fica numa posição aproximada.
+        <div
+          className="absolute inset-x-0 px-5 text-center"
+          style={{ top: below === null ? "62%" : below + 24 }}
+        >
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}

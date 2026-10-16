@@ -17,7 +17,7 @@ export default function ProjectDetails({
 }: ProjectDetailsProps) {
   const SubTitle = Title === "h1" ? "h2" : "h3";
   const subTitleClass =
-    "text-sm font-semibold uppercase tracking-widest text-brand-200";
+    "font-display font-bold";
 
   const statusLabel = projectStatuses.find(
     (item) => item.id === project.status,
@@ -30,19 +30,19 @@ export default function ProjectDetails({
     <div className="space-y-6 p-6 md:p-8">
       <div className={reserveCloseSpace ? "pr-12" : ""}>
         {meta && (
-          <p className="text-sm font-medium uppercase tracking-widest text-brand-200">
+          <p className="text-sm font-medium text-accent-ink">
             {meta}
           </p>
         )}
         <Title
           id={titleId}
-          className="mt-1 text-2xl font-bold text-white md:text-3xl"
+          className="mt-1 font-display text-3xl font-bold tracking-[-0.02em] md:text-4xl"
         >
           {project.title}
         </Title>
       </div>
 
-      <p className="whitespace-pre-line text-lg leading-relaxed text-white/90">
+      <p className="whitespace-pre-line text-lg leading-relaxed">
         {project.description}
       </p>
 
@@ -53,7 +53,7 @@ export default function ProjectDetails({
             {project.tech.map((item) => (
               <li
                 key={item}
-                className="rounded-full border border-brand-800 bg-brand-950/60 px-3 py-1 text-sm font-medium text-brand-200"
+                className="rounded-full bg-surface px-3 py-1 text-sm font-medium"
               >
                 {item}
               </li>
@@ -65,7 +65,7 @@ export default function ProjectDetails({
       {project.objective && (
         <div>
           <SubTitle className={subTitleClass}>Objetivo e escopo</SubTitle>
-          <p className="mt-2 whitespace-pre-line text-white/90">
+          <p className="mt-2 whitespace-pre-line leading-relaxed text-muted">
             {project.objective}
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function ProjectDetails({
           <SubTitle className={subTitleClass}>
             Resultados e aprendizados
           </SubTitle>
-          <p className="mt-2 whitespace-pre-line text-white/90">
+          <p className="mt-2 whitespace-pre-line leading-relaxed text-muted">
             {project.results}
           </p>
         </div>
@@ -85,7 +85,7 @@ export default function ProjectDetails({
       {project.team && project.team.length > 0 && (
         <div>
           <SubTitle className={subTitleClass}>Equipe</SubTitle>
-          <p className="mt-2 text-white/90">{project.team.join(", ")}</p>
+          <p className="mt-2 text-muted">{project.team.join(", ")}</p>
         </div>
       )}
 
@@ -95,7 +95,7 @@ export default function ProjectDetails({
             href={project.repo}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-200 px-6 py-3 font-medium text-brand-950 transition-colors hover:bg-white"
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-ink transition-colors hover:bg-ink hover:text-white"
           >
             Ver repositório ↗
           </a>

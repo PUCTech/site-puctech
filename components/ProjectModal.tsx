@@ -51,7 +51,7 @@ export default function ProjectModal({
         if (event.target === event.currentTarget) onClose();
       }}
       aria-labelledby={titleId}
-      className="project-dialog m-auto max-h-[90vh] w-[min(92vw,46rem)] overflow-y-auto rounded-2xl border border-brand-800 bg-brand-900 p-0 text-white backdrop:bg-brand-950/80 backdrop:backdrop-blur-sm"
+      className="project-dialog m-auto max-h-[90vh] w-[min(92vw,46rem)] overflow-y-auto rounded-[2rem] bg-white p-0 text-ink backdrop:bg-ink/40 backdrop:backdrop-blur-sm"
     >
       {project && (
         <div className="relative">
@@ -59,7 +59,7 @@ export default function ProjectModal({
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="absolute right-3 top-3 z-10 inline-flex size-10 items-center justify-center rounded-full border border-brand-800 bg-brand-950/80 text-white transition-colors hover:border-brand-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-200"
+            className="absolute right-4 top-4 z-10 inline-flex size-10 items-center justify-center rounded-full bg-surface transition-colors hover:bg-accent"
           >
             <svg
               width="18"

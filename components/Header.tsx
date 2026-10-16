@@ -14,31 +14,32 @@ export default function Header() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   const linkClass = (href: string) =>
-    `w-fit border-b-2 py-1 transition-colors ${
+    `rounded-full px-3.5 py-1.5 transition-colors ${
       isActive(href)
-        ? "border-brand-200 font-semibold text-white"
-        : "border-transparent text-brand-200/60 hover:text-white"
+        ? "bg-surface font-semibold text-ink"
+        : "text-muted hover:text-ink"
     }`;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-800 bg-brand-950/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+    <header className="sticky top-0 z-50 border-b border-border bg-white/80 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Link
           href="/"
           className="flex items-center"
           onClick={() => setOpen(false)}
         >
           <Image
-            src="/logo-puctech.svg"
+            src="/logo-puctech-ink.svg"
             alt="Logo da PUC Tech"
             width={310}
             height={82}
             loading="eager"
-            className="h-8 w-auto"
+            className="h-7 w-auto"
           />
         </Link>
-        <nav className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => (
+        {/* Processo Seletivo fica fora: no desktop ele é o botão da direita. */}
+        <nav className="hidden items-center gap-1 text-[15px] lg:flex">
+          {navLinks.slice(0, -1).map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -50,9 +51,16 @@ export default function Header() {
           ))}
         </nav>
 
+        <Link
+          href="/processo-seletivo"
+          className="hidden justify-self-end rounded-full bg-accent px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-ink hover:text-white lg:inline-flex"
+        >
+          Processo Seletivo
+        </Link>
+
         <button
           type="button"
-          className="lg:hidden"
+          className="inline-flex size-10 items-center justify-center rounded-full border border-border lg:hidden"
           aria-label="Abrir menu"
           aria-expanded={open}
           onClick={() => setOpen(!open)}
@@ -76,7 +84,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-4 border-t border-brand-800 px-6 py-4 lg:hidden">
+        <nav className="flex flex-col gap-1 border-t border-border bg-white px-5 py-4 lg:hidden">
           {navLinks.map((link) => (
             <Link
               key={link.href}

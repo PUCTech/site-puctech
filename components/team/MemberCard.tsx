@@ -1,9 +1,10 @@
 import Image from "next/image";
 import type { Member } from "@/data/team";
 
-export const membersGrid = "flex flex-wrap justify-center gap-4";
+export const membersGrid =
+  "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5";
 
-export const featuredGrid = "flex flex-wrap justify-center gap-4";
+export const featuredGrid = "grid grid-cols-2 gap-3 md:grid-cols-3";
 
 type MemberCardProps = {
   member: Member;
@@ -35,70 +36,57 @@ export default function MemberCard({
 
   return (
     <article
-        className={`relative flex w-[calc(50%-0.5rem)] flex-col items-center rounded-2xl border border-transparent px-3 py-4 text-center transition-colors hover:border-brand-500 ${
-        highlight ? "bg-brand-200 sm:w-[14rem]" : "bg-paper sm:w-[12.5rem]"
+      className={`group relative rounded-3xl p-2 pb-4 transition-colors ${
+        highlight ? "bg-accent" : "bg-surface hover:bg-[#e3f0f5]"
       }`}
     >
-      <div
-        className={`relative overflow-hidden rounded-full ${
-          highlight
-            ? "h-24 w-24 bg-paper ring-2 ring-paper"
-            : "h-20 w-20 bg-brand-200"
-        }`}
-      >
+      <div className="relative aspect-square overflow-hidden rounded-[1.25rem] bg-white">
         {member.photo ? (
           <Image
             src={member.photo}
             alt={`Foto de ${member.name}`}
             fill
-            sizes="96px"
-            loading="eager"
+            sizes={highlight ? "(min-width: 768px) 260px, 50vw" : "(min-width: 768px) 180px, 50vw"}
             className="object-cover"
           />
         ) : (
           <span
             aria-hidden
-            className={`flex h-full w-full items-center justify-center font-semibold text-brand-800 ${
-              highlight ? "text-2xl" : "text-xl"
-            }`}
+            className="flex size-full items-center justify-center font-display text-3xl font-bold text-accent-ink"
           >
             {getInitials(member.name)}
           </span>
         )}
       </div>
 
-      <h3
-        className={`mt-3 font-semibold leading-tight text-brand-950 ${
-          highlight ? "text-lg" : "text-base"
-        }`}
-      >
-        {member.name}
-      </h3>
-      {title && <p className="mt-0.5 text-sm text-brand-800">{title}</p>}
+      <div className="px-2 pt-3">
+        <h3 className={`font-display leading-tight font-bold ${highlight ? "text-lg" : ""}`}>
+          {member.name}
+        </h3>
+        {title && (
+          <p className={`mt-0.5 text-sm ${highlight ? "text-ink" : "text-muted"}`}>
+            {title}
+          </p>
+        )}
 
-      {badge && (
-        <span
-          className={`mt-3 rounded-full px-2.5 py-0.5 text-xs font-medium leading-snug text-brand-800 ${
-            highlight ? "bg-paper" : "bg-brand-200"
-          }`}
-        >
-          {badge}
-        </span>
-      )}
+        {badge && (
+          <p className="mt-2 inline-block rounded-full bg-white px-2.5 py-0.5 text-xs font-medium">
+            {badge}
+          </p>
+        )}
 
-      {member.linkedin && (
-        <a
-          href={member.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`LinkedIn de ${member.name} (abre em nova aba)`}
-          className={`mt-3 text-sm underline decoration-transparent underline-offset-4 transition-colors after:absolute after:inset-0 after:rounded-2xl hover:decoration-current focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500 ${
-            highlight ? "text-brand-800" : "text-brand-500"
-          }`}
-        >
-          LinkedIn ↗
-        </a>
-      )}
+        {member.linkedin && (
+          <a
+            href={member.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`LinkedIn de ${member.name} (abre em nova aba)`}
+            className="mt-2 block text-sm font-semibold underline decoration-transparent underline-offset-4 transition-colors after:absolute after:inset-0 after:rounded-3xl hover:decoration-current focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-accent-ink"
+          >
+            LinkedIn ↗
+          </a>
+        )}
+      </div>
     </article>
   );
 }

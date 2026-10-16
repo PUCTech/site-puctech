@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Section from "@/components/Section";
+import { Block, SectionNav, SidebarLayout } from "@/components/Section";
 import MemberCard, {
   featuredGrid,
   membersGrid,
@@ -42,7 +42,7 @@ function MemberGroup({
   if (members.length === 0) return null;
 
   return (
-    <Section id={id} title={title} subtitle={subtitle}>
+    <Block id={id} title={title} subtitle={subtitle}>
       <div className={highlight ? featuredGrid : membersGrid}>
         {members.map((member) => (
           <MemberCard
@@ -53,53 +53,50 @@ function MemberGroup({
           />
         ))}
       </div>
-    </Section>
+    </Block>
   );
 }
 
 export default function EquipePage() {
+  // Atalhos só para os grupos que têm gente (os vazios não aparecem).
+  const nav = [
+    { id: "tutores", label: "Tutores", show: advisors.length > 0 },
+    { id: "honorarios", label: "Membros Honorários", show: honorary.length > 0 },
+    { id: "fundadores", label: "Fundadores", show: founders.length > 0 },
+    { id: "diretoria-executiva", label: "Diretoria Executiva", show: executive.length > 0 },
+    { id: "diretorias-estrategicas", label: "Diretorias Estratégicas", show: strategic.length > 0 },
+    { id: "areas-operacionais", label: "Áreas Operacionais", show: true },
+    { id: "idealizadores", label: "Idealizadores", show: idealizers.length > 0 },
+  ].filter((item) => item.show);
+
   return (
-    <main>
-      <section className="overflow-hidden">
-        {/* A largura máxima (62rem) mantém a proporção 7:5 e centraliza a foto em telas grandes. */}
-        <div className="hero-fade-x relative mx-auto h-[38rem] max-w-[62rem] md:h-[36rem] lg:aspect-[8/5] lg:h-auto">
+    <SidebarLayout
+      title="Equipe"
+      intro={
+        <p>
+          As pessoas que constroem a PUC Tech todos os dias, da orientação
+          acadêmica aos estudantes que fazem a liga acontecer.
+        </p>
+      }
+      aside={<SectionNav items={nav} />}
+    >
+      <div id="conheca-os-membros" className="scroll-mt-24 overflow-hidden rounded-[2rem]">
+        <div className="relative aspect-[4/3] sm:aspect-[16/9]">
           <Image
             src="/equipe/grupo-puctech.jpg"
             alt=""
             fill
-            sizes="(min-width: 1024px) 992px, 100vw"
-            loading="eager"
-            className="object-cover object-top"
+            sizes="(min-width: 1024px) 800px, 100vw"
+            priority
+            className="object-cover"
           />
-          {/* Camadas escuras: deixam o texto legível e fundem a foto com o resto da página. */}
-          <div aria-hidden className="absolute inset-0 bg-brand-950/70" />
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-linear-to-b from-transparent from-75% to-brand-950"
-          />
-          {/* Texto colado no topo, para ficar acima das cabeças da foto. */}
-          <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 pt-12 text-center md:pt-16">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Equipe
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base text-brand-200/90 sm:text-lg md:mt-6">
-              As pessoas que constroem a PUC Tech todos os dias, da orientação
-              acadêmica aos estudantes que fazem a liga acontecer.
-            </p>
-          </div>
         </div>
-      </section>
-
-      {/* Só padding em cima: o espaço de baixo vem da seção seguinte (Tutores). */}
-      <section id="conheca-os-membros" className="scroll-mt-16 pt-16 md:pt-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="max-w-3xl text-lg text-brand-200/90">
-            A PUC Tech é formada por uma comunidade de estudantes engajados,
-            orientadores e parceiros que acreditam no protagonismo estudantil
-            como motor da transformação na universidade e na sociedade.
-          </p>
-        </div>
-      </section>
+        <p className="bg-surface p-7 text-lg leading-relaxed md:p-9">
+          A PUC Tech é formada por uma comunidade de estudantes engajados,
+          orientadores e parceiros que acreditam no protagonismo estudantil
+          como motor da transformação na universidade e na sociedade.
+        </p>
+      </div>
 
       <MemberGroup
         id="tutores"
@@ -141,13 +138,13 @@ export default function EquipePage() {
         highlight
       />
 
-      <Section
+      <Block
         id="areas-operacionais"
         title="Áreas Operacionais"
         subtitle={groupDescriptions.areasOperacionais}
       >
         <CurrentTeam />
-      </Section>
+      </Block>
 
       <MemberGroup
         id="idealizadores"
@@ -155,6 +152,6 @@ export default function EquipePage() {
         subtitle={groupDescriptions.idealizadores}
         members={idealizers}
       />
-    </main>
+    </SidebarLayout>
   );
 }

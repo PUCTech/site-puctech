@@ -1,32 +1,33 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brand-950: #020d2b;
-  --color-brand-900: #081a3e;
-  --color-brand-800: #143966;
-  --color-brand-500: #2b6fac;
-  --color-brand-200: #bae4fe;
-  --color-paper: #f0f4f9;
+  --color-ink: #04142f;
+  --color-muted: #4a5b72;
+  --color-accent: #01d4ff;
+  --color-accent-ink: #00799a;
+  --color-surface: #eef6f9;
+  --color-border: #dbe5eb;
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-figtree);
+  --font-display: var(--font-bricolage);
 }
 
 body {
-  background: var(--color-brand-950);
-  color: #ffffff;
+  background: #ffffff;
+  color: var(--color-ink);
 }
 
-/* Carrosséis (parceiros e projetos): esmaece as bordas para os quadrados "entrarem" e "saírem" suavemente. */
-.carousel-mask {
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
+::selection {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+@utility tile {
+  border-radius: 2rem;
+  padding: 1.75rem;
+  @media (width >= 48rem) {
+    padding: 2.25rem;
+  }
 }
 
 /* Pop-up de projeto: entrada suave. */
@@ -48,39 +49,5 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .project-dialog[open] {
     animation: none;
-  }
-}
-
-/* Faixa de parceiros: rola sem parar. A lista é duplicada, então andar metade da largura fecha o ciclo sem "pulo". */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.marquee-track {
-  animation: marquee 40s linear infinite;
-}
-
-/* Foto da equipe em telas grandes: as laterais esmaecem para a foto se fundir ao fundo azul. */
-@media (min-width: 64rem) {
-  .hero-fade-x {
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
   }
 }
