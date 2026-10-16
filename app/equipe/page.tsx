@@ -80,8 +80,8 @@ export default function EquipePage() {
       }
       aside={<SectionNav items={nav} />}
     >
-      <div id="conheca-os-membros" className="scroll-mt-24 overflow-hidden rounded-[2rem]">
-        <div className="relative aspect-[4/3] sm:aspect-[16/9]">
+      <div id="conheca-os-membros" className="scroll-mt-24 pb-12 md:pb-16">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[16/9]">
           <Image
             src="/equipe/grupo-puctech.jpg"
             alt=""
@@ -91,7 +91,7 @@ export default function EquipePage() {
             className="object-cover"
           />
         </div>
-        <p className="bg-surface p-7 text-lg leading-relaxed md:p-9">
+        <p className="mt-8 max-w-[62ch] text-lg leading-relaxed md:text-xl">
           A PUC Tech é formada por uma comunidade de estudantes engajados,
           orientadores e parceiros que acreditam no protagonismo estudantil
           como motor da transformação na universidade e na sociedade.

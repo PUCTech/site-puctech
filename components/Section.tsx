@@ -37,7 +37,7 @@ export function SidebarLayout({
         {intro && <div className="mt-4 leading-relaxed text-muted">{intro}</div>}
         {aside && <div className="mt-8">{aside}</div>}
       </aside>
-      <div className="min-w-0 space-y-4">{children}</div>
+      <div className="min-w-0">{children}</div>
     </main>
   );
 }
@@ -62,7 +62,7 @@ export function SectionNav({ items }: { items: { id: string; label: string }[] }
   );
 }
 
-/** Bloco arredondado de conteúdo, com título opcional. */
+/** Seção de conteúdo, sem caixa: separada da anterior por uma linha fina. */
 export function Block({
   id,
   title,
@@ -73,17 +73,17 @@ export function Block({
   id?: string;
   title?: string;
   subtitle?: string;
-  tone?: "white" | "surface" | "accent";
+  tone?: "white" | "accent";
   children?: ReactNode;
 }) {
-  const tones = {
-    white: "border border-border bg-white",
-    surface: "bg-surface",
-    accent: "bg-accent",
-  };
-
+  // "accent" ganha uma barra ciano à esquerda; os outros tons ficam iguais.
   return (
-    <section id={id} className={`tile scroll-mt-24 ${tones[tone]}`}>
+    <section
+      id={id}
+      className={`scroll-mt-24 border-t border-border py-12 first:border-t-0 first:pt-0 md:py-16 ${
+        tone === "accent" ? "border-l-4 border-l-accent pl-6 md:pl-8" : ""
+      }`}
+    >
       {title && <h2 className={h2}>{title}</h2>}
       {subtitle && (
         <p className="mt-3 max-w-[62ch] leading-relaxed text-muted">{subtitle}</p>

@@ -6,14 +6,14 @@ export default function ProjectTile({ project }: { project: Project }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem] bg-surface">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-surface">
         {project.image ? (
           <Image
             src={project.image}
             alt=""
             fill
             sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <span
@@ -24,8 +24,10 @@ export default function ProjectTile({ project }: { project: Project }) {
           </span>
         )}
       </div>
-      <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
-        <p className="font-display text-xl font-bold">{project.title}</p>
+      <div className="flex flex-1 flex-col pt-5">
+        <p className="font-display text-2xl font-bold tracking-[-0.02em] underline decoration-transparent decoration-2 underline-offset-4 transition-colors group-hover:decoration-accent">
+          {project.title}
+        </p>
         {project.summary && (
           <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{project.summary}</p>
         )}

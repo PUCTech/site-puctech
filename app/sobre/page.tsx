@@ -41,9 +41,9 @@ export default function SobrePage() {
       </Block>
 
       <Block id="diferenca" title={difference.title}>
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-x-10 gap-y-10 sm:grid-cols-2">
           {difference.items.map((item, index) => (
-            <li key={item.title} className="rounded-3xl bg-surface p-6">
+            <li key={item.title} className="border-t-2 border-accent pt-5">
               <p className="text-sm font-semibold text-accent-ink">
                 {String(index + 1).padStart(2, "0")}
               </p>
@@ -68,11 +68,11 @@ export default function SobrePage() {
         </ul>
       </Block>
 
-      <Block id="historia" title={history.title} tone="surface">
-        <ul className="flex flex-wrap gap-3">
+      <Block id="historia" title={history.title}>
+        <ul className="flex flex-wrap gap-x-12 gap-y-4">
           {history.milestones.map((item) => (
-            <li key={item.year} className="rounded-3xl bg-white px-6 py-4">
-              <p className="font-display text-3xl font-bold">{item.year}</p>
+            <li key={item.year}>
+              <p className="font-display text-5xl font-bold tracking-[-0.03em]">{item.year}</p>
               <p className="text-sm text-muted">{item.label}</p>
             </li>
           ))}
@@ -91,7 +91,7 @@ export default function SobrePage() {
             alt="Logo da PUC-SP"
             width={128}
             height={128}
-            className="size-24 shrink-0 rounded-3xl object-cover"
+            className="size-24 shrink-0 rounded-xl object-cover"
           />
           <div className="space-y-4 leading-relaxed text-muted">
             {support.paragraphs.map((text) => (

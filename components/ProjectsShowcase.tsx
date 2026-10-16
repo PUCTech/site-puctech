@@ -104,11 +104,11 @@ export default function ProjectsShowcase({
       }
     >
       {projects.length === 0 ? (
-        <p className="tile bg-surface text-lg text-muted">
+        <p className="text-lg text-muted">
           Em breve, os projetos da PUC Tech vão aparecer aqui.
         </p>
       ) : visible.length === 0 ? (
-        <div className="tile bg-surface">
+        <div>
           <p className="text-lg">Nenhum projeto encontrado com esses filtros.</p>
           <button
             type="button"
@@ -122,7 +122,7 @@ export default function ProjectsShowcase({
           </button>
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-x-8 gap-y-12 pb-12 sm:grid-cols-2 md:pb-16">
           {visible.map((project) => (
             <li key={project.slug}>
               <button
@@ -132,7 +132,7 @@ export default function ProjectsShowcase({
                   setSelected(project);
                   setOpen(true);
                 }}
-                className="block h-full w-full cursor-pointer rounded-[2rem] border border-border bg-white p-2 text-left transition-colors hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-ink"
+                className="group block h-full w-full cursor-pointer rounded-2xl text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-ink"
               >
                 <ProjectTile project={project} />
               </button>

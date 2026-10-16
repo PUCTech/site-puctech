@@ -22,14 +22,6 @@ body {
   color: var(--color-ink);
 }
 
-@utility tile {
-  border-radius: 2rem;
-  padding: 1.75rem;
-  @media (width >= 48rem) {
-    padding: 2.25rem;
-  }
-}
-
 /* Pop-up de projeto: entrada suave. */
 @keyframes dialog-in {
   from {
