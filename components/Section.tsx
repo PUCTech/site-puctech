@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 export const container = "mx-auto w-full max-w-6xl px-5 sm:px-6";
@@ -89,6 +90,18 @@ export function Block({
       )}
       {children && <div className={title || subtitle ? "mt-8" : ""}>{children}</div>}
     </section>
+  );
+}
+
+/** Link para outra página escrito como comando de terminal, no tom da abertura da home. */
+export function CdLink({ href, className = "" }: { href: string; className?: string }) {
+  return (
+    <Link
+      href={href}
+      className={`inline-block font-mono text-sm text-accent-ink underline decoration-accent/40 underline-offset-4 transition-colors hover:text-ink hover:decoration-accent ${className}`}
+    >
+      cd {href}
+    </Link>
   );
 }
 
