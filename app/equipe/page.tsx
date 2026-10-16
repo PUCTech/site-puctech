@@ -23,15 +23,6 @@ export const metadata: Metadata = {
     "Conheça os tutores, fundadores e a equipe atual da PUC Tech, a primeira liga de ciência e tecnologia da PUC-SP.",
 };
 
-// Níveis da estrutura da liga, na ordem em que aparecem na introdução.
-const levels = [
-  { title: "Tutores", text: groupDescriptions.tutores },
-  { title: "Fundadores", text: groupDescriptions.fundadores },
-  { title: "Diretoria Executiva", text: groupDescriptions.diretoriaExecutiva },
-  { title: "Áreas Operacionais", text: groupDescriptions.areasOperacionais },
-  { title: "Trainees", text: groupDescriptions.trainees },
-];
-
 // Grupo de pessoas. Se estiver vazio, a seção não aparece.
 function MemberGroup({
   id,
@@ -107,23 +98,6 @@ export default function EquipePage() {
             orientadores e parceiros que acreditam no protagonismo estudantil
             como motor da transformação na universidade e na sociedade.
           </p>
-          <p className="mt-4 max-w-3xl text-lg text-brand-200/90">
-            Nossa estrutura é composta por diferentes níveis que se
-            complementam:
-          </p>
-
-          {/* flex + justify-center: o último card (Trainees) fica centralizado. */}
-          <ul className="mt-6 flex flex-wrap justify-center gap-4">
-            {levels.map((level) => (
-              <li
-                key={level.title}
-                className="w-full rounded-2xl border border-brand-800 bg-brand-900/40 p-5 sm:w-[calc(50%-0.5rem)]"
-              >
-                <h3 className="font-semibold">{level.title}</h3>
-                <p className="mt-2 text-sm text-brand-200/80">{level.text}</p>
-              </li>
-            ))}
-          </ul>
         </div>
       </section>
 
