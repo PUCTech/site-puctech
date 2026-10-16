@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import AreaIcon from "@/components/AreaIcon";
 import AsciiLogo from "@/components/AsciiLogo";
 import Reveal from "@/components/Reveal";
 import Stats from "@/components/Stats";
@@ -23,10 +24,12 @@ const gap = "py-12 md:py-16";
 function Heading({
   title,
   href,
+  wide = false,
   children,
 }: {
   title: string;
   href?: string;
+  wide?: boolean; // texto em duas colunas, ocupando a largura toda
   children: ReactNode;
 }) {
   return (
@@ -37,7 +40,13 @@ function Heading({
         </h2>
         {href && <CdLink href={href} />}
       </div>
-      <div className="mt-4 max-w-3xl space-y-3 text-lg leading-relaxed text-muted">{children}</div>
+      <div
+        className={`mt-4 text-lg leading-relaxed text-muted ${
+          wide ? "gap-12 space-y-3 md:columns-2 md:space-y-0 [&>p]:break-inside-avoid md:[&>p+p]:mt-0" : "max-w-3xl space-y-3"
+        }`}
+      >
+        {children}
+      </div>
     </Reveal>
   );
 }
@@ -64,7 +73,7 @@ export default function Home() {
       </Stage>
 
       <Stage id="sobre" className={gap}>
-        <Heading title={about.title} href="/sobre">
+        <Heading title={about.title} href="/sobre" wide>
           {about.paragraphs.map((text) => (
             <p key={text}>{withBold(text)}</p>
           ))}
@@ -76,20 +85,12 @@ export default function Home() {
           <p>{projectsIntro.text}</p>
         </Heading>
         <Reveal delay={150}>
-          <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
+          <ul className="mt-8 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {projectAreas.map((area) => (
-              <li key={area.title} className="group">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink">
-                  <Image
-                    src={area.image}
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 270px, 50vw"
-                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
-                    style={{ objectPosition: area.position }}
-                  />
-                </div>
-                <p className="mt-3 font-semibold leading-snug">{area.title}</p>
+              <li key={area.title}>
+                <AreaIcon title={area.title} className="size-7 text-accent-ink" />
+                <p className="mt-4 font-semibold leading-snug">{area.title}</p>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{area.text}</p>
               </li>
             ))}
           </ul>
