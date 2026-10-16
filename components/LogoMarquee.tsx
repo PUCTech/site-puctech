@@ -4,7 +4,8 @@ type Partner = { name: string; logo?: string };
 
 // Faixa de logos que rola sem parar (marquee). A lista é duplicada, então andar
 // metade da largura fecha o ciclo sem "pulo". Passar o mouse pausa.
-// Logos .svg viram pretos (brancos no modo escuro); imagens comuns ficam em tons de cinza.
+// Logos .svg/.png com fundo transparente viram pretos (brancos no modo escuro);
+// .jpg (com fundo) ficam em tons de cinza até ganharem uma versão vetorial.
 export default function LogoMarquee({ partners }: { partners: Partner[] }) {
   const logo = (partner: Partner, hidden: boolean) => (
     <li
@@ -19,7 +20,7 @@ export default function LogoMarquee({ partners }: { partners: Partner[] }) {
           width={160}
           height={64}
           className={`max-h-14 w-auto object-contain opacity-70 transition-opacity hover:opacity-100 ${
-            partner.logo.endsWith(".svg") ? "brightness-0 dark:invert" : "rounded-lg grayscale"
+            partner.logo.endsWith(".jpg") ? "rounded-lg grayscale" : "brightness-0 dark:invert"
           }`}
         />
       ) : (
