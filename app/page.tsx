@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import AsciiLogo from "@/components/AsciiLogo";
-import { CdLink, container, withBold } from "@/components/Section";
+import { CdLink, Stage, withBold } from "@/components/Section";
 import { socials } from "@/components/SocialIcons";
 import {
   about,
@@ -34,7 +34,7 @@ export default function Home() {
       </section>
 
       {/* Números: logo abaixo da abertura, soltos na página. */}
-      <section className={`${container} pb-20 md:pb-28`}>
+      <Stage className="pb-20 md:pb-28">
         <h2 className="sr-only">Nossos números</h2>
         <dl className="grid grid-cols-2 gap-x-6 gap-y-10 border-t border-border pt-10 sm:grid-cols-3 lg:grid-cols-5">
           {stats.map((stat) => (
@@ -49,10 +49,10 @@ export default function Home() {
             </div>
           ))}
         </dl>
-      </section>
+      </Stage>
 
       {/* Sobre */}
-      <section id="sobre" className={`${container} scroll-mt-20 py-20 md:py-28`}>
+      <Stage id="sobre" className="py-20 md:py-28">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <h2 className={display}>{about.title}</h2>
@@ -64,10 +64,10 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </Stage>
 
       {/* Projetos */}
-      <section id="projetos" className={`${container} scroll-mt-20 py-20 md:py-28`}>
+      <Stage id="projetos" className="py-20 md:py-28">
         <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
           <h2 className={`${display} lg:col-span-5`}>Projetos</h2>
           <div className="lg:col-span-7">
@@ -96,13 +96,13 @@ export default function Home() {
             </li>
           ))}
         </ul>
-      </section>
+      </Stage>
 
       {/* Processo seletivo: a única faixa de cor da home. */}
-      <section className="bg-accent">
+      <Stage className="bg-accent">
         <Link
           href="/processo-seletivo"
-          className={`${container} group flex flex-col gap-6 py-16 md:flex-row md:items-end md:justify-between md:py-20`}
+          className="group flex flex-col gap-6 py-16 md:flex-row md:items-end md:justify-between md:py-20"
         >
           <span>
             <span className="block text-lg font-medium">{selectionPage.badge}</span>
@@ -114,10 +114,10 @@ export default function Home() {
             cd /processo-seletivo
           </span>
         </Link>
-      </section>
+      </Stage>
 
       {/* Parceiros */}
-      <section id="parceiros" className={`${container} scroll-mt-20 py-20 md:py-28`}>
+      <Stage id="parceiros" className="py-20 md:py-28">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <h2 className={display}>{partnersIntro.title}</h2>
@@ -144,10 +144,10 @@ export default function Home() {
             ))}
           </ul>
         </div>
-      </section>
+      </Stage>
 
       {/* Redes */}
-      <section id="redes" className={`${container} scroll-mt-20 border-t border-border py-20 md:py-28`}>
+      <Stage id="redes" className="py-20 md:py-28">
         <h2 className={display}>{socialIntro.title}</h2>
         <p className="mt-4 text-lg font-semibold">{socialIntro.tagline}</p>
         <p className="mt-1 max-w-[56ch] text-lg leading-relaxed text-muted">{socialIntro.text}</p>
@@ -168,7 +168,7 @@ export default function Home() {
             </li>
           ))}
         </ul>
-      </section>
+      </Stage>
     </main>
   );
 }

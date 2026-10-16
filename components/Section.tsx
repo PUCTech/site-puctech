@@ -93,6 +93,33 @@ export function Block({
   );
 }
 
+/**
+ * Seção da home com a largura da tela toda: o conteúdo fica centralizado e
+ * `art` vai numa camada de fundo, para animações ASCII como a da abertura.
+ */
+export function Stage({
+  id,
+  art,
+  className = "",
+  children,
+}: {
+  id?: string;
+  art?: ReactNode;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id} className={`relative isolate scroll-mt-20 ${className}`}>
+      {art && (
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          {art}
+        </div>
+      )}
+      <div className={container}>{children}</div>
+    </section>
+  );
+}
+
 /** Link para outra página escrito como comando de terminal, no tom da abertura da home. */
 export function CdLink({ href, className = "" }: { href: string; className?: string }) {
   return (
