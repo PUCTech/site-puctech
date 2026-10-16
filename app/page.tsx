@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import AsciiLogo from "@/components/AsciiLogo";
+import Stats from "@/components/Stats";
 import { CdLink, Stage, withBold } from "@/components/Section";
 import { socials } from "@/components/SocialIcons";
 import {
@@ -11,7 +12,6 @@ import {
   partnersIntro,
   projectsIntro,
   socialIntro,
-  stats,
 } from "@/data/home";
 import { projectAreas } from "@/data/projects";
 import { selectionPage } from "@/data/selection";
@@ -57,19 +57,7 @@ export default function Home() {
       {/* Números: logo abaixo da abertura. */}
       <Stage className={gap}>
         <h2 className="sr-only">Nossos números</h2>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border pt-10 sm:grid-cols-3 lg:grid-cols-5">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col-reverse justify-end">
-              <dt className="mt-1 max-w-[18ch] text-sm leading-snug text-muted">
-                {stat.label}
-              </dt>
-              <dd className="text-5xl font-bold tracking-[-0.04em] md:text-6xl">
-                {stat.value}
-                <span className="text-accent">{stat.suffix}</span>
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <Stats />
       </Stage>
 
       <Stage id="sobre" className={gap}>
