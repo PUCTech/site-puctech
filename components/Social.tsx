@@ -1,4 +1,5 @@
 import {
+  GithubIcon,
   InstagramIcon,
   LinkedinIcon,
   LinkIcon,
@@ -27,6 +28,15 @@ export default function Social() {
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a
+              href={siteConfig.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={button}
+            >
+              <GithubIcon />
+              GitHub
+            </a>
             <a
               href={siteConfig.links.linkedin}
               target="_blank"

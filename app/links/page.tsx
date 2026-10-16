@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  GithubIcon,
   InstagramIcon,
   LinkedinIcon,
   LinkIcon,
@@ -12,10 +13,11 @@ import { links, linksPage, type LinkItem } from "@/data/links";
 
 export const metadata: Metadata = {
   title: "Links",
-  description: "Siga a PUC Tech nas redes sociais: Instagram, LinkedIn, TikTok e X.",
+  description: "Siga a PUC Tech no GitHub, LinkedIn, Instagram, TikTok e X.",
 };
 
 const icons = {
+  github: GithubIcon,
   instagram: InstagramIcon,
   linkedin: LinkedinIcon,
   tiktok: TiktokIcon,

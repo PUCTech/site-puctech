@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  GithubIcon,
   InstagramIcon,
   LinkedinIcon,
   LinkIcon,
@@ -40,6 +41,17 @@ export default function Footer() {
 
           <ul className="flex flex-col gap-2">
             <li className="font-semibold">Redes</li>
+            <li>
+              <a
+                href={siteConfig.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialLink}
+              >
+                <GithubIcon className="size-4" />
+                GitHub
+              </a>
+            </li>
             <li>
               <a
                 href={siteConfig.links.linkedin}

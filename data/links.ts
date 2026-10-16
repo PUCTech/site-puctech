@@ -8,11 +8,17 @@
 //   description → texto menor embaixo do nome
 //   href        → endereço. Começando com "/" é uma página do site; senão, abre em outra aba.
 //                 Se ficar vazio (""), o botão aparece desativado com "em breve".
-//   icon        → "instagram" | "linkedin" | "tiktok" | "x" | "link" (padrão: "link")
+//   icon        → "github" | "instagram" | "linkedin" | "tiktok" | "x" | "link" (padrão: "link")
 
 import { siteConfig } from "@/lib/site";
 
-export type LinkIconId = "instagram" | "linkedin" | "tiktok" | "x" | "link";
+export type LinkIconId =
+  | "github"
+  | "instagram"
+  | "linkedin"
+  | "tiktok"
+  | "x"
+  | "link";
 
 export type LinkItem = {
   label: string;
@@ -27,6 +33,12 @@ export const linksPage = {
 };
 
 export const links: LinkItem[] = [
+  {
+    label: "GitHub",
+    description: "PUCTech",
+    href: siteConfig.links.github,
+    icon: "github",
+  },
   {
     label: "LinkedIn",
     description: "PUC Tech",
@@ -51,7 +63,7 @@ export const links: LinkItem[] = [
     href: siteConfig.links.x,
     icon: "x",
   },
-];
   // Exemplos para quando existirem:
   // { label: "Comunidade no WhatsApp", href: "https://chat.whatsapp.com/...", icon: "link" },
   // { label: "Fale com a gente", description: "contato@...", href: "mailto:contato@..." },
+];

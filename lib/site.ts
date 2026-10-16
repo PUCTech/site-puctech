@@ -9,6 +9,7 @@ export const siteConfig = {
   url: siteUrl,
   description: "A Primeira Liga de Ciência e Tecnologia da PUC-SP",
   links: {
+    github: "https://github.com/PUCTech",
     instagram: "https://www.instagram.com/puctechsp/",
     linkedin: "https://www.linkedin.com/company/puctechsp/",
     tiktok: "https://www.tiktok.com/@puctechsp",
