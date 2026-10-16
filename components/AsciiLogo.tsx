@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { scenes, withPrompt, type Frame } from "@/components/asciiScenes";
 import { container } from "@/components/Section";
 
 // "PUCTech" em ASCII com uma chuva estilo Matrix: cada coluna tem uma gota de
@@ -13,6 +14,14 @@ const SHADES = ".:-=+*#%@"; // do traço mais fino (borda da letra) ao mais chei
 const RAIN = "0123456789ABCDEFXYZ$+-*/=%<>{}[]|!?#&";
 const FRAME_MS = 1000 / 30;
 const SAMPLES = 4; // subamostras por célula, para suavizar as bordas das letras
+// Linha do tempo: o "PUCTech" aparece, some numa dissolução e dá lugar a uma
+// cena (donut.c, sl, pong...); depois volta, e a próxima cena entra.
+const FIRST_LOGO_S = 9; // inclui os ~3 s em que a chuva revela as letras
+const LOGO_S = 6;
+const SCENE_S = 8;
+const FADE_S = 0.8;
+
+type Act = { frame: Frame; t: number; duration: number; scene: boolean };
 
 type Drop = { y: number; speed: number; trail: number };
 
@@ -94,11 +103,47 @@ export default function AsciiLogo({
 
       let cols = 0;
       let rows = 0;
-      let letters: string[] = []; // caractere final de cada célula ("" = fora das letras)
       let glyphs: string[] = []; // caracteres da chuva, trocados aos poucos
       let reveal = new Float32Array(0); // até que linha cada coluna já foi revelada
       let drops: Drop[] = [];
       let last = 0;
+      let logo: string[] = []; // as letras, na grade inteira
+      let promptX = 0; // coluna onde começa o conteúdo da página (para o "$ comando")
+      let dissolve = new Float32Array(0); // ordem em que cada célula troca na dissolução
+      let act: Act;
+      let next: Act | null = null;
+      let fade = 0;
+      let sceneIndex = 0;
+
+      const logoAct = (duration: number): Act => ({ frame: () => logo, t: 0, duration, scene: false });
+      const sceneAct = (): Act => {
+        const scene = scenes[sceneIndex++ % scenes.length];
+        // As cenas usam a tela inteira.
+        const frame = withPrompt(scene.make(cols, rows, cellRatio), scene.command, cols, rows, promptX, 1);
+        return { frame, t: 0, duration: SCENE_S, scene: true };
+      };
+      let cellRatio = 0.6;
+
+      /** Avança a linha do tempo e devolve a grade do quadro atual. */
+      const stageFrame = (dt: number) => {
+        if (!next && act.t >= act.duration) {
+          next = act.scene ? logoAct(LOGO_S) : sceneAct();
+          fade = 0;
+        }
+        const current = act.frame(act.t, dt);
+        act.t += dt;
+        if (!next) return current;
+
+        const incoming = next.frame(next.t, dt);
+        next.t += dt;
+        fade += dt / FADE_S;
+        if (fade >= 1) {
+          act = next;
+          next = null;
+          return incoming;
+        }
+        return current.map((ch, i) => (dissolve[i] < fade ? incoming[i] : ch));
+      };
 
       const draw = (dt: number) => {
         const bright = new Array<string>(cols * rows).fill(" ");
@@ -130,9 +175,22 @@ export default function AsciiLogo({
           }
         }
 
-        for (let i = 0; i < letters.length; i++) {
-          if (letters[i] && ((i / cols) | 0) <= reveal[i % cols]) {
-            bright[i] = letters[i];
+        const cells = reduce ? logo : stageFrame(dt);
+
+        // Durante as cenas a chuva some, para a cena ficar legível. Na troca, ela
+        // some (ou volta) célula a célula, junto com a dissolução.
+        const entering = !act.scene && next?.scene;
+        const leaving = act.scene && next && !next.scene;
+        const hideRain = (i: number) =>
+          !reduce &&
+          (entering ? dissolve[i] < fade : leaving ? dissolve[i] >= fade : act.scene);
+
+        for (let i = 0; i < cells.length; i++) {
+          if (cells[i] !== " " && ((i / cols) | 0) <= reveal[i % cols]) {
+            bright[i] = cells[i];
+            dim[i] = " ";
+          } else if (hideRain(i)) {
+            bright[i] = " ";
             dim[i] = " ";
           }
         }
@@ -165,9 +223,15 @@ export default function AsciiLogo({
           if (c >= 0.12) lastRow = Math.max(lastRow, (i / cols) | 0);
         });
         setBelow((lastRow + 1) * charH);
-        letters = Array.from(coverage, (c) =>
-          c < 0.12 ? "" : SHADES[Math.min(SHADES.length - 1, Math.floor(c * SHADES.length))],
+        logo = Array.from(coverage, (c) =>
+          c < 0.12 ? " " : SHADES[Math.min(SHADES.length - 1, Math.floor(c * SHADES.length))],
         );
+        cellRatio = charW / charH;
+        promptX = Math.max(0, Math.floor((cols - contentWidth / charW) / 2));
+        dissolve = Float32Array.from({ length: logo.length }, () => Math.random());
+        act = logoAct(FIRST_LOGO_S);
+        next = null;
+        sceneIndex = 0;
         glyphs = Array.from({ length: cols * rows }, () => pick(RAIN));
         reveal = new Float32Array(cols).fill(reduce ? rows : -1);
         // A primeira gota de cada coluna começa acima da tela, em alturas diferentes.
