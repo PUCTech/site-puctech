@@ -237,12 +237,171 @@ const cowsay: Scene["make"] = (w, h) => {
   };
 };
 
+// htop: medidores de CPU e memória mexendo e a lista de processos.
+const PROCS = [
+  ["node", "next-server"],
+  ["python", "train_model.py"],
+  ["java", "minerva-api.jar"],
+  ["postgres", "postgres: careon"],
+  ["code", "Visual Studio Code"],
+  ["chrome", "Google Chrome (47 abas)"],
+  ["docker", "dockerd"],
+  ["unity", "Rothernet"],
+  ["spotify", "lofi beats to code to"],
+  ["bash", "./donut"],
+];
+
+const htop: Scene["make"] = (w, h) => {
+  const cpus = 8;
+  const load = Array.from({ length: cpus }, () => Math.random());
+  const usage = PROCS.map(() => Math.random() * 30);
+  let clock = 0;
+
+  return (t, dt) => {
+    clock += dt;
+    if (clock > 0.4) {
+      clock = 0;
+      load.forEach((_, i) => (load[i] = Math.min(1, Math.max(0.05, load[i] + (Math.random() - 0.5) * 0.4))));
+      usage.forEach((_, i) => (usage[i] = Math.max(0.1, usage[i] + (Math.random() - 0.5) * 12)));
+    }
+    const cells = blank(w, h);
+    const width = Math.min(w - 4, 100);
+    const x = Math.floor((w - width) / 2);
+    let y = Math.max(3, Math.floor((h - (cpus / 2 + 6 + PROCS.length)) / 2));
+    const bar = (label: string, value: number, size: number) =>
+      `${label}[${"|".repeat(Math.round(value * size)).padEnd(size)}${(value * 100).toFixed(1).padStart(5)}%]`;
+    const half = Math.floor((width - 2) / 2);
+    for (let i = 0; i < cpus; i += 2) {
+      write(cells, w, h, x, y, bar(`${i + 1}`.padStart(2), load[i], half - 11));
+      write(cells, w, h, x + half + 2, y, bar(`${i + 2}`.padStart(2), load[i + 1], half - 11));
+      y++;
+    }
+    write(cells, w, h, x, y++, bar("Mem", 0.62 + Math.sin(t) * 0.05, width - 12));
+    write(cells, w, h, x, y++, `Tasks: 142, 3 running   Load average: ${(load[0] * 4).toFixed(2)} ${(load[1] * 3).toFixed(2)} 1.07   Uptime: 2 years`);
+    y++;
+    write(cells, w, h, x, y++, "  PID USER      CPU%  MEM%  COMMAND".padEnd(width, " "));
+    const order = PROCS.map((_, i) => i).sort((a, b) => usage[b] - usage[a]);
+    order.forEach((i, k) => {
+      const pid = String(1000 + i * 137).padStart(5);
+      const line = `${pid} puctech  ${usage[i].toFixed(1).padStart(4)}  ${(usage[i] / 3).toFixed(1).padStart(4)}  ${PROCS[i][1]}`;
+      write(cells, w, h, x, y + k, line.slice(0, width));
+    });
+    return cells;
+  };
+};
+
+// neofetch: o cartão de "sistema" da liga.
+const neofetch: Scene["make"] = (w, h) => {
+  const art = [
+    "   ____  _   _  ____ ",
+    "  |  _ \\| | | |/ ___|",
+    "  | |_) | | | | |    ",
+    "  |  __/| |_| | |___ ",
+    "  |_|    \\___/ \\____|",
+    "      _____         _     ",
+    "     |_   _|__  ___| |__  ",
+    "       | |/ _ \\/ __| '_ \\ ",
+    "       | |  __/ (__| | | |",
+    "       |_|\\___|\\___|_| |_|",
+  ];
+  const info = [
+    "puctech@puc-sp",
+    "--------------",
+    "OS: PUC Tech Linux 2024.1",
+    "Host: PUC-SP, São Paulo",
+    "Kernel: protagonismo-estudantil",
+    "Uptime: desde 2024",
+    "Packages: 10+ projetos",
+    "Shell: zsh (com muito café)",
+    "Members: 50+ estudantes",
+    "CPU: Ciência da Computação",
+    "GPU: ideias em paralelo",
+  ];
+  return (t) => {
+    const cells = blank(w, h);
+    const width = 32 + 34;
+    const x = Math.floor((w - width) / 2);
+    const y = Math.max(3, Math.floor((h - info.length) / 2));
+    art.forEach((row, k) => write(cells, w, h, x, y + k, row));
+    // As linhas de informação aparecem uma a uma.
+    info.slice(0, Math.floor(t * 6)).forEach((row, k) => write(cells, w, h, x + 32, y + k, row));
+    return cells;
+  };
+};
+
+// git log --graph rolando para cima.
+const COMMITS = [
+  "feat: hero em ASCII",
+  "fix: o donut girava ao contrário",
+  "Merge branch 'main' into feat/redesign",
+  "chore: remove console.log (de novo)",
+  "feat: modo escuro",
+  "fix: funciona na minha máquina",
+  "docs: README que ninguém vai ler",
+  "refactor: renomeia variável x para x2",
+  "feat: pong que às vezes erra",
+  "revert: 'fix: funciona na minha máquina'",
+  "style: mais um tom de ciano",
+  "test: adiciona o primeiro teste (finalmente)",
+  "feat: processo seletivo 2027",
+  "fix: typo",
+  "fix: typo do fix anterior",
+];
+
+const gitlog: Scene["make"] = (w, h) => {
+  const hash = () => Math.random().toString(16).slice(2, 9);
+  const lines = COMMITS.flatMap((msg, i) => {
+    const branch = i % 4 === 2;
+    return branch
+      ? [`|\\`, `| * ${hash()} ${msg}`, `|/`]
+      : [`* ${hash()} ${msg}`, "|"];
+  });
+  return (t) => {
+    const cells = blank(w, h);
+    const x = Math.max(2, Math.floor((w - 60) / 2));
+    const offset = Math.floor(t * 5);
+    for (let r = 3; r < h; r++) {
+      const line = lines[(r - 3 + offset) % lines.length];
+      write(cells, w, h, x, r, line);
+    }
+    return cells;
+  };
+};
+
+// npm install: barra de progresso e a piada do node_modules.
+const npm: Scene["make"] = (w, h) => {
+  const steps = [
+    "npm WARN deprecated left-pad@1.3.0: use String.prototype.padStart",
+    "npm WARN deprecated request@2.88.2: request has been deprecated",
+    "npm WARN peer react@19 required by algum-pacote@0.0.1",
+  ];
+  return (t) => {
+    const cells = blank(w, h);
+    const width = Math.min(w - 4, 70);
+    const x = Math.floor((w - width) / 2);
+    const y = Math.max(3, Math.floor(h / 2) - 4);
+    steps.slice(0, Math.floor(t * 1.5)).forEach((row, k) => write(cells, w, h, x, y + k, row.slice(0, width)));
+    const p = Math.min(1, t / 5.5);
+    const size = width - 10;
+    write(cells, w, h, x, y + 4, `[${"#".repeat(Math.round(p * size)).padEnd(size, ".")}] ${Math.round(p * 100)}%`);
+    if (p >= 1) {
+      write(cells, w, h, x, y + 6, "added 1337 packages in 6s");
+      write(cells, w, h, x, y + 7, "node_modules: 2.4 GB (maior que o universo observável)");
+    }
+    return cells;
+  };
+};
+
 export const scenes: Scene[] = [
   { command: "./donut", make: donut },
   { command: "sl -F", make: sl },
   { command: "life", make: life },
   { command: "pong", make: pong },
   { command: "cowsay", make: cowsay },
+  { command: "htop", make: htop },
+  { command: "neofetch", make: neofetch },
+  { command: "git log --graph", make: gitlog },
+  { command: "npm install", make: npm },
 ];
 
 /** Linha de comando digitada no canto da cena, como num terminal. */
