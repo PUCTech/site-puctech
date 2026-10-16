@@ -282,7 +282,7 @@ export default function AsciiLogo({
   }, []);
 
   const layer =
-    "absolute inset-0 m-0 overflow-hidden whitespace-pre font-mono text-[7px] leading-none text-accent sm:text-[9px]";
+    "pointer-events-none absolute inset-0 m-0 select-none overflow-hidden whitespace-pre font-mono text-[7px] leading-none text-accent sm:text-[9px]";
   return (
     <div ref={boxRef} className={`overflow-hidden ${className}`}>
       {/* Só para medir o tamanho de um caractere. */}
