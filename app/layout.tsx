@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { siteConfig } from "@/lib/site";
 
+// Só para desenhar as letras do "PUCTech" em ASCII na abertura; os títulos usam a Figtree.
 const display = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin"],

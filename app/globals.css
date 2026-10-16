@@ -9,7 +9,7 @@
   --color-border: #dbe5eb;
 
   --font-sans: var(--font-figtree);
-  --font-display: var(--font-bricolage);
+  --font-display: var(--font-figtree);
 }
 
 body {
