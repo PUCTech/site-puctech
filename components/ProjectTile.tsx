@@ -6,7 +6,7 @@ export default function ProjectTile({ project }: { project: Project }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-surface">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-ink">
         {project.image ? (
           <Image
             src={project.image}
@@ -18,7 +18,7 @@ export default function ProjectTile({ project }: { project: Project }) {
         ) : (
           <span
             aria-hidden
-            className="absolute inset-0 flex items-center justify-center font-display text-4xl font-bold tracking-[-0.03em] text-accent-ink/30"
+            className="absolute inset-0 flex items-center justify-center font-display text-4xl font-bold tracking-[-0.03em] text-accent"
           >
             {project.title}
           </span>
