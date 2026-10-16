@@ -14,25 +14,25 @@ export const projectsPage = {
 export const projectAreas = [
   {
     title: "Inteligência Artificial",
-    text: "Aplicações práticas de IA e aprendizado de máquina em diferentes contextos (educação, meio ambiente, saúde etc.).",
+    text: "Aplicações práticas de IA e aprendizado de máquina em educação, saúde e meio ambiente.",
     image: "/projetos/areas/inteligencia-artificial.jpg",
     position: "50% 40%",
   },
   {
     title: "Engenharia de Software",
-    text: "Desenvolvimento de sistemas robustos com foco em boas práticas, escalabilidade e integração de tecnologias modernas.",
+    text: "Sistemas robustos, com boas práticas, escalabilidade e integração de tecnologias modernas.",
     image: "/projetos/areas/engenharia-de-software.jpg",
     position: "50% 30%",
   },
   {
     title: "Cibersegurança",
-    text: "Projetos voltados à segurança de sistemas, detecção de fraudes, testes de penetração e conscientização digital.",
+    text: "Segurança de sistemas, detecção de fraudes, testes de penetração e conscientização digital.",
     image: "/projetos/areas/ciberseguranca.jpg",
     position: "50% 75%",
   },
   {
     title: "Dados e Pesquisa Aplicada",
-    text: "Estudos e experimentações com foco em impacto social, análise de dados e visualização interativa.",
+    text: "Estudos com foco em impacto social, análise de dados e visualizações interativas para todos.",
     image: "/projetos/areas/dados.jpg",
     position: "50% 50%",
   },

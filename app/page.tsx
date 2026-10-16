@@ -41,7 +41,7 @@ function Heading({
         {href && <CdLink href={href} />}
       </div>
       <div
-        className={`mt-4 text-lg leading-relaxed text-muted ${
+        className={`mt-4 text-lg leading-relaxed text-pretty text-muted ${
           wide ? "gap-12 space-y-3 md:columns-2 md:space-y-0 [&>p]:break-inside-avoid md:[&>p+p]:mt-0" : "max-w-3xl space-y-3"
         }`}
       >
@@ -90,7 +90,7 @@ export default function Home() {
               <li key={area.title}>
                 <AreaIcon title={area.title} className="size-7 text-accent-ink" />
                 <p className="mt-4 font-semibold leading-snug">{area.title}</p>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{area.text}</p>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-pretty text-muted">{area.text}</p>
               </li>
             ))}
           </ul>

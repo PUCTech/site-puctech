@@ -7,8 +7,8 @@ export const hero = {
 export const about = {
   title: "Sobre",
   paragraphs: [
-    "A **PUC Tech** é a primeira liga de ciência e tecnologia da PUC-SP, formada por estudantes que acreditam no protagonismo estudantil como motor de transformação. Nosso propósito é criar experiências práticas e colaborativas que ampliem a formação universitária, conectando teoria e prática, tecnologia e impacto social.",
-    "Atuamos por meio de projetos, oficinas, eventos e iniciativas que desenvolvem competências técnicas, profissionais e humanas. Somos um espaço onde estudantes lideram, inovam e constroem soluções reais para desafios concretos, em equipe e com propósito.",
+    "A **PUC Tech** é a primeira liga de ciência e tecnologia da PUC-SP, formada por estudantes que veem no protagonismo estudantil um motor de transformação. Criamos experiências práticas que unem teoria, tecnologia e impacto social.",
+    "Atuamos com projetos, oficinas, eventos e iniciativas que desenvolvem competências técnicas, profissionais e humanas. Aqui, estudantes lideram, inovam e constroem soluções reais para desafios concretos, sempre em equipe.",
   ],
 };
 
@@ -21,7 +21,7 @@ export const stats = [
 ];
 
 export const projectsIntro = {
-  text: "Desenvolvemos soluções aplicadas com foco em inteligência artificial, engenharia de software, cibersegurança e inovação social.",
+  text: "Soluções aplicadas em IA, engenharia de software, cibersegurança e inovação social.",
   areas: [
     "Inteligência Artificial",
     "Engenharia de Software",
