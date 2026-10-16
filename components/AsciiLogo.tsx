@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { scenes, withPrompt, type Frame } from "@/components/asciiScenes";
+import { DIM, INVERSE, scenes, withPrompt, type Frame, type Grid } from "@/components/asciiScenes";
 import { container } from "@/components/Section";
 
 // "PUCTech" em ASCII com uma chuva estilo Matrix: cada coluna tem uma gota de
@@ -68,6 +68,32 @@ function rasterize(
 
 const pick = (chars: string) => chars[(Math.random() * chars.length) | 0];
 
+const escapeHtml = (text: string) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** Camada invertida: trechos marcados viram <span> com fundo ciano; o resto, espaços. */
+function inverseHtml(cells: string[], inverse: Uint8Array, cols: number, rows: number) {
+  if (!inverse.includes(1)) return "";
+  const out: string[] = [];
+  for (let r = 0; r < rows; r++) {
+    let line = "";
+    let c = 0;
+    while (c < cols) {
+      const i = r * cols + c;
+      if (!inverse[i]) {
+        line += " ";
+        c++;
+        continue;
+      }
+      let run = "";
+      while (c < cols && inverse[r * cols + c]) run += cells[r * cols + c++];
+      line += `<span class="bg-accent text-on-accent">${escapeHtml(run)}</span>`;
+    }
+    out.push(line);
+  }
+  return out.join("\n");
+}
+
 /** Precisa de uma caixa com tamanho e posição (ex.: className="absolute inset-0"). */
 export default function AsciiLogo({
   className = "relative h-96",
@@ -81,6 +107,7 @@ export default function AsciiLogo({
   const brightRef = useRef<HTMLPreElement>(null);
   const dimRef = useRef<HTMLPreElement>(null);
   const probeRef = useRef<HTMLSpanElement>(null);
+  const inverseRef = useRef<HTMLPreElement>(null);
   const widthRef = useRef<HTMLDivElement>(null);
   const [below, setBelow] = useState<number | null>(null);
 
@@ -153,12 +180,22 @@ export default function AsciiLogo({
           next = null;
           return incoming;
         }
-        return current.map((ch, i) => (dissolve[i] < fade ? incoming[i] : ch));
+        // Dissolução: cada célula (e o estilo dela) vem de uma das duas cenas.
+        const mixed: Grid = current.map((ch, i) => (dissolve[i] < fade ? incoming[i] : ch));
+        if (current.style || incoming.style) {
+          const style = new Uint8Array(mixed.length);
+          for (let i = 0; i < style.length; i++) {
+            style[i] = (dissolve[i] < fade ? incoming.style?.[i] : current.style?.[i]) ?? 0;
+          }
+          mixed.style = style;
+        }
+        return mixed;
       };
 
       const draw = (dt: number) => {
         const bright = new Array<string>(cols * rows).fill(" ");
         const dim = new Array<string>(cols * rows).fill(" ");
+        const inverse = new Uint8Array(cols * rows); // células com fundo ciano
 
         // A chuva troca alguns caracteres a cada quadro, como no terminal.
         for (let k = 0; k < cols * rows * 0.01; k++) {
@@ -186,7 +223,7 @@ export default function AsciiLogo({
           }
         }
 
-        const cells = reduce ? logo : stageFrame(dt);
+        const cells: Grid = reduce ? logo : stageFrame(dt);
 
         // Durante as cenas a chuva some, para a cena ficar legível. Na troca, ela
         // some (ou volta) célula a célula, junto com a dissolução.
@@ -196,8 +233,16 @@ export default function AsciiLogo({
           !reduce &&
           (entering ? dissolve[i] < fade : leaving ? dissolve[i] >= fade : act.scene);
 
+        const style = cells.style;
         for (let i = 0; i < cells.length; i++) {
-          if (cells[i] !== " " && ((i / cols) | 0) <= reveal[i % cols]) {
+          if (style?.[i] === INVERSE) {
+            inverse[i] = 1;
+            bright[i] = " ";
+            dim[i] = " ";
+          } else if (style?.[i] === DIM && cells[i] !== " ") {
+            dim[i] = cells[i];
+            bright[i] = " ";
+          } else if (cells[i] !== " " && ((i / cols) | 0) <= reveal[i % cols]) {
             bright[i] = cells[i];
             dim[i] = " ";
           } else if (hideRain(i)) {
@@ -213,6 +258,7 @@ export default function AsciiLogo({
         };
         if (brightRef.current) brightRef.current.textContent = join(bright);
         if (dimRef.current) dimRef.current.textContent = join(dim);
+        if (inverseRef.current) inverseRef.current.innerHTML = inverseHtml(cells, inverse, cols, rows);
       };
 
       setup = () => {
@@ -304,6 +350,7 @@ export default function AsciiLogo({
       <div ref={widthRef} className={`${container} invisible h-0`} />
       <pre ref={dimRef} aria-hidden className={`${layer} opacity-30`} />
       <pre ref={brightRef} aria-hidden className={layer} />
+      <pre ref={inverseRef} aria-hidden className={layer} />
       {children && (
         // Fica invisível até as letras serem medidas e então aparece já no lugar
         // (sem pular de posição). Sem JavaScript, o <noscript> mostra o título.

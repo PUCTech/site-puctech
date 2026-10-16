@@ -4,7 +4,15 @@
 // outra função: a cada quadro ela recebe o tempo da cena (s) e o intervalo (s)
 // e devolve a grade inteira (largura × altura), com " " nas células vazias.
 
-export type Frame = (t: number, dt: number) => string[];
+/**
+ * Grade de um quadro. `style` (opcional) muda o visual de cada célula:
+ * 0 = normal, DIM = esmaecida, INVERSE = invertida (fundo ciano, como as barras do htop).
+ */
+export type Grid = string[] & { style?: Uint8Array };
+export const DIM = 1;
+export const INVERSE = 2;
+
+export type Frame = (t: number, dt: number) => Grid;
 export type Scene = { command: string; make: (w: number, h: number, cellRatio: number) => Frame };
 
 const blank = (w: number, h: number) => new Array<string>(w * h).fill(" ");
@@ -237,55 +245,198 @@ const cowsay: Scene["make"] = (w, h) => {
   };
 };
 
-// htop: medidores de CPU e memória mexendo e a lista de processos.
-const PROCS = [
-  ["node", "next-server"],
-  ["python", "train_model.py"],
-  ["java", "minerva-api.jar"],
-  ["postgres", "postgres: careon"],
-  ["code", "Visual Studio Code"],
-  ["chrome", "Google Chrome (47 abas)"],
-  ["docker", "dockerd"],
-  ["unity", "Rothernet"],
-  ["spotify", "lofi beats to code to"],
-  ["bash", "./donut"],
+// htop, réplica 1:1 do layout padrão do htop 3: CPUs e memória em duas colunas,
+// tabela de processos ordenada por CPU% e a barra de teclas F1–F10 embaixo.
+// Atualiza a cada 1,5 s, como o htop por padrão.
+type Proc = {
+  pid: number;
+  user: string;
+  cmd: string;
+  cpu: number; // CPU% atual
+  base: number; // CPU% em torno do qual oscila
+  mem: number;
+  virt: string;
+  res: string;
+  shr: string;
+  time: number; // segundos de CPU acumulados
+};
+
+const PROCESSES: [string, string, number, number, string, string, string][] = [
+  // usuário, comando, CPU% médio, MEM%, VIRT, RES, SHR
+  ["puctech", "/usr/bin/python3 train_model.py --epochs 300", 92, 9.8, "8124M", "1.5G", "212M"],
+  ["puctech", "/opt/unity/Editor/Unity -projectPath ~/rothernet", 48, 12.1, "11.2G", "1.9G", "301M"],
+  ["puctech", "/usr/bin/node .next/standalone/server.js", 31, 3.2, "4012M", "512M", "102M"],
+  ["puctech", "/opt/google/chrome/chrome --type=renderer (47 abas)", 26, 7.4, "1.3T", "1.1G", "187M"],
+  ["puctech", "/usr/share/code/code --type=renderer", 18, 4.6, "1.2T", "731M", "142M"],
+  ["postgres", "postgres: careon careon_db 127.0.0.1(5432) idle", 11, 1.4, "421M", "221M", "198M"],
+  ["puctech", "/usr/lib/jvm/java-21/bin/java -jar minerva-api.jar", 9, 6.2, "6301M", "981M", "38M"],
+  ["root", "/usr/bin/dockerd -H fd:// --containerd=/run/containerd.sock", 6, 0.8, "2683M", "124M", "61M"],
+  ["puctech", "/usr/bin/uvicorn rothernet.api:app --port 8000", 5, 1.1, "612M", "178M", "41M"],
+  ["puctech", "/usr/bin/spotify --type=utility lofi-beats-to-code-to", 4, 1.9, "1.1T", "297M", "112M"],
+  ["root", "/usr/lib/Xorg :0 -seat seat0 -auth /run/lightdm/root", 3, 0.6, "742M", "98M", "61M"],
+  ["puctech", "/usr/bin/zsh", 2, 0.1, "17964", "9812", "6412"],
+  ["puctech", "./donut", 2, 0.0, "2388", "1024", "880"],
+  ["root", "/usr/bin/containerd", 1.5, 0.4, "1946M", "58M", "31M"],
+  ["puctech", "/usr/bin/python3 -m jupyter lab", 1.2, 1.7, "912M", "271M", "33M"],
+  ["root", "/lib/systemd/systemd-journald", 1, 0.2, "92740", "31204", "29812"],
+  ["postgres", "postgres: checkpointer", 0.8, 0.3, "421M", "41M", "39M"],
+  ["puctech", "/usr/bin/git fetch --all", 0.7, 0.1, "29112", "11240", "8124"],
+  ["root", "/usr/sbin/sshd -D", 0.4, 0.1, "15420", "9124", "7812"],
+  ["root", "/sbin/init splash", 0.3, 0.1, "167M", "13212", "8412"],
+  ["puctech", "/usr/bin/tmux new -s liga", 0.3, 0.1, "13004", "5212", "3904"],
+  ["postgres", "postgres: walwriter", 0.3, 0.1, "421M", "11M", "9412"],
+  ["root", "/usr/lib/snapd/snapd", 0.2, 0.3, "1789M", "41M", "21M"],
+  ["www-data", "nginx: worker process", 0.2, 0.1, "55912", "7104", "4412"],
+  ["root", "nginx: master process /usr/sbin/nginx", 0.1, 0.0, "55212", "1880", "112"],
+  ["puctech", "/usr/bin/vim README.md", 0.1, 0.1, "24412", "11024", "6912"],
+  ["root", "/usr/sbin/cron -f", 0.0, 0.0, "6812", "2704", "2412"],
+  ["puctech", "/usr/bin/htop", 0.6, 0.0, "10212", "4812", "3412"],
+  ["root", "/usr/sbin/NetworkManager --no-daemon", 0.1, 0.1, "335M", "18M", "15M"],
+  ["root", "/usr/lib/bluetooth/bluetoothd", 0.0, 0.0, "11204", "6012", "5112"],
+  ["puctech", "/usr/bin/pipewire", 0.4, 0.1, "102M", "14M", "8412"],
+  ["puctech", "/usr/bin/redis-server 127.0.0.1:6379", 0.2, 0.1, "71204", "9812", "4412"],
+  ["root", "/usr/sbin/cupsd -l", 0.0, 0.0, "21412", "11204", "9912"],
+  ["puctech", "/usr/bin/ssh-agent -s", 0.0, 0.0, "8112", "4012", "3812"],
+  ["root", "/usr/lib/polkit-1/polkitd --no-debug", 0.0, 0.1, "310M", "8412", "6912"],
+  ["puctech", "/usr/libexec/gvfsd", 0.0, 0.0, "240M", "7412", "6512"],
 ];
 
 const htop: Scene["make"] = (w, h) => {
-  const cpus = 8;
-  const load = Array.from({ length: cpus }, () => Math.random());
-  const usage = PROCS.map(() => Math.random() * 30);
-  let clock = 0;
+  const procs: Proc[] = PROCESSES.map(([user, cmd, base, mem, virt, res, shr], i) => ({
+    pid: 1000 + ((i * 7919) % 30000),
+    user,
+    cmd,
+    base,
+    cpu: base,
+    mem,
+    virt,
+    res,
+    shr,
+    time: base * 37 + i * 13,
+  }));
+  const cpus = Array.from({ length: 8 }, () => 0.2 + Math.random() * 0.5);
+  let load = [2.14, 1.98, 1.77];
+  let clock = 1.5; // já começa atualizando
+  let cursor = 0;
+  let cursorClock = 0;
+
+  const fmtTime = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    return `${m}:${(sec % 60).toFixed(2).padStart(5, "0")}`;
+  };
+  const row = (f: string[]) =>
+    `${f[0].padStart(7)} ${f[1].padEnd(9)} ${f[2].padStart(3)} ${f[3].padStart(3)} ${f[4].padStart(5)} ${f[5].padStart(5)} ${f[6].padStart(5)} ${f[7]} ${f[8].padStart(5)} ${f[9].padStart(4)} ${f[10].padStart(9)}  `;
+  const HEADER = row(["PID", "USER", "PRI", "NI", "VIRT", "RES", "SHR", "S", "CPU%", "MEM%", "TIME+"]) + "Command";
 
   return (t, dt) => {
+    // A cada 1,5 s os números mudam, como o htop.
     clock += dt;
-    if (clock > 0.4) {
+    if (clock >= 1.5) {
       clock = 0;
-      load.forEach((_, i) => (load[i] = Math.min(1, Math.max(0.05, load[i] + (Math.random() - 0.5) * 0.4))));
-      usage.forEach((_, i) => (usage[i] = Math.max(0.1, usage[i] + (Math.random() - 0.5) * 12)));
+      for (const p of procs) p.cpu = Math.max(0, p.base * (0.55 + Math.random() * 0.9));
+      cpus.forEach((c, i) => (cpus[i] = Math.min(0.98, Math.max(0.03, c + (Math.random() - 0.5) * 0.35))));
+      load = load.map((l) => Math.max(0.4, l + (Math.random() - 0.5) * 0.3));
     }
-    const cells = blank(w, h);
-    const width = Math.min(w - 4, 100);
-    const x = Math.floor((w - width) / 2);
-    let y = Math.max(3, Math.floor((h - (cpus / 2 + 6 + PROCS.length)) / 2));
-    const bar = (label: string, value: number, size: number) =>
-      `${label}[${"|".repeat(Math.round(value * size)).padEnd(size)}${(value * 100).toFixed(1).padStart(5)}%]`;
-    const half = Math.floor((width - 2) / 2);
-    for (let i = 0; i < cpus; i += 2) {
-      write(cells, w, h, x, y, bar(`${i + 1}`.padStart(2), load[i], half - 11));
-      write(cells, w, h, x + half + 2, y, bar(`${i + 2}`.padStart(2), load[i + 1], half - 11));
-      y++;
+    for (const p of procs) p.time += (p.cpu / 100) * dt;
+    // O cursor desce de vez em quando, como alguém navegando com as setas.
+    cursorClock += dt;
+    if (cursorClock > 1.1) {
+      cursorClock = 0;
+      cursor++;
     }
-    write(cells, w, h, x, y++, bar("Mem", 0.62 + Math.sin(t) * 0.05, width - 12));
-    write(cells, w, h, x, y++, `Tasks: 142, 3 running   Load average: ${(load[0] * 4).toFixed(2)} ${(load[1] * 3).toFixed(2)} 1.07   Uptime: 2 years`);
-    y++;
-    write(cells, w, h, x, y++, "  PID USER      CPU%  MEM%  COMMAND".padEnd(width, " "));
-    const order = PROCS.map((_, i) => i).sort((a, b) => usage[b] - usage[a]);
-    order.forEach((i, k) => {
-      const pid = String(1000 + i * 137).padStart(5);
-      const line = `${pid} puctech  ${usage[i].toFixed(1).padStart(4)}  ${(usage[i] / 3).toFixed(1).padStart(4)}  ${PROCS[i][1]}`;
-      write(cells, w, h, x, y + k, line.slice(0, width));
+
+    const cells: Grid = blank(w, h);
+    const style = new Uint8Array(w * h);
+    cells.style = style;
+    const x0 = 1;
+    const W = w - 2;
+    const put = (x: number, y: number, text: string, mode = 0) => {
+      write(cells, w, h, x, y, text);
+      if (mode) for (let k = 0; k < text.length; k++) if (x + k < w && y < h) style[y * w + x + k] = mode;
+    };
+
+    // Medidor: "  0[||||||||        34.2%]", com o valor por cima da barra, no fim.
+    const meter = (x: number, y: number, width: number, label: string, frac: number, text: string) => {
+      const inner = width - 5;
+      const fill = Math.round(Math.min(1, frac) * inner);
+      put(x, y, label.padStart(3));
+      put(x + 3, y, "[");
+      put(x + 4, y, "|".repeat(Math.min(fill, inner - text.length)));
+      put(x + 4 + inner - text.length, y, text, 1);
+      put(x + 4 + inner, y, "]");
+    };
+
+    const top = 3;
+    const colW = Math.floor((W - 2) / 2);
+    const right = x0 + colW + 2;
+    for (let i = 0; i < 4; i++) {
+      meter(x0, top + i, colW, `${i}`, cpus[i], `${(cpus[i] * 100).toFixed(1)}%`);
+      meter(right, top + i, colW, `${i + 4}`, cpus[i + 4], `${(cpus[i + 4] * 100).toFixed(1)}%`);
+    }
+    const memUsed = 5.21 + Math.sin(t / 3) * 0.08;
+    meter(x0, top + 4, colW, "Mem", memUsed / 15.5, `${memUsed.toFixed(2)}G/15.5G`);
+    meter(x0, top + 5, colW, "Swp", 0.055, "112M/2.00G");
+
+    const running = procs.filter((p) => p.cpu > 8).length;
+    const label = (y: number, name: string, value: string) => {
+      put(right + 2, y, name, 1);
+      put(right + 2 + name.length, y, value);
+    };
+    label(top + 4, "Tasks: ", `${procs.length + 177}, 1047 thr, 312 kthr; ${running} running`);
+    label(top + 5, "Load average: ", load.map((l) => l.toFixed(2)).join(" "));
+    const up = 21 * 86400 + 3 * 3600 + 41 * 60 + 12 + Math.floor(t);
+    const hh = String(Math.floor((up % 86400) / 3600)).padStart(2, "0");
+    const mm = String(Math.floor((up % 3600) / 60)).padStart(2, "0");
+    const ss = String(up % 60).padStart(2, "0");
+    label(top + 6, "Uptime: ", `${Math.floor(up / 86400)} days, ${hh}:${mm}:${ss}`);
+
+    // Tabela de processos, até ~70% da altura (abaixo disso a abertura esmaece).
+    const bottom = Math.max(top + 12, Math.floor(h * 0.72));
+    const headerY = top + 8;
+    put(x0, headerY, HEADER.padEnd(W).slice(0, W), INVERSE);
+    const visible = bottom - headerY - 1;
+    const sorted = [...procs].sort((a, b) => b.cpu - a.cpu);
+    const selected = cursor % Math.max(1, Math.min(visible, sorted.length));
+    sorted.slice(0, visible).forEach((p, k) => {
+      const y = headerY + 1 + k;
+      const fields = [
+        String(p.pid),
+        p.user,
+        "20",
+        "0",
+        p.virt,
+        p.res,
+        p.shr,
+        p.cpu > 8 ? "R" : "S",
+        p.cpu.toFixed(1),
+        p.mem.toFixed(1),
+        fmtTime(p.time),
+      ];
+      const line = (row(fields) + p.cmd).padEnd(W).slice(0, W);
+      if (k === selected) {
+        put(x0, y, line, INVERSE);
+        return;
+      }
+      put(x0, y, line);
+      // Como no htop: o caminho do programa fica apagado e o nome dele em destaque.
+      const at = row(fields).length;
+      const path = p.cmd.split(" ")[0];
+      const slash = path.lastIndexOf("/");
+      if (slash > 0) put(x0 + at, y, path.slice(0, slash + 1).slice(0, Math.max(0, W - at)), DIM);
     });
+
+    // Barra de teclas: "F1" normal e o nome invertido, até o fim da linha.
+    const keys = ["Help", "Setup", "Search", "Filter", "Tree", "SortBy", "Nice -", "Nice +", "Kill", "Quit"];
+    let x = x0;
+    keys.forEach((name, i) => {
+      const key = `F${i + 1}`;
+      put(x, bottom, key);
+      x += key.length;
+      const text = name.padEnd(6);
+      put(x, bottom, text, INVERSE);
+      x += text.length;
+    });
+    if (x < x0 + W) put(x, bottom, " ".repeat(x0 + W - x), INVERSE);
     return cells;
   };
 };
