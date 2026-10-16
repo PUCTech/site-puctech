@@ -3,12 +3,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { navLinks } from "@/lib/site";
 
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // No topo da página o cabeçalho fica "solto"; ao rolar, ganha fundo e linha.
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 8);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -21,7 +30,13 @@ export default function Header() {
     }`;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white/80 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out ${
+        scrolled || open
+          ? "border-border/80 bg-white/80 backdrop-blur-md"
+          : "border-transparent bg-white"
+      }`}
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Link
           href="/"
