@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { DIM, INVERSE, scenes, withPrompt, type Frame, type Grid } from "@/components/asciiScenes";
+import { useEffect, useRef, useState } from "react";
+import { DIM, FAINT, INVERSE, SOFT, scenes, withPrompt, type Frame, type Grid } from "@/components/asciiScenes";
 import { container } from "@/components/Section";
 
 // "PUCTech" em ASCII com uma chuva estilo Matrix: cada coluna tem uma gota de
@@ -68,6 +68,10 @@ function rasterize(
 
 const pick = (chars: string) => chars[(Math.random() * chars.length) | 0];
 
+// Camadas de opacidade, da frente para trás: cheio, SOFT (65%), DIM (35%), FAINT (15%).
+const LAYER_CLASS = ["", "opacity-65", "opacity-35", "opacity-15"];
+const layerOf = (tone: number) => (tone === SOFT ? 1 : tone === DIM ? 2 : tone === FAINT ? 3 : 0);
+
 const escapeHtml = (text: string) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -97,15 +101,16 @@ function inverseHtml(cells: string[], inverse: Uint8Array, cols: number, rows: n
 /** Precisa de uma caixa com tamanho e posição (ex.: className="absolute inset-0"). */
 export default function AsciiLogo({
   className = "relative h-96",
-  children,
+  tagline,
 }: {
   className?: string;
   /** Fica centralizado logo abaixo das letras. */
-  children?: ReactNode;
+  tagline?: string;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
-  const brightRef = useRef<HTMLPreElement>(null);
-  const dimRef = useRef<HTMLPreElement>(null);
+  const layerRefs = useRef<(HTMLPreElement | null)[]>([]);
+  // O subtítulo só aparece com o "PUCTech" formado e parado (some durante as cenas).
+  const [titleOn, setTitleOn] = useState(false);
   const probeRef = useRef<HTMLSpanElement>(null);
   const inverseRef = useRef<HTMLPreElement>(null);
   const widthRef = useRef<HTMLDivElement>(null);
@@ -135,6 +140,10 @@ export default function AsciiLogo({
       let drops: Drop[] = [];
       let last = 0;
       let logo: string[] = []; // as letras, na grade inteira
+      let letterCols: number[] = []; // colunas que têm parte das letras
+      let logoBottom = 0; // última linha das letras
+      let revealedAll = false; // a chuva já revelou o logo inteiro?
+      let titleReady = false;
       let promptX = 0; // coluna onde começa o conteúdo da página (para o "$ comando")
       let dissolve = new Float32Array(0); // ordem em que cada célula troca na dissolução
       let act: Act;
@@ -193,9 +202,11 @@ export default function AsciiLogo({
       };
 
       const draw = (dt: number) => {
-        const bright = new Array<string>(cols * rows).fill(" ");
-        const dim = new Array<string>(cols * rows).fill(" ");
+        const layers = LAYER_CLASS.map(() => new Array<string>(cols * rows).fill(" "));
         const inverse = new Uint8Array(cols * rows); // células com fundo ciano
+        const clear = (i: number) => {
+          for (const layer of layers) layer[i] = " ";
+        };
 
         // A chuva troca alguns caracteres a cada quadro, como no terminal.
         for (let k = 0; k < cols * rows * 0.01; k++) {
@@ -209,10 +220,10 @@ export default function AsciiLogo({
             reveal[c] = Math.max(reveal[c], drop.y);
             const head = Math.floor(drop.y);
 
+            // A cabeça da gota é cheia e o rastro vai sumindo: 65% → 35% → 15%.
             for (let r = Math.max(0, head - drop.trail); r <= head && r < rows; r++) {
-              const i = r * cols + c;
-              if (r === head) bright[i] = glyphs[i];
-              else dim[i] = glyphs[i];
+              const f = (head - r) / drop.trail;
+              layers[r === head ? 0 : f < 0.3 ? 1 : f < 0.65 ? 2 : 3][r * cols + c] = glyphs[r * cols + c];
             }
 
             // Saiu pela parte de baixo: volta lá para cima, mais devagar e espaçada.
@@ -235,20 +246,24 @@ export default function AsciiLogo({
 
         const style = cells.style;
         for (let i = 0; i < cells.length; i++) {
-          if (style?.[i] === INVERSE) {
+          const tone = style?.[i] ?? 0;
+          if (tone === INVERSE) {
             inverse[i] = 1;
-            bright[i] = " ";
-            dim[i] = " ";
-          } else if (style?.[i] === DIM && cells[i] !== " ") {
-            dim[i] = cells[i];
-            bright[i] = " ";
+            clear(i);
           } else if (cells[i] !== " " && ((i / cols) | 0) <= reveal[i % cols]) {
-            bright[i] = cells[i];
-            dim[i] = " ";
+            clear(i);
+            layers[layerOf(tone)][i] = cells[i];
           } else if (hideRain(i)) {
-            bright[i] = " ";
-            dim[i] = " ";
+            clear(i);
           }
+        }
+
+        // Subtítulo: só com o logo inteiro na tela, sem cena entrando ou saindo.
+        if (!revealedAll) revealedAll = letterCols.every((c) => reveal[c] > logoBottom);
+        const ready = reduce || (!act.scene && !next && revealedAll);
+        if (ready !== titleReady) {
+          titleReady = ready;
+          setTitleOn(ready);
         }
 
         const join = (cells: string[]) => {
@@ -256,8 +271,10 @@ export default function AsciiLogo({
           for (let r = 0; r < rows; r++) out.push(cells.slice(r * cols, (r + 1) * cols).join(""));
           return out.join("\n");
         };
-        if (brightRef.current) brightRef.current.textContent = join(bright);
-        if (dimRef.current) dimRef.current.textContent = join(dim);
+        layers.forEach((layer, k) => {
+          const el = layerRefs.current[k];
+          if (el) el.textContent = join(layer);
+        });
         if (inverseRef.current) inverseRef.current.innerHTML = inverseHtml(cells, inverse, cols, rows);
       };
 
@@ -280,6 +297,19 @@ export default function AsciiLogo({
           if (c >= 0.12) lastRow = Math.max(lastRow, (i / cols) | 0);
         });
         setBelow((lastRow + 1) * charH);
+        logoBottom = lastRow;
+        letterCols = [];
+        for (let c = 0; c < cols; c++) {
+          for (let r = 0; r <= lastRow; r++) {
+            if (coverage[r * cols + c] >= 0.12) {
+              letterCols.push(c);
+              break;
+            }
+          }
+        }
+        revealedAll = false;
+        titleReady = false;
+        setTitleOn(false);
         logo = Array.from(coverage, (c) =>
           c < 0.12 ? " " : SHADES[Math.min(SHADES.length - 1, Math.floor(c * SHADES.length))],
         );
@@ -348,23 +378,116 @@ export default function AsciiLogo({
       </span>
       {/* Só para medir a largura do conteúdo da página. */}
       <div ref={widthRef} className={`${container} invisible h-0`} />
-      <pre ref={dimRef} aria-hidden className={`${layer} opacity-30`} />
-      <pre ref={brightRef} aria-hidden className={layer} />
+      {/* Camadas de trás para a frente: 15%, 35%, 65% e cheia. */}
+      {[3, 2, 1, 0].map((k) => (
+        <pre
+          key={k}
+          ref={(el) => {
+            layerRefs.current[k] = el;
+          }}
+          aria-hidden
+          className={`${layer} ${LAYER_CLASS[k]}`}
+        />
+      ))}
       <pre ref={inverseRef} aria-hidden className={layer} />
-      {children && (
-        // Fica invisível até as letras serem medidas e então aparece já no lugar
-        // (sem pular de posição). Sem JavaScript, o <noscript> mostra o título.
+      {tagline && (
+        // Posicionado logo abaixo das letras. É só visual (o texto real está no <h1>
+        // da página); sem JavaScript, o <noscript> deixa as letras visíveis.
         <div
           data-hero-title
-          className="absolute inset-x-0 px-5 text-center transition-opacity duration-1000 ease-out motion-reduce:transition-none"
-          style={{ top: below === null ? "62%" : below + 24, opacity: below === null ? 0 : 1 }}
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 px-5 text-center"
+          style={{ top: below === null ? "62%" : below + 24 }}
         >
-          {children}
+          <span
+            className={`inline-block rounded-full px-4 py-1.5 text-base font-medium tracking-[-0.01em] text-balance text-muted transition-colors duration-500 md:text-xl ${
+              titleOn ? "bg-paper" : "bg-transparent"
+            }`}
+          >
+            <ScrambleText text={tagline} visible={titleOn} />
+          </span>
           <noscript>
-            <style>{"[data-hero-title]{opacity:1!important}"}</style>
+            <style>{"[data-hero-title] .invisible{visibility:visible!important}"}</style>
           </noscript>
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Texto que aparece e some como o ASCII: cada letra passa por caracteres
+ * aleatórios antes de assentar (ou de sumir), em ordem embaralhada. Cada letra
+ * guarda a largura da letra real, então a linha não treme durante o efeito.
+ */
+function ScrambleText({ text, visible }: { text: string; visible: boolean }) {
+  const [glyphs, setGlyphs] = useState<string[]>(() => Array.from(text, () => ""));
+  // Estado em que o texto está de fato (começa escondido). Só anima quando muda:
+  // assim ele não "some" ao carregar a página, quando já estava escondido.
+  const shown = useRef(false);
+
+  useEffect(() => {
+    if (visible === shown.current) return;
+    shown.current = visible;
+    const letters = Array.from(text);
+    const final = letters.map((ch) => (visible ? ch : ""));
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const id = requestAnimationFrame(() => setGlyphs(final));
+      return () => cancelAnimationFrame(id);
+    }
+    const SPREAD = 500; // ms entre a primeira e a última letra começarem
+    const SCRAMBLE = 350; // ms que cada letra fica embaralhando
+    const delays = letters.map(() => Math.random() * SPREAD);
+    const start = performance.now();
+    let frame = 0;
+    let last = 0;
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      if (elapsed >= SPREAD + SCRAMBLE) {
+        setGlyphs(final);
+        return;
+      }
+      if (now - last > 40) {
+        last = now;
+        setGlyphs(
+          letters.map((ch, i) => {
+            if (ch === " ") return " ";
+            const p = (elapsed - delays[i]) / SCRAMBLE;
+            if (p < 0) return visible ? "" : ch;
+            if (p < 1) return pick(RAIN);
+            return visible ? ch : "";
+          }),
+        );
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [text, visible]);
+
+  // Palavras inteiras não quebram no meio; cada letra real fica invisível por baixo
+  // (guardando a largura) e o caractere da vez aparece por cima.
+  const words = text.split(" ");
+  // Posição de cada palavra no texto (cada espaço conta 1).
+  const starts = words.map((_, w) => words.slice(0, w).join(" ").length + (w > 0 ? 1 : 0));
+  return (
+    <>
+      {words.map((word, w) => {
+        const start = starts[w];
+        return (
+          <span key={w}>
+            {w > 0 && " "}
+            <span className="inline-block whitespace-nowrap">
+              {Array.from(word, (ch, k) => (
+                <span key={k} className="relative">
+                  <span className="invisible">{ch}</span>
+                  <span className="absolute inset-0 text-center">{glyphs[start + k]}</span>
+                </span>
+              ))}
+            </span>
+          </span>
+        );
+      })}
+    </>
   );
 }

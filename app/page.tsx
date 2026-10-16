@@ -56,14 +56,11 @@ export default function Home() {
     <main>
       {/* Abertura: a chuva de caracteres ocupa a tela toda. */}
       <section className="relative h-[calc(100svh-4rem)] max-h-[60rem] min-h-[28rem]">
-        <AsciiLogo className="absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_70%,transparent)]">
-          <h1>
-            <span className="sr-only">PUC Tech: </span>
-            <span className="inline-block rounded-full bg-paper px-4 py-1.5 text-base font-medium tracking-[-0.01em] text-balance text-muted md:text-xl">
-              {hero.title}
-            </span>
-          </h1>
-        </AsciiLogo>
+        <h1 className="sr-only">PUC Tech: {hero.title}</h1>
+        <AsciiLogo
+          className="absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_70%,transparent)]"
+          tagline={hero.title}
+        />
       </section>
 
       {/* Números: logo abaixo da abertura, com respiro em cima. */}
