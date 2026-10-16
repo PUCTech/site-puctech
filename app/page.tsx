@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import AreaIcon from "@/components/AreaIcon";
 import AsciiLogo from "@/components/AsciiLogo";
+import LogoMarquee from "@/components/LogoMarquee";
 import Reveal from "@/components/Reveal";
 import Stats from "@/components/Stats";
 import { CdLink, Stage, withBold } from "@/components/Section";
@@ -124,22 +124,9 @@ export default function Home() {
           ))}
         </Heading>
         <Reveal delay={150}>
-          <ul className="mt-8 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
-            {partners.map((partner) => (
-              <li key={partner.name} className="flex flex-col items-start gap-3">
-                {partner.logo && (
-                  <Image
-                    src={partner.logo}
-                    alt=""
-                    width={96}
-                    height={96}
-                    className="size-20 rounded-xl object-cover md:size-24"
-                  />
-                )}
-                <span className="text-sm text-muted">{partner.name}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-10">
+            <LogoMarquee partners={partners} />
+          </div>
         </Reveal>
       </Stage>
 

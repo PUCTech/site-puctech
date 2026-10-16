@@ -41,6 +41,21 @@ body {
   transition: none;
 }
 
+/* Faixa de logos dos parceiros (LogoMarquee). */
+@keyframes marquee {
+  to {
+    transform: translateX(calc(-50% - 1.25rem));
+  }
+}
+
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
 /* Pop-up de projeto: entrada suave. */
 @keyframes dialog-in {
   from {
