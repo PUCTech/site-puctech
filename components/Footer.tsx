@@ -1,118 +1,46 @@
+import Logo from "@/components/Logo";
 import Link from "next/link";
-import {
-  GithubIcon,
-  InstagramIcon,
-  LinkedinIcon,
-  LinkIcon,
-  TiktokIcon,
-  XIcon,
-} from "@/components/SocialIcons";
+import { socials } from "@/components/SocialIcons";
+import { container } from "@/components/Section";
 import { navLinks, siteConfig } from "@/lib/site";
 
-const footerLink =
-  "text-brand-200/80 underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-white hover:decoration-brand-200 focus-visible:text-white focus-visible:decoration-brand-200";
-
-const socialLink = `inline-flex items-center gap-2 ${footerLink}`;
-
+// Rodapé enxuto: uma linha com logo, navegação e redes; embaixo, o crédito.
 export default function Footer() {
   return (
-    <footer className="border-t border-brand-800 bg-brand-950">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10 md:flex-row md:justify-between">
-        <div>
-          <p className="text-lg font-bold">
-            PUC<span className="font-light italic text-brand-200">Tech</span>
-          </p>
-          <p className="mt-2 max-w-sm text-sm text-brand-200/80">
-            {siteConfig.description}
-          </p>
-        </div>
+    <footer className="mt-16 border-t border-border">
+      <div className={`${container} flex flex-col gap-6 py-8 md:flex-row md:items-center md:justify-between`}>
+        <Link href="/" aria-label="PUC Tech, página inicial" className="shrink-0">
+          <Logo className="h-6 w-auto" alt="" />
+        </Link>
 
-        <div className="flex gap-16 text-sm">
-          <ul className="flex flex-col gap-2">
-            <li className="font-semibold">Navegação</li>
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className={footerLink}>
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <nav aria-label="Rodapé" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="transition-colors hover:text-ink">
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
-          <ul className="flex flex-col gap-2">
-            <li className="font-semibold">Redes</li>
-            <li>
+        <ul className="flex gap-4 text-muted">
+          {socials.map(({ label, href, Icon }) => (
+            <li key={label}>
               <a
-                href={siteConfig.links.github}
+                href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={socialLink}
+                aria-label={label}
+                title={label}
+                className="transition-colors hover:text-accent-ink"
               >
-                <GithubIcon className="size-4" />
-                GitHub
+                <Icon className="size-[18px]" />
               </a>
             </li>
-            <li>
-              <a
-                href={siteConfig.links.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLink}
-              >
-                <LinkedinIcon className="size-4" />
-                LinkedIn
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.links.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLink}
-              >
-                <InstagramIcon className="size-4" />
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.links.tiktok}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLink}
-              >
-                <TiktokIcon className="size-4" />
-                TikTok
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.links.x}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLink}
-              >
-                <XIcon className="size-4" />
-                X
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.links.allLinks}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLink}
-              >
-                <LinkIcon className="size-4" />
-                Nossos links
-              </a>
-            </li>
-          </ul>
-        </div>
+          ))}
+        </ul>
       </div>
 
-      <p className="pb-6 text-center text-xs text-brand-200/60">
-        © {new Date().getFullYear()} PUC Tech. Todos os direitos reservados.
+      <p className={`${container} pb-8 text-xs text-muted`}>
+        © {new Date().getFullYear()} PUC Tech · {siteConfig.description}
       </p>
     </footer>
   );

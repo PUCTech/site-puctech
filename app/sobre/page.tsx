@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Section from "@/components/Section";
+import { Block, SectionNav, SidebarLayout } from "@/components/Section";
 import {
   aboutPage,
   difference,
@@ -18,101 +18,88 @@ export const metadata: Metadata = {
 
 export default function SobrePage() {
   return (
-    <main>
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,#143966_0%,transparent_100%)] opacity-70"
+    <SidebarLayout
+      title={aboutPage.title}
+      intro={<p>{aboutPage.intro}</p>}
+      aside={
+        <SectionNav
+          items={[
+            { id: "visao", label: vision.title },
+            { id: "diferenca", label: "Por que e como" },
+            { id: "valores", label: values.title },
+            { id: "historia", label: history.title },
+            { id: "apoio", label: support.title },
+          ]}
         />
-        <div className="relative mx-auto max-w-4xl px-6 py-20 text-center md:py-28">
-          <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
-            {aboutPage.title}
-          </h1>
-          <p className="mx-auto mt-6 max-w-3xl text-lg text-brand-200/90">
-            {aboutPage.intro}
-          </p>
-        </div>
-      </section>
+      }
+    >
+      <Block id="visao" tone="accent">
+        <h2 className="font-semibold">{vision.title}</h2>
+        <p className="mt-4 font-display text-2xl leading-snug font-semibold tracking-[-0.015em] text-balance md:text-[2rem]">
+          {vision.text}
+        </p>
+      </Block>
 
-      <Section id="diferenca" title={difference.title}>
-        <div className="grid gap-4 sm:grid-cols-2">
+      <Block id="diferenca" title={difference.title}>
+        <ul className="grid gap-x-10 gap-y-10 sm:grid-cols-2">
           {difference.items.map((item, index) => (
-            <div key={item.title} className="rounded-2xl bg-paper p-6 md:p-8">
-              <p className="text-sm font-semibold text-brand-500">
+            <li key={item.title} className="border-t-2 border-accent pt-5">
+              <p className="text-sm font-semibold text-accent-ink">
                 {String(index + 1).padStart(2, "0")}
               </p>
-              <h3 className="mt-3 text-xl font-semibold text-brand-950">
-                {item.title}
-              </h3>
-              <p className="mt-3 text-brand-800">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section id="visao" title={vision.title}>
-        <div className="rounded-3xl bg-brand-200 p-8 md:p-12">
-          <p className="max-w-4xl text-xl leading-relaxed text-brand-950 md:text-2xl">
-            {vision.text}
-          </p>
-        </div>
-      </Section>
-
-      <Section id="valores" title={values.title}>
-       <ul className="flex flex-wrap justify-center gap-4">
-          {values.items.map((value) => (
-            <li
-              key={value.title}
-              className="w-full rounded-2xl bg-paper p-6 sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)]"
-            >
-              <h3 className="text-lg font-semibold text-brand-950">{value.title}</h3>
-              <p className="mt-2 text-brand-800">{value.text}</p>
+              <h3 className="mt-2 font-display text-lg font-bold">{item.title}</h3>
+              <p className="mt-2 leading-relaxed text-muted">{item.text}</p>
             </li>
           ))}
         </ul>
-      </Section>
+      </Block>
 
-      <section id="historia" className="scroll-mt-16 px-6 py-16 md:py-20">
-        <div className="mx-auto grid max-w-6xl gap-8 rounded-[2rem] bg-paper p-8 md:grid-cols-12 md:p-14">
-          <div className="md:col-span-4">
-            <h2 className="text-3xl font-bold text-brand-950 md:text-4xl">
-              {history.title}
-            </h2>
-            <ul className="mt-6 flex flex-wrap gap-3 md:flex-col md:items-start">
-              {history.milestones.map((item) => (
-                <li
-                  key={item.year}
-                  className="rounded-full bg-brand-200 px-4 py-2 text-sm font-medium text-brand-800"
-                >
-                  <span className="font-bold">{item.year}</span> · {item.label}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="space-y-4 text-lg leading-relaxed text-brand-800 md:col-span-8">
-            {history.paragraphs.map((text) => (
-              <p key={text}>{text}</p>
-            ))}
-          </div>
+      <Block id="valores" title={values.title}>
+        <ul className="divide-y divide-border">
+          {values.items.map((value) => (
+            <li
+              key={value.title}
+              className="grid gap-1 py-4 first:pt-0 last:pb-0 sm:grid-cols-[16rem_1fr] sm:gap-6"
+            >
+              <h3 className="font-display font-bold">{value.title}</h3>
+              <p className="text-muted">{value.text}</p>
+            </li>
+          ))}
+        </ul>
+      </Block>
+
+      <Block id="historia" title={history.title}>
+        <ul className="flex flex-wrap gap-x-12 gap-y-4">
+          {history.milestones.map((item) => (
+            <li key={item.year}>
+              <p className="font-display text-5xl font-bold tracking-[-0.03em]">{item.year}</p>
+              <p className="text-sm text-muted">{item.label}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6 space-y-4 leading-relaxed text-muted">
+          {history.paragraphs.map((text) => (
+            <p key={text}>{text}</p>
+          ))}
         </div>
-      </section>
+      </Block>
 
-      <Section id="apoio" title={support.title}>
-        <div className="flex flex-col gap-8 md:flex-row md:items-center">
+      <Block id="apoio" title={support.title}>
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
           <Image
             src={support.logo}
             alt="Logo da PUC-SP"
-            width={160}
-            height={160}
-            className="size-32 shrink-0 rounded-2xl object-cover md:size-40"
+            width={128}
+            height={128}
+            className="size-24 shrink-0 rounded-xl object-cover"
           />
-          <div className="max-w-3xl space-y-4 text-lg text-brand-200/90">
+          <div className="space-y-4 leading-relaxed text-muted">
             {support.paragraphs.map((text) => (
               <p key={text}>{text}</p>
             ))}
           </div>
         </div>
-      </Section>
-    </main>
+      </Block>
+    </SidebarLayout>
   );
 }

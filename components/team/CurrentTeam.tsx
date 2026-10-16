@@ -98,7 +98,7 @@ export default function CurrentTeam() {
       <div
         role="tablist"
         aria-label="Filtrar equipe por área"
-        className="flex flex-wrap gap-2"
+        className="inline-flex flex-wrap gap-1 rounded-3xl bg-surface p-1.5 sm:rounded-full"
       >
         {tabs.map((tab) => (
           <button
@@ -109,10 +109,10 @@ export default function CurrentTeam() {
             aria-selected={active === tab.id}
             aria-controls="team-panel"
             onClick={() => setActive(tab.id)}
-            className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
               active === tab.id
-                ? "border-brand-200 bg-brand-200 text-brand-950"
-                : "border-brand-800 text-brand-200 hover:border-brand-200"
+                ? "bg-ink text-paper"
+                : "text-muted hover:text-ink"
             }`}
           >
             {tab.label}
@@ -124,16 +124,16 @@ export default function CurrentTeam() {
         id="team-panel"
         role="tabpanel"
         aria-labelledby={`tab-${active}`}
-        className="mt-10 space-y-12"
+        className="mt-8 space-y-10"
       >
         {areaDetails && (
-          <p className="max-w-2xl text-brand-200/80">
+          <p className="max-w-[62ch] text-muted">
             {areaDetails.description}
           </p>
         )}
 
         {visible.length === 0 && (
-          <p className="text-brand-200/80">Ninguém por aqui ainda.</p>
+          <p className="text-muted">Ninguém por aqui ainda.</p>
         )}
 
         {sections.map((section) => {
@@ -149,7 +149,7 @@ export default function CurrentTeam() {
 
           return (
             <div key={section.key}>
-              <h3 className="text-xl font-semibold">{section.title}</h3>
+              <h3 className="font-display text-xl font-bold">{section.title}</h3>
               <div className={`mt-6 ${section.grid}`}>
                 {people.map((member) => (
                   <MemberCard

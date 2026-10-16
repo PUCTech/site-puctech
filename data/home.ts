@@ -7,8 +7,8 @@ export const hero = {
 export const about = {
   title: "Sobre",
   paragraphs: [
-    "A **PUC Tech** é a primeira liga de ciência e tecnologia da PUC-SP, formada por estudantes que acreditam no protagonismo estudantil como motor de transformação. Nosso propósito é criar experiências práticas e colaborativas que ampliem a formação universitária, conectando teoria e prática, tecnologia e impacto social.",
-    "Atuamos por meio de projetos, oficinas, eventos e iniciativas que desenvolvem competências técnicas, profissionais e humanas. Somos um espaço onde estudantes lideram, inovam e constroem soluções reais para desafios concretos, em equipe e com propósito.",
+    "A **PUC Tech** é a primeira liga de ciência e tecnologia da PUC-SP, formada por estudantes que veem no protagonismo estudantil um motor de transformação. Criamos experiências práticas que unem teoria, tecnologia e impacto social.",
+    "Atuamos com projetos, oficinas, eventos e iniciativas que desenvolvem competências técnicas, profissionais e humanas. Aqui, estudantes lideram, inovam e constroem soluções reais para desafios concretos, sempre em equipe.",
   ],
 };
 
@@ -21,7 +21,7 @@ export const stats = [
 ];
 
 export const projectsIntro = {
-  text: "Desenvolvemos soluções aplicadas com foco em inteligência artificial, engenharia de software, cibersegurança e inovação social.",
+  text: "Soluções aplicadas em IA, engenharia de software, cibersegurança e inovação social.",
   areas: [
     "Inteligência Artificial",
     "Engenharia de Software",
@@ -41,8 +41,8 @@ export const partnersIntro = {
 // Para mostrar o logo de um parceiro, coloque o arquivo em public/parceiros/
 // e acrescente logo: "/parceiros/nome.png". Sem logo, aparece o nome em texto.
 export const partners: { name: string; logo?: string }[] = [
-  { name: "PUC-SP", logo: "/parceiros/puc-sp.jpg" },
-  { name: "Amazon AWS", logo: "/parceiros/amazon-aws.jpg" },
+  { name: "PUC-SP", logo: "/parceiros/puc-sp.png" },
+  { name: "Amazon AWS", logo: "/parceiros/amazon-aws.svg" },
   { name: "Blumi Talents", logo: "/parceiros/blumi-talents.jpg" },
   { name: "Peacore", logo: "/parceiros/peacore.jpg" },
   { name: "Conecta Devs", logo: "/parceiros/conecta-devs.jpg" },
