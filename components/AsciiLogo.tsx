@@ -113,11 +113,22 @@ export default function AsciiLogo({
       let act: Act;
       let next: Act | null = null;
       let fade = 0;
-      let sceneIndex = 0;
+      // Ordem aleatória: embaralha todas as cenas e toca cada uma uma vez antes de
+      // repetir; a nova rodada nunca começa pela cena que acabou de passar.
+      let queue: typeof scenes = [];
+      let lastScene: (typeof scenes)[number] | null = null;
+      const nextScene = () => {
+        if (queue.length === 0) {
+          queue = [...scenes].sort(() => Math.random() - 0.5);
+          if (queue[0] === lastScene) queue.push(queue.shift()!);
+        }
+        lastScene = queue.shift()!;
+        return lastScene;
+      };
 
       const logoAct = (duration: number): Act => ({ frame: () => logo, t: 0, duration, scene: false });
       const sceneAct = (): Act => {
-        const scene = scenes[sceneIndex++ % scenes.length];
+        const scene = nextScene();
         // As cenas usam a tela inteira.
         const frame = withPrompt(scene.make(cols, rows, cellRatio), scene.command, cols, rows, promptX, 1);
         return { frame, t: 0, duration: SCENE_S, scene: true };
@@ -231,7 +242,7 @@ export default function AsciiLogo({
         dissolve = Float32Array.from({ length: logo.length }, () => Math.random());
         act = logoAct(FIRST_LOGO_S);
         next = null;
-        sceneIndex = 0;
+        queue = [];
         glyphs = Array.from({ length: cols * rows }, () => pick(RAIN));
         reveal = new Float32Array(cols).fill(reduce ? rows : -1);
         // A primeira gota de cada coluna começa acima da tela, em alturas diferentes.
