@@ -505,7 +505,7 @@ const neofetch: Scene["make"] = (w, h) => {
   };
 };
 
-// git log --graph rolando para cima.
+// Mensagens de commit usadas no painel de git log do tmux.
 const COMMITS = [
   "feat: hero em ASCII",
   "fix: o donut girava ao contrário",
@@ -524,26 +524,119 @@ const COMMITS = [
   "fix: typo do fix anterior",
 ];
 
-const gitlog: Scene["make"] = (w, h) => {
-  const hash = () => Math.random().toString(16).slice(2, 9);
-  const lines = COMMITS.flatMap((msg, i) => {
-    const branch = i % 4 === 2;
-    return branch
-      ? [`|\\`, `| * ${hash()} ${msg}`, `|/`]
-      : [`* ${hash()} ${msg}`, "|"];
+// tmux com três painéis, como um dia normal de desenvolvimento: Claude Code em
+// cima, git log embaixo e o `npm run dev` rodando à direita.
+const CLAUDE: [string, number][] = [
+  // texto, tom
+  ["> deixa o ASCII da abertura azul-escuro no modo claro", 0],
+  ["", 0],
+  ["● Update(components/AsciiLogo.tsx)", SOFT],
+  ["  └ Updated components/AsciiLogo.tsx with 1 addition and 1 removal", DIM],
+  ["    372 -  leading-none text-accent sm:text-[9px]", DIM],
+  ["    372 +  leading-none text-ink sm:text-[9px] dark:text-accent", 0],
+  ["", 0],
+  ["● Bash(npm run build)", SOFT],
+  ["  └ ✓ Compiled successfully", DIM],
+  ["", 0],
+  ["● No modo claro o ASCII agora é azul-escuro #04142f;", 0],
+  ["  no escuro continua ciano. Commit 3d04219.", 0],
+  ["", 0],
+  ["* Brewed for 24s", FAINT],
+];
+
+const ROUTES = ["/", "/", "/", "/sobre", "/equipe", "/projetos", "/processo-seletivo"];
+const devLine = (): [string, number][] => {
+  if (Math.random() < 0.18) return [[" ✓ Compiled in " + (12 + ((Math.random() * 25) | 0)) + "ms", SOFT]];
+  const total = 14 + ((Math.random() * 60) | 0);
+  const next = (0.9 + Math.random() * 5).toFixed(1);
+  const route = ROUTES[(Math.random() * ROUTES.length) | 0];
+  return [
+    [` GET ${route} `, 0],
+    ["200", SOFT],
+    [` in ${total}ms `, 0],
+    [`(next.js: ${next}ms, application-code: ${total - 2}ms)`, DIM],
+  ];
+};
+
+const tmux: Scene["make"] = (w, h) => {
+  const x0 = 1;
+  const W = w - 2;
+  const top = 3;
+  const bottom = Math.max(top + 14, Math.floor(h * 0.72)); // barra de status
+  const split = x0 + Math.floor(W * 0.55); // divisória vertical
+  const mid = top + Math.floor((bottom - top) * 0.55); // divisória do lado esquerdo
+  const graph = COMMITS.flatMap((msg, i) => {
+    const hash = Math.random().toString(16).slice(2, 9);
+    return i % 4 === 2 ? [["|\\", ""], [`| * ${hash}`, msg], ["|/", ""]] : [[`* ${hash}`, msg]];
   });
-  return (t) => {
+  // Log do servidor: começa com o cabeçalho do next dev e vai ganhando linhas.
+  const dev: [string, number][][] = [
+    [["> site-puctech@0.1.0 dev", DIM]],
+    [["> next dev", DIM]],
+    [["", 0]],
+    [["   ▲ Next.js 16.3.8", 0]],
+    [["   - Local:        http://localhost:3000", SOFT]],
+    [[" ✓ Ready in 812ms", SOFT]],
+  ];
+  let devClock = 0;
+
+  return (t, dt) => {
     const cells = blank(w, h);
-    const x = Math.max(2, Math.floor((w - 60) / 2));
-    const offset = Math.floor(t * 5);
-    for (let r = 3; r < h; r++) {
-      const line = lines[(r - 3 + offset) % lines.length];
-      const graph = line.match(/^[|\\/* ]+/)?.[0] ?? "";
-      write(cells, w, h, x, r, graph, DIM);
-      const rest = line.slice(graph.length);
-      write(cells, w, h, x + graph.length, r, rest.slice(0, 7), SOFT);
-      write(cells, w, h, x + graph.length + 7, r, rest.slice(7));
+    // Escreve dentro de um painel, cortando o que passar da largura.
+    const put = (x: number, y: number, width: number, text: string, tone = 0) =>
+      write(cells, w, h, x, y, text.slice(0, Math.max(0, width)), tone);
+
+    // Bordas dos painéis.
+    for (let y = top; y < bottom; y++) put(split, y, 1, "│", DIM);
+    put(x0, mid, split - x0, "─".repeat(split - x0), DIM);
+    put(split, mid, 1, "┤", DIM);
+
+    // Claude Code (em cima, à esquerda): o pedido é digitado e as respostas vêm em seguida.
+    const leftW = split - x0 - 2;
+    const prompt = CLAUDE[0][0];
+    const typed = Math.min(prompt.length, Math.floor(t * 30));
+    put(x0 + 1, top, leftW, prompt.slice(0, typed));
+    const shownLines = typed < prompt.length ? 0 : Math.floor((t - prompt.length / 30) * 4);
+    CLAUDE.slice(1, 1 + shownLines).forEach(([text, tone], k) => {
+      if (top + 1 + k < mid) put(x0 + 1, top + 1 + k, leftW, text, tone);
+    });
+
+    // git log (embaixo, à esquerda).
+    const shell = "~/dev/site-puctech on feat/redesign > ";
+    const cmd = "git log --oneline --graph";
+    put(x0 + 1, mid + 1, leftW, shell, DIM);
+    put(x0 + 1 + shell.length, mid + 1, leftW - shell.length, cmd.slice(0, Math.floor(t * 18)));
+    if (t * 18 > cmd.length + 6) {
+      graph.slice(0, bottom - mid - 2).forEach(([g, msg], k) => {
+        const y = mid + 2 + k;
+        put(x0 + 1, y, leftW, g, DIM);
+        put(x0 + 1 + g.length + 1, y, leftW - g.length - 1, msg);
+      });
     }
+
+    // npm run dev (à direita): uma linha nova a cada ~0,25 s, rolando para cima.
+    devClock += dt;
+    while (devClock > 0.25) {
+      devClock -= 0.25;
+      dev.push(devLine());
+    }
+    const rightX = split + 2;
+    const rightW = x0 + W - rightX;
+    const rows = bottom - top;
+    dev.slice(-rows).forEach((parts, k) => {
+      let x = rightX;
+      for (const [text, tone] of parts) {
+        put(x, top + k, rightX + rightW - x, text, tone);
+        x += text.length;
+      }
+    });
+
+    // Barra de status do tmux.
+    const left = "[liga] 0:claude* 1:dev 2:git-";
+    const now = new Date();
+    const clock = `"puctech" ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const bar = (left + " ".repeat(Math.max(1, W - left.length - clock.length)) + clock).slice(0, W);
+    put(x0, bottom, W, bar, INVERSE);
     return cells;
   };
 };
@@ -583,7 +676,7 @@ export const scenes: Scene[] = [
   { command: "cowsay", make: cowsay },
   { command: "htop", make: htop },
   { command: "neofetch", make: neofetch },
-  { command: "git log --graph", make: gitlog },
+  { command: "tmux attach -t liga", make: tmux },
   { command: "npm install", make: npm },
 ];
 
