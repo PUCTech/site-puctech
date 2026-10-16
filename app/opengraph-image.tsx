@@ -16,15 +16,15 @@ export default function Image() {
           alignItems: "center",
           justifyContent: "center",
           background:
-            "linear-gradient(135deg, #020d2b 0%, #081a3e 60%, #2b6fac 100%)",
-          color: "#ffffff",
+            "#ffffff",
+          color: "#04142f",
         }}
       >
         <div style={{ display: "flex", fontSize: 150, fontWeight: 700 }}>
           <span>PUC</span>
-          <span style={{ color: "#bae4fe", marginLeft: 16 }}>Tech</span>
+          <span style={{ color: "#00799a", marginLeft: 16 }}>Tech</span>
         </div>
-        <div style={{ marginTop: 24, fontSize: 36, color: "#bae4fe" }}>
+        <div style={{ marginTop: 32, fontSize: 34, padding: "12px 32px", borderRadius: 999, background: "#01d4ff" }}>
           A Primeira Liga de Ciência e Tecnologia da PUC-SP
         </div>
       </div>

@@ -1,32 +1,91 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-brand-950: #020d2b;
-  --color-brand-900: #081a3e;
-  --color-brand-800: #143966;
-  --color-brand-500: #2b6fac;
-  --color-brand-200: #bae4fe;
-  --color-paper: #f0f4f9;
+@custom-variant dark (&:where(.dark, .dark *));
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Cores do tema claro e do escuro: o botão no cabeçalho troca a classe .dark no <html>. */
+:root {
+  --paper: #ffffff;
+  --ink: #04142f;
+  --muted: #4a5b72;
+  --accent-ink: #00799a;
+  --surface: #eef6f9;
+  --border: #dbe5eb;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #050d1a;
+  --ink: #e6eef5;
+  --muted: #93a3b8;
+  --accent-ink: #4fe0ff;
+  --surface: #0d1a2c;
+  --border: #1a2a40;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: #01d4ff;
+  --color-on-accent: #04142f; /* texto sobre o ciano: escuro nos dois temas */
+  --color-accent-ink: var(--accent-ink);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+
+  --font-sans: var(--font-figtree);
+  --font-display: var(--font-figtree);
 }
 
 body {
-  background: var(--color-brand-950);
-  color: #ffffff;
+  background: var(--paper);
+  color: var(--ink);
 }
 
-/* Carrosséis (parceiros e projetos): esmaece as bordas para os quadrados "entrarem" e "saírem" suavemente. */
-.carousel-mask {
-  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 8%,
-    #000 92%,
-    transparent
-  );
+/* Troca de tema: a página inteira faz um fade suave (View Transitions). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 500ms;
+  animation-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+/* Entrada das seções ao rolar (componente Reveal): sobe 16px e aparece, devagar. */
+[data-reveal] {
+  transition:
+    opacity 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+}
+
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: none;
+}
+
+/* Faixa de logos dos parceiros (LogoMarquee). */
+@keyframes marquee {
+  to {
+    transform: translateX(calc(-50% - 1.25rem));
+  }
+}
+
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 
 /* Pop-up de projeto: entrada suave. */
@@ -48,39 +107,5 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .project-dialog[open] {
     animation: none;
-  }
-}
-
-/* Faixa de parceiros: rola sem parar. A lista é duplicada, então andar metade da largura fecha o ciclo sem "pulo". */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.marquee-track {
-  animation: marquee 40s linear infinite;
-}
-
-/* Foto da equipe em telas grandes: as laterais esmaecem para a foto se fundir ao fundo azul. */
-@media (min-width: 64rem) {
-  .hero-fade-x {
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
   }
 }

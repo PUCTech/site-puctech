@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Block, SidebarLayout, button, withBold } from "@/components/Section";
+import { ExternalIcon } from "@/components/SocialIcons";
 import { apply, prepare, selectionPage } from "@/data/selection";
 
 export const metadata: Metadata = {
@@ -7,79 +9,56 @@ export const metadata: Metadata = {
     "Saiba como se preparar para o próximo processo seletivo da PUC Tech, previsto para o primeiro semestre de 2027.",
 };
 
-// Texto entre **dois asteriscos** vira negrito.
-function withBold(text: string) {
-  return text.split("**").map((part, index) =>
-    index % 2 === 1 ? (
-      <strong key={index} className="font-semibold">
-        {part}
-      </strong>
-    ) : (
-      part
-    ),
-  );
-}
-
 export default function ProcessoSeletivoPage() {
   return (
-    <main>
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,#143966_0%,transparent_100%)] opacity-70"
-        />
-        <div className="relative mx-auto max-w-4xl px-6 py-20 text-center md:py-28">
-          <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
-            {selectionPage.title}
-          </h1>
-          <p className="mt-6 inline-block rounded-full bg-brand-200 px-4 py-2 text-sm font-medium text-brand-800">
-            {selectionPage.badge}
-          </p>
-          <p className="mx-auto mt-6 max-w-3xl text-lg text-brand-200/90">
-            {withBold(selectionPage.intro)}
-          </p>
-        </div>
-      </section>
+    <SidebarLayout title={selectionPage.title}>
+      <Block>
+        <p className="font-display text-2xl leading-snug font-semibold tracking-[-0.015em] text-balance text-muted md:text-[2rem]">
+          {withBold(selectionPage.intro)}
+        </p>
+      </Block>
 
-      <section className="px-6 pb-20 md:pb-28">
-        <div className="mx-auto max-w-3xl rounded-2xl bg-paper p-8 text-center md:p-12">
-          <h2 className="text-2xl font-bold text-brand-950 md:text-3xl">
-            {prepare.title}
-          </h2>
-          <p className="mt-4 text-lg leading-relaxed text-brand-800">
-            {withBold(prepare.text)}
-          </p>
+      {/* Duas colunas separadas por uma linha: como se preparar | inscrição. */}
+      <div className="grid border-t border-border pt-12 md:grid-cols-2 md:pt-16">
+        <Block title={prepare.title}>
+          <p className="leading-relaxed text-muted">{withBold(prepare.text)}</p>
           <a
             href={prepare.linkUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-8 inline-block rounded-full bg-brand-950 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-800"
+            className={`${button.base} ${button.dark} mt-6`}
           >
-            {prepare.linkLabel} ↗
+            {prepare.linkLabel}
+            <ExternalIcon className="size-4" />
           </a>
-        </div>
+        </Block>
 
-        <div className="mt-10 flex justify-center">
+        <section className="flex flex-col items-start justify-between gap-8 border-t border-border py-12 md:border-t-0 md:border-l md:py-0 md:pl-10">
+          <p className="font-display text-3xl leading-tight font-bold tracking-[-0.02em] text-balance md:text-4xl">
+            <span aria-hidden className="mb-4 block size-3 rounded-full bg-accent" />
+            {selectionPage.badge}
+          </p>
           {apply.applyUrl ? (
             <a
               href={apply.applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block rounded-full bg-paper px-8 py-4 text-lg font-semibold text-brand-950 transition-colors hover:bg-brand-200"
+              className={`${button.base} ${button.primary}`}
             >
-              {apply.applyLabel} ↗
+              {apply.applyLabel}
+              <ExternalIcon className="size-4" />
             </a>
           ) : (
             <button
               type="button"
               disabled
-              className="inline-block cursor-not-allowed text-balance rounded-full border border-brand-500 px-6 py-4 text-center text-base font-semibold text-brand-200/80 sm:px-8 sm:text-lg"
+              className="cursor-not-allowed rounded-full border border-dashed border-border px-5 py-2.5 text-left text-[15px] font-semibold text-muted"
             >
               {apply.soonLabel}
             </button>
           )}
-        </div>
-      </section>
-    </main>
+        </section>
+      </div>
+    </SidebarLayout>
   );
 }
