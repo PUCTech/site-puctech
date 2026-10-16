@@ -18,7 +18,7 @@ import { projectAreas } from "@/data/projects";
 import { selectionPage } from "@/data/selection";
 
 // Todas as seções seguem o mesmo ritmo: título, texto logo abaixo e o conteúdo.
-const gap = "py-14 md:py-20";
+const gap = "py-12 md:py-16";
 
 function Heading({
   title,
@@ -30,12 +30,14 @@ function Heading({
   children: ReactNode;
 }) {
   return (
-    <Reveal className="max-w-[62ch]">
-      <h2 className="text-3xl font-bold tracking-[-0.03em] text-balance md:text-5xl md:leading-[1.05]">
-        {title}
-      </h2>
-      <div className="mt-4 space-y-3 text-lg leading-relaxed text-muted">{children}</div>
-      {href && <CdLink href={href} className="mt-5" />}
+    <Reveal>
+      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+        <h2 className="text-3xl font-bold tracking-[-0.03em] text-balance md:text-5xl md:leading-[1.05]">
+          {title}
+        </h2>
+        {href && <CdLink href={href} />}
+      </div>
+      <div className="mt-4 max-w-3xl space-y-3 text-lg leading-relaxed text-muted">{children}</div>
     </Reveal>
   );
 }
@@ -74,7 +76,7 @@ export default function Home() {
           <p>{projectsIntro.text}</p>
         </Heading>
         <Reveal delay={150}>
-          <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
+          <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
             {projectAreas.map((area) => (
               <li key={area.title} className="group">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink">
@@ -121,7 +123,7 @@ export default function Home() {
           ))}
         </Heading>
         <Reveal delay={150}>
-          <ul className="mt-10 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
+          <ul className="mt-8 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
             {partners.map((partner) => (
               <li key={partner.name} className="flex flex-col items-start gap-3">
                 {partner.logo && (
@@ -146,7 +148,7 @@ export default function Home() {
           <p>{socialIntro.text}</p>
         </Heading>
         <Reveal delay={150}>
-          <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
+          <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-4">
             {socials.map(({ label, href, Icon }) => (
               <li key={label}>
                 <a
