@@ -61,11 +61,13 @@ export const values = {
 
 export const history = {
   title: "História da PUC Tech",
+  // Marcos da linha do tempo, em ordem. Sem `month`, o marco fica no começo do ano.
   milestones: [
-    { year: "2024", events: ["Fundação da liga"] },
-    { year: "2025", events: ["Formalização", "Julho: 1ª turma de trainees"] },
-    { year: "2026", events: ["Julho: 2ª turma de trainees"] },
-  ],
+    { year: 2024, label: "Fundação da liga" },
+    { year: 2025, label: "Formalização" },
+    { year: 2025, month: 7, label: "1ª turma de trainees" },
+    { year: 2026, month: 7, label: "2ª turma de trainees" },
+  ] as { year: number; month?: number; label: string }[],
   paragraphs: [
     "A PUC Tech surgiu da iniciativa de alunos de Ciência da Computação da PUC-SP que queriam um espaço para aplicar o que aprendem em projetos reais, desenvolver habilidades e se conectar com a tecnologia além da sala de aula.",
     "Fundada em 2024 e formalizada em 2025, a liga cresceu com o apoio de professores, coordenações e demais estudantes, e hoje se consolida como um polo de inovação e protagonismo estudantil dentro da universidade.",

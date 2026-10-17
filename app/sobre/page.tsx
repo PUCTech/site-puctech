@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Reveal from "@/components/Reveal";
 import { Heading, Stage } from "@/components/Section";
 import Typewriter from "@/components/Typewriter";
@@ -45,6 +45,113 @@ const valueIcons: Record<string, ReactNode> = {
     </>
   ),
 };
+
+const monthName = (month: number) =>
+  new Date(2000, month - 1).toLocaleString("pt-BR", { month: "long" });
+
+// Anos da linha do tempo: do primeiro marco até o ano atual (do build).
+const firstYear = history.milestones[0].year;
+const years = Array.from(
+  { length: new Date().getFullYear() - firstYear + 1 },
+  (_, i) => firstYear + i,
+);
+
+/**
+ * Linha do tempo. No desktop, cada ano é um trecho igual da linha (o primeiro
+ * numa ponta, o atual na outra) e cada marco fica no seu mês, ligado ao texto
+ * por um pontilhado. No celular, os marcos ficam agrupados por ano.
+ */
+function Timeline() {
+  // Posição de 0 a 1 na linha, no meio do mês do marco.
+  const at = (year: number, month = 1) => ((year - firstYear) * 12 + month - 0.5) / (years.length * 12);
+  const now = new Date();
+  const today = at(now.getFullYear(), now.getMonth() + 1);
+
+  return (
+    <>
+      <div className="relative mt-14 hidden h-[19rem] md:block">
+        {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
+        <span aria-hidden className="absolute inset-x-0 top-52 h-0.5 bg-border" />
+        <span
+          aria-hidden
+          className="timeline-line absolute left-0 top-52 h-0.5 bg-accent"
+          style={{ width: `${today * 100}%` }}
+        />
+        {years.slice(1).map((year, i) => (
+          <span
+            key={year}
+            aria-hidden
+            className="absolute top-50 h-5 w-px bg-border"
+            style={{ left: `${((i + 1) / years.length) * 100}%` }}
+          />
+        ))}
+
+        <ol>
+          {history.milestones.map((item, i) => {
+            const pos = at(item.year, item.month);
+            const flip = pos > 0.75; // perto da ponta direita, o texto vai para a esquerda
+            return (
+              <li
+                key={item.label}
+                className={`timeline-mark absolute bottom-[calc(100%-13rem)] border-dotted border-accent ${
+                  flip ? "-translate-x-full border-r-2 pr-4 text-right" : "border-l-2 pl-4"
+                } ${i % 2 ? "h-28" : "h-44"}`}
+                style={{ left: `${pos * 100}%`, "--at": pos / today } as CSSProperties}
+              >
+                <p className="font-mono text-sm text-accent-ink">
+                  {item.month ? `${monthName(item.month)} de ${item.year}` : item.year}
+                </p>
+                <p className="mt-1 w-44 font-semibold leading-snug">{item.label}</p>
+                <span
+                  aria-hidden
+                  className={`absolute -bottom-[7px] size-3 rounded-full bg-accent ring-4 ring-paper ${
+                    flip ? "-right-[7px]" : "-left-[7px]"
+                  }`}
+                />
+              </li>
+            );
+          })}
+        </ol>
+
+        <ol aria-hidden className="absolute inset-x-0 top-56 flex">
+          {years.map((year, i) => (
+            <li
+              key={year}
+              className={`flex-1 text-6xl font-bold tracking-[-0.04em] ${
+                i === 0 ? "text-left" : i === years.length - 1 ? "text-right" : "text-center"
+              }`}
+            >
+              {year}
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <ol className="relative mt-12 grid grid-cols-3 md:hidden">
+        <span
+          aria-hidden
+          className="timeline-line absolute inset-x-0 top-1.5 h-0.5 bg-gradient-to-r from-accent from-75% to-transparent"
+        />
+        {years.map((year) => (
+          <li key={year} className="relative pr-4">
+            <span aria-hidden className="block size-3.5 rounded-full border-2 border-accent bg-paper" />
+            <p className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">{year}</p>
+            <ul className="mt-2 space-y-1 text-[15px] leading-snug text-pretty text-muted">
+              {history.milestones
+                .filter((item) => item.year === year)
+                .map((item) => (
+                  <li key={item.label}>
+                    {item.month && <span className="capitalize">{monthName(item.month)}: </span>}
+                    {item.label}
+                  </li>
+                ))}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    </>
+  );
+}
 
 // Mesmo ritmo da home: título, texto logo abaixo e o conteúdo.
 const gap = "py-12 md:py-16";
@@ -123,24 +230,7 @@ export default function SobrePage() {
           ))}
         </Heading>
         <Reveal delay={150}>
-          {/* A linha segue depois do último marco e some: a história continua. */}
-          <ol className="relative mt-12 grid grid-cols-3 md:grid-cols-4">
-            <span
-              aria-hidden
-              className="absolute inset-x-0 top-1.5 h-0.5 bg-gradient-to-r from-accent from-75% to-transparent md:from-60%"
-            />
-            {history.milestones.map((item) => (
-              <li key={item.year} className="relative pr-4">
-                <span aria-hidden className="block size-3.5 rounded-full border-2 border-accent bg-paper" />
-                <p className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl md:text-6xl">{item.year}</p>
-                <ul className="mt-2 space-y-1 text-[15px] leading-snug text-pretty text-muted">
-                  {item.events.map((event) => (
-                    <li key={event}>{event}</li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ol>
+          <Timeline />
         </Reveal>
       </Stage>
 
