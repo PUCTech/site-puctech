@@ -69,6 +69,13 @@ export const history = {
       photo: "/sobre/fundacao-2025.jpg",
       photoAlt: "Fundadores da PUC Tech reunidos em volta de uma mesa, com o kanban da liga na tela",
     },
+    {
+      year: 2024,
+      month: 10,
+      label: "Semana Acadêmica, com palestra do Google Cloud",
+      photo: "/sobre/semana-academica-2024.jpg",
+      photoAlt: "Alunos reunidos em sala de aula ao fim da palestra do Google Cloud",
+    },
     { year: 2025, label: "Formalização" },
     {
       year: 2025,
