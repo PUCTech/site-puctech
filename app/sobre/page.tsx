@@ -70,6 +70,20 @@ const years = Array.from(
 const LABEL_W = 0.145; // largura do texto de um marco (w-44), como fração da linha
 const LEVEL = 120; // altura mínima (px) de um marco acima da linha (livra os anos)
 const STEP = 84; // distância (px) entre alturas: cabe um texto de duas linhas
+const PHOTO_W = 0.135; // largura de um marco com foto (w-36 + pontilhado), como fração da linha
+
+/**
+ * Lado de cada foto embaixo da linha: à direita se couber sem encostar na anterior,
+ * senão à esquerda.
+ */
+function photoSides(positions: number[]) {
+  let end = 0; // até onde vai a foto anterior
+  return positions.map((pos) => {
+    const right = pos >= end && pos + PHOTO_W <= 1;
+    end = right ? pos + PHOTO_W : pos;
+    return !right; // true = vai para a esquerda
+  });
+}
 
 /**
  * Alturas dos marcos acima da linha. O texto sai para o lado (direita, ou esquerda
@@ -115,6 +129,7 @@ function Timeline() {
   const marks = history.milestones.map((item) => ({ item, pos: at(item.year, item.month, item.day), below: Boolean(item.photo) }));
   const above = marks.filter((m) => !m.below).map((m) => ({ ...m, flip: m.pos > 0.75 }));
   const levels = aboveLevels(above);
+  const photoFlips = photoSides(marks.filter((m) => m.below).map((m) => m.pos));
   // Altura da faixa acima da linha: o marco mais alto mais o texto dele.
   const lineTop = Math.max(...levels) + 8;
 
@@ -155,9 +170,7 @@ function Timeline() {
           <ol>
             {marks.map(({ item, pos, below }, i) => {
               const rank = marks.slice(0, i).filter((m) => m.below === below).length;
-              // Fotos alternam o lado (esquerda, direita, esquerda...) para não se encostarem;
-              // perto do fim vão sempre para a esquerda.
-              const flip = below ? rank % 2 === 0 || pos > 0.85 : above[rank].flip;
+              const flip = below ? photoFlips[rank] : above[rank].flip;
               const height = below ? 0 : levels[rank]; // px, acima da linha
               return (
                 <li
@@ -214,7 +227,10 @@ function Timeline() {
         </div>
       </div>
 
-      <ol className="relative mt-12 grid grid-cols-3 xl:hidden">
+      <ol
+        className="relative mt-12 grid xl:hidden"
+        style={{ gridTemplateColumns: `repeat(${years.length}, minmax(0, 1fr))` }}
+      >
         <span
           aria-hidden
           className="timeline-line absolute inset-x-0 top-1.5 h-0.5 bg-gradient-to-r from-accent from-75% to-transparent"
