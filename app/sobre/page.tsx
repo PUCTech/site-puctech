@@ -69,8 +69,38 @@ const years = Array.from(
  */
 // A linha do tempo rola na horizontal: cada ano tem a mesma largura fixa, então
 // cabe qualquer quantidade de marcos sem apertar.
-const YEAR_PX = 560; // o menor que ainda deixa as fotos em duas fileiras
-const TRACK_PX = years.length * YEAR_PX;
+const YEAR_PX = 880; // fotos a dois meses de distância cabem lado a lado
+const MONTH_PX = YEAR_PX / 12;
+// Trechos sem nada por mais de MAX_GAP meses viram um pontilhado curto (GAP_PX),
+// em vez de linha vazia: a linha só gasta espaço onde aconteceu alguma coisa.
+const MAX_GAP = 4;
+const GAP_PX = 96;
+
+/** Meses desde o começo do primeiro ano: no dia, ou no meio do mês. */
+const monthsOf = (year: number, month = 1, day?: number) =>
+  (year - firstYear) * 12 + month - 1 + (day ? day / 31 : 0.5);
+const eventMonths = history.milestones.map((m) => monthsOf(m.year, m.month, m.day)).sort((a, b) => a - b);
+const START = eventMonths[0] - 1; // a linha começa um mês antes do primeiro marco
+const END = years.length * 12; // e termina no fim do ano atual
+const gaps = eventMonths
+  .slice(1)
+  .map((b, i) => [eventMonths[i] + 1, b - 1])
+  .filter(([a, b]) => b - a > MAX_GAP - 2);
+
+/** Posição (px) de um momento na linha, já com os trechos vazios encurtados. */
+function px(t: number) {
+  let x = 0;
+  let cur = START;
+  for (const [a, b] of gaps) {
+    if (t <= a) return x + (t - cur) * MONTH_PX;
+    x += (a - cur) * MONTH_PX;
+    if (t <= b) return x + ((t - a) / (b - a)) * GAP_PX;
+    x += GAP_PX;
+    cur = b;
+  }
+  return x + (t - cur) * MONTH_PX;
+}
+const TRACK_PX = px(END);
 const LABEL_W = 160 / TRACK_PX; // largura do texto de um marco (w-36 + folga), como fração da linha
 const LEVEL = 100; // altura mínima (px) de um marco acima da linha (livra os anos)
 const STEP = 64; // distância (px) entre alturas: cabe um texto de duas linhas
@@ -136,10 +166,9 @@ function aboveLevels(items: { pos: number; flip: boolean }[]) {
 
 function Timeline() {
   // Posição de 0 a 1 na linha: no dia do marco, ou no meio do mês se não tiver dia.
-  const at = (year: number, month = 1, day?: number) =>
-    ((year - firstYear) * 12 + month - 1 + (day ? day / 31 : 0.5)) / (years.length * 12);
+  const at = (year: number, month?: number, day?: number) => px(monthsOf(year, month, day)) / TRACK_PX;
   const now = new Date();
-  const today = at(now.getFullYear(), now.getMonth() + 1);
+  const today = px(Math.min(END, monthsOf(now.getFullYear(), now.getMonth() + 1))) / TRACK_PX;
 
   const marks = history.milestones.map((item) => ({ item, pos: at(item.year, item.month, item.day), below: Boolean(item.photo) }));
   const above = marks.filter((m) => !m.below).map((m) => ({ ...m, flip: m.pos + LABEL_W > 1 }));
@@ -166,12 +195,23 @@ function Timeline() {
             className="timeline-line absolute left-0 top-(--line) h-0.5 bg-accent"
             style={{ width: `${today * 100}%` }}
           />
+          {/* Trechos encurtados: pontilhado por cima da linha. */}
+          {gaps.map(([a]) => (
+            <span
+              key={a}
+              aria-hidden
+              className="absolute top-(--line) h-0.5 bg-paper"
+              style={{ left: px(a), width: GAP_PX }}
+            >
+              <span className="block border-t-2 border-dotted border-accent/70" />
+            </span>
+          ))}
           {years.slice(1).map((year, i) => (
             <span
               key={year}
               aria-hidden
               className="absolute top-[calc(var(--line)-0.5rem)] h-5 w-px bg-border"
-              style={{ left: `${((i + 1) / years.length) * 100}%` }}
+              style={{ left: `${(px((i + 1) * 12) / TRACK_PX) * 100}%` }}
             />
           ))}
           {/* Cada ano fica centralizado no tracinho onde ele termina, logo acima da linha. */}
@@ -180,7 +220,7 @@ function Timeline() {
               <li
                 key={year}
                 className="absolute top-[calc(var(--line)-2rem)] z-10 -translate-x-1/2 bg-paper px-1.5 text-lg font-bold tracking-[-0.02em]"
-                style={{ left: `${((i + 1) / years.length) * 100}%` }}
+                style={{ left: `${(px((i + 1) * 12) / TRACK_PX) * 100}%` }}
               >
                 {year}
               </li>
