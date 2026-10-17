@@ -124,34 +124,36 @@ function Timeline() {
                   }`}
                   style={{ left: `${pos * 100}%`, "--at": pos / today } as CSSProperties}
                 >
-                  <p className="font-mono text-sm text-accent-ink">{dateLabel(item)}</p>
+                  {item.photo && (
+                    <>
+                      {/* Um caminho só: desce da linha, faz a curva e entra no meio da foto.
+                          Altura fixa = pt-6 + metade da foto (w-60 em 4:3) = 114px. */}
+                      <svg
+                        aria-hidden
+                        viewBox="0 0 16 116"
+                        className={`dash-fade-corner absolute top-0 h-[116px] w-4 overflow-visible ${
+                          flip ? "right-0 [--fade-dir:to_right]" : "left-0 [--fade-dir:to_left]"
+                        }`}
+                      >
+                        <path
+                          className="dash-march"
+                          fill="none"
+                          d={flip ? "M15 0 V100 Q15 114 1 114 H0" : "M1 0 V100 Q1 114 15 114 H16"}
+                        />
+                      </svg>
+                      <Image
+                        src={item.photo}
+                        alt={item.photoAlt ?? ""}
+                        width={480}
+                        height={360}
+                        className={`aspect-[4/3] w-60 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
+                      />
+                    </>
+                  )}
+                  <p className={`font-mono text-sm text-accent-ink ${below ? "mt-3" : ""}`}>{dateLabel(item)}</p>
                   <p className={`mt-1 font-semibold leading-snug text-balance ${below ? "w-60" : "w-44"}`}>
                     {item.label}
                   </p>
-                  {item.photo && (
-                    // O pontilhado desce da linha e faz a curva até o meio da foto (w-60 em 4:3).
-                    // Desce da linha, faz a curva e entra no meio da foto (w-60 em 4:3).
-                    <span aria-hidden className={`absolute top-0 bottom-[5.625rem] w-4 ${flip ? "right-0" : "left-0"}`}>
-                      <svg className={`absolute top-0 bottom-3 h-[calc(100%-0.75rem)] w-0.5 overflow-visible ${flip ? "right-0" : "left-0"}`}>
-                        <line className="dash-march" x1="1" y1="0" x2="1" y2="100%" />
-                      </svg>
-                      <svg className={`absolute bottom-0 size-3 overflow-visible ${flip ? "right-0" : "left-0"}`}>
-                        <path className="dash-march" d={flip ? "M11 0 Q11 11 0 11" : "M1 0 Q1 11 12 11"} fill="none" />
-                      </svg>
-                      <svg className={`absolute bottom-0 h-0.5 w-[calc(100%-0.75rem)] overflow-visible ${flip ? "left-0" : "right-0"}`}>
-                        <line className="dash-march" x1={flip ? "100%" : "0"} y1="1" x2={flip ? "0" : "100%"} y2="1" />
-                      </svg>
-                    </span>
-                  )}
-                  {item.photo && (
-                    <Image
-                      src={item.photo}
-                      alt={item.photoAlt ?? ""}
-                      width={480}
-                      height={360}
-                      className={`mt-3 aspect-[4/3] w-60 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
-                    />
-                  )}
                   <span
                     aria-hidden
                     className={`absolute size-3 rounded-full bg-accent ring-4 ring-paper ${
@@ -159,7 +161,7 @@ function Timeline() {
                     } ${flip ? "-right-[7px]" : "-left-[7px]"}`}
                   />
                   {!below && (
-                    <svg aria-hidden className={`absolute inset-y-0 h-full w-0.5 overflow-visible ${flip ? "right-0" : "left-0"}`}>
+                    <svg aria-hidden className={`dash-fade-y absolute inset-y-0 h-full w-0.5 overflow-visible ${flip ? "right-0" : "left-0"}`}>
                       <line className="dash-march" x1="1" y1="100%" x2="1" y2="0" />
                     </svg>
                   )}
