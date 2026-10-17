@@ -66,6 +66,14 @@ export const history = {
     { year: 2024, label: "Fundação da liga" },
     { year: 2025, label: "Formalização" },
     { year: 2025, month: 7, label: "1ª turma de trainees" },
+    {
+      year: 2025,
+      month: 11,
+      day: 24,
+      label: "Visita à AWS",
+      photo: "/sobre/visita-aws-2025.jpg",
+      photoAlt: "Grupo da PUC Tech em frente ao painel da Amazon no escritório da AWS",
+    },
     { year: 2026, month: 7, label: "2ª turma de trainees" },
     {
       year: 2026,
