@@ -62,8 +62,9 @@ export const values = {
 export const history = {
   title: "História da PUC Tech",
   milestones: [
-    { year: "2024", label: "Fundação" },
-    { year: "2025", label: "Formalização" },
+    { year: "2024", events: ["Fundação da liga"] },
+    { year: "2025", events: ["Formalização", "Julho: 1ª turma de trainees"] },
+    { year: "2026", events: ["Julho: 2ª turma de trainees"] },
   ],
   paragraphs: [
     "A PUC Tech surgiu da iniciativa de alunos de Ciência da Computação da PUC-SP que queriam um espaço para aplicar o que aprendem em projetos reais, desenvolver habilidades e se conectar com a tecnologia além da sala de aula.",

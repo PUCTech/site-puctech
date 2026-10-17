@@ -77,11 +77,11 @@ export default function SobrePage() {
         <Reveal delay={150}>
           <ol className="mt-10 grid gap-x-12 gap-y-10 sm:grid-cols-2">
             {difference.items.map((item, index) => (
-              <li key={item.title} className="grid grid-cols-[2.25rem_1fr] items-baseline">
+              <li key={item.title} className="grid grid-cols-[2.25rem_1fr] content-start items-baseline">
                 <span className="font-mono text-sm text-accent-ink">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <p className="text-xl font-semibold leading-snug">{item.title}</p>
+                <p className="text-xl font-semibold leading-snug text-balance">{item.title}</p>
                 <p className="col-start-2 mt-2 leading-relaxed text-pretty text-muted">{item.text}</p>
               </li>
             ))}
@@ -94,7 +94,7 @@ export default function SobrePage() {
         <Reveal delay={150}>
           <ul className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {values.items.map((value) => (
-              <li key={value.title}>
+              <li key={value.title} className="grid grid-cols-[2.5rem_1fr] content-start items-center gap-y-1.5">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -103,12 +103,12 @@ export default function SobrePage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden
-                  className="size-7 text-accent-ink"
+                  className="size-6 text-accent-ink"
                 >
                   {valueIcons[value.title]}
                 </svg>
-                <p className="mt-4 font-semibold leading-snug">{value.title}</p>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{value.text}</p>
+                <p className="font-semibold leading-snug text-balance">{value.title}</p>
+                <p className="col-start-2 text-[15px] leading-relaxed text-pretty text-muted">{value.text}</p>
               </li>
             ))}
           </ul>
@@ -123,16 +123,20 @@ export default function SobrePage() {
         </Heading>
         <Reveal delay={150}>
           {/* A linha segue depois do último marco e some: a história continua. */}
-          <ol className="relative mt-12 grid grid-cols-2 md:grid-cols-4">
+          <ol className="relative mt-12 grid grid-cols-3 md:grid-cols-4">
             <span
               aria-hidden
-              className="absolute inset-x-0 top-1.5 h-0.5 bg-gradient-to-r from-accent from-50% to-transparent md:from-40%"
+              className="absolute inset-x-0 top-1.5 h-0.5 bg-gradient-to-r from-accent from-75% to-transparent md:from-60%"
             />
             {history.milestones.map((item) => (
-              <li key={item.year} className="relative pr-6">
+              <li key={item.year} className="relative pr-4">
                 <span aria-hidden className="block size-3.5 rounded-full border-2 border-accent bg-paper" />
-                <p className="mt-5 text-5xl font-bold tracking-[-0.04em] md:text-6xl">{item.year}</p>
-                <p className="mt-1 font-mono text-sm text-accent-ink">{item.label}</p>
+                <p className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl md:text-6xl">{item.year}</p>
+                <ul className="mt-2 space-y-1 text-[15px] leading-snug text-pretty text-muted">
+                  {item.events.map((event) => (
+                    <li key={event}>{event}</li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ol>
@@ -166,7 +170,7 @@ export default function SobrePage() {
               </li>
             ))}
           </ul>
-          <p className="mt-8 text-muted">{support.closing}</p>
+          <p className="mt-8 text-pretty text-muted">{support.closing}</p>
         </Reveal>
       </Stage>
     </main>
