@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import Reveal from "@/components/Reveal";
-import { Heading, Stage, withBold } from "@/components/Section";
+import { Heading, Stage } from "@/components/Section";
+import Typewriter from "@/components/Typewriter";
 import {
   aboutPage,
   difference,
@@ -66,7 +67,7 @@ export default function SobrePage() {
           <div className="py-14 md:py-20">
             <h2 className="font-medium">{vision.title}</h2>
             <p className="mt-3 max-w-5xl text-2xl leading-snug tracking-[-0.02em] text-balance md:text-4xl [&_strong]:font-bold [&_strong]:text-on-accent">
-              {withBold(vision.text)}
+              <Typewriter text={vision.text} />
             </p>
           </div>
         </Reveal>
