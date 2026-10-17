@@ -130,17 +130,17 @@ function Timeline() {
                   </p>
                   {item.photo && (
                     // O pontilhado desce da linha e faz a curva até o meio da foto (w-60 em 4:3).
-                    // Descida e trecho até a foto andam; só a curvinha do canto fica parada.
+                    // Desce da linha, faz a curva e entra no meio da foto (w-60 em 4:3).
                     <span aria-hidden className={`absolute top-0 bottom-[5.625rem] w-4 ${flip ? "right-0" : "left-0"}`}>
-                      <span className={`dots-y dots-down absolute top-0 bottom-3 ${flip ? "right-0" : "left-0"}`} />
-                      <span
-                        className={`absolute bottom-0 size-3 border-b-2 border-dotted border-accent ${
-                          flip ? "right-0 rounded-br-xl border-r-2" : "left-0 rounded-bl-xl border-l-2"
-                        }`}
-                      />
-                      <span
-                        className={`dots-x absolute bottom-0 ${flip ? "right-3 left-0 dots-left" : "left-3 right-0 dots-right"}`}
-                      />
+                      <svg className={`absolute top-0 bottom-3 h-[calc(100%-0.75rem)] w-0.5 overflow-visible ${flip ? "right-0" : "left-0"}`}>
+                        <line className="dash-march" x1="1" y1="0" x2="1" y2="100%" />
+                      </svg>
+                      <svg className={`absolute bottom-0 size-3 overflow-visible ${flip ? "right-0" : "left-0"}`}>
+                        <path className="dash-march" d={flip ? "M11 0 Q11 11 0 11" : "M1 0 Q1 11 12 11"} fill="none" />
+                      </svg>
+                      <svg className={`absolute bottom-0 h-0.5 w-[calc(100%-0.75rem)] overflow-visible ${flip ? "left-0" : "right-0"}`}>
+                        <line className="dash-march" x1={flip ? "100%" : "0"} y1="1" x2={flip ? "0" : "100%"} y2="1" />
+                      </svg>
                     </span>
                   )}
                   {item.photo && (
@@ -159,7 +159,9 @@ function Timeline() {
                     } ${flip ? "-right-[7px]" : "-left-[7px]"}`}
                   />
                   {!below && (
-                    <span aria-hidden className={`dots-y dots-up absolute inset-y-0 ${flip ? "right-0" : "left-0"}`} />
+                    <svg aria-hidden className={`absolute inset-y-0 h-full w-0.5 overflow-visible ${flip ? "right-0" : "left-0"}`}>
+                      <line className="dash-march" x1="1" y1="100%" x2="1" y2="0" />
+                    </svg>
                   )}
                 </li>
               );

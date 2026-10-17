@@ -136,36 +136,23 @@ body {
   transition: none;
 }
 
-/* Pontilhados da linha do tempo que andam devagar da linha até o marco. */
-.dots-y,
-.dots-x {
-  --dot: radial-gradient(circle, var(--color-accent) 0.8px, transparent 1.2px);
-  animation: 1.6s linear infinite;
+/* Pontilhados da linha do tempo: os pontos andam devagar da linha até o marco. */
+.dash-march {
+  stroke: var(--color-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 0 6;
+  animation: dash-march 1.6s linear infinite;
 }
 
-.dots-y {
-  width: 2px;
-  background: var(--dot) 0 0 / 2px 6px repeat-y;
+@keyframes dash-march {
+  to {
+    stroke-dashoffset: -6;
+  }
 }
-
-.dots-x {
-  height: 2px;
-  background: var(--dot) 0 0 / 6px 2px repeat-x;
-}
-
-.dots-up { animation-name: dots-up; }
-.dots-down { animation-name: dots-down; }
-.dots-left { animation-name: dots-left; }
-.dots-right { animation-name: dots-right; }
-
-@keyframes dots-up { to { background-position-y: -6px; } }
-@keyframes dots-down { to { background-position-y: 6px; } }
-@keyframes dots-left { to { background-position-x: -6px; } }
-@keyframes dots-right { to { background-position-x: 6px; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .dots-y,
-  .dots-x {
+  .dash-march {
     animation: none;
   }
 }
