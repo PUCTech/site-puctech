@@ -115,32 +115,25 @@ function Timeline() {
               const rank = history.milestones.slice(0, i).filter((m) => Boolean(m.photo) === below).length;
               // Texto vai para a esquerda perto da ponta direita; as fotos, já da metade em diante.
               const flip = pos > (below ? 0.5 : 0.75);
+              const height = rank % 2 ? 96 : 160; // px, acima da linha
               return (
                 <li
                   key={item.label}
                   className={`timeline-mark absolute ${flip ? "-translate-x-full pr-4 text-right" : "pl-4"} ${
                     // Acima, alturas alternadas para os textos vizinhos não se tocarem.
-                    below ? "top-[calc(10rem+1px)] pt-6" : `bottom-[calc(100%-10rem)] ${rank % 2 ? "h-24" : "h-40"}`
+                    below ? "top-[calc(10rem+1px)] pt-6" : "bottom-[calc(100%-10rem)]"
                   }`}
-                  style={{ left: `${pos * 100}%`, "--at": pos / today } as CSSProperties}
+                  style={{ left: `${pos * 100}%`, height: below ? undefined : height, "--at": pos / today } as CSSProperties}
                 >
                   {item.photo && (
                     <>
                       {/* Um caminho só: desce da linha, faz a curva e entra no meio da foto.
                           Altura fixa = pt-6 + metade da foto (w-60 em 4:3) = 114px. */}
-                      <svg
-                        aria-hidden
-                        viewBox="0 0 16 116"
-                        className={`dash-fade-corner absolute top-0 h-[116px] w-4 overflow-visible ${
-                          flip ? "right-0 [--fade-dir:to_right]" : "left-0 [--fade-dir:to_left]"
-                        }`}
-                      >
-                        <path
-                          className="dash-march"
-                          fill="none"
-                          d={flip ? "M15 0 V100 Q15 114 1 114 H0" : "M1 0 V100 Q1 114 15 114 H16"}
-                        />
-                      </svg>
+                      <MarchingDots
+                        length={124}
+                        d={flip ? "M15 0 V100 Q15 114 1 114 H0" : "M1 0 V100 Q1 114 15 114 H16"}
+                        className={`top-0 h-[116px] w-4 ${flip ? "right-0" : "left-0"}`}
+                      />
                       <Image
                         src={item.photo}
                         alt={item.photoAlt ?? ""}
@@ -161,9 +154,11 @@ function Timeline() {
                     } ${flip ? "-right-[7px]" : "-left-[7px]"}`}
                   />
                   {!below && (
-                    <svg aria-hidden className={`dash-fade-y absolute inset-y-0 h-full w-0.5 overflow-visible ${flip ? "right-0" : "left-0"}`}>
-                      <line className="dash-march" x1="1" y1="100%" x2="1" y2="0" />
-                    </svg>
+                    <MarchingDots
+                      length={height}
+                      d={`M1 ${height} V0`}
+                      className={`inset-y-0 w-0.5 ${flip ? "right-0" : "left-0"}`}
+                    />
                   )}
                 </li>
               );
@@ -208,6 +203,33 @@ function Timeline() {
         ))}
       </ol>
     </>
+  );
+}
+
+const DOT_GAP = 6; // px entre os pontos do pontilhado
+const DOT_SPEED = 4; // px por segundo: bem devagar
+
+/**
+ * Pontilhado que anda ao longo de `d` (da linha até o marco). Cada ponto desliza
+ * pelo caminho com offset-path, que é suave mesmo devagar, e some nas pontas.
+ */
+function MarchingDots({ d, length, className }: { d: string; length: number; className: string }) {
+  const count = Math.ceil(length / DOT_GAP);
+  const duration = length / DOT_SPEED;
+  return (
+    <span aria-hidden className={`absolute ${className}`}>
+      {Array.from({ length: count }, (_, i) => (
+        <span
+          key={i}
+          className="march-dot"
+          style={{
+            offsetPath: `path("${d}")`,
+            animationDuration: `${duration}s`,
+            animationDelay: `${(-i / count) * duration}s`,
+          }}
+        />
+      ))}
+    </span>
   );
 }
 

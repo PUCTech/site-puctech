@@ -136,36 +136,40 @@ body {
   transition: none;
 }
 
-/* Pontilhados da linha do tempo: os pontos andam devagar da linha até o marco. */
-.dash-march {
-  stroke: var(--color-accent);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 0 6;
-  animation: dash-march 1.6s linear infinite;
+/* Pontilhados da linha do tempo: cada ponto desliza pelo caminho e some nas pontas. */
+.march-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  offset-rotate: 0deg;
+  offset-anchor: center;
+  will-change: offset-distance, opacity;
+  animation: march linear infinite;
 }
 
-/* Os pontos surgem e somem aos poucos nas pontas, em vez de piscar. */
-.dash-fade-y {
-  mask-image: linear-gradient(transparent, #000 16px, #000 calc(100% - 16px), transparent);
-}
-
-.dash-fade-corner {
-  mask-image:
-    linear-gradient(transparent, #000 16px),
-    linear-gradient(var(--fade-dir), transparent, #000 6px);
-  mask-composite: intersect;
-}
-
-@keyframes dash-march {
+@keyframes march {
+  from {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  12%,
+  88% {
+    opacity: 1;
+  }
   to {
-    stroke-dashoffset: -6;
+    offset-distance: 100%;
+    opacity: 0;
   }
 }
 
+/* Sem movimento: os pontos ficam parados, já espalhados pelo caminho. */
 @media (prefers-reduced-motion: reduce) {
-  .dash-march {
-    animation: none;
+  .march-dot {
+    animation-play-state: paused;
   }
 }
 
