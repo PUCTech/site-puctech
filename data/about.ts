@@ -30,7 +30,7 @@ export const difference = {
 
 export const vision = {
   title: "Nossa Visão",
-  text: "Ser referência dentro e fora da PUC-SP como uma comunidade universitária que forma protagonistas em tecnologia, conectando talentos ao mercado, à pesquisa e à inovação por meio da prática, da colaboração e do protagonismo estudantil.",
+  text: "Ser **referência** dentro e fora da PUC-SP como uma comunidade universitária que forma **protagonistas em tecnologia**, conectando talentos ao **mercado**, à **pesquisa** e à **inovação** por meio da prática, da colaboração e do protagonismo estudantil.",
 };
 
 export const values = {
@@ -66,16 +66,21 @@ export const history = {
     { year: "2025", label: "Formalização" },
   ],
   paragraphs: [
-    "A PUC Tech surgiu da iniciativa de alunos do curso de Ciência da Computação da PUC-SP que sonhavam em criar um espaço onde pudessem aplicar seus conhecimentos em projetos práticos, desenvolver suas habilidades e se conectar com o mundo da tecnologia além da sala de aula.",
-    "Fundada em 2024 e formalizada em 2025, a liga cresceu com o apoio de professores, coordenações e demais estudantes, consolidando-se como um polo de inovação e protagonismo estudantil dentro da universidade.",
+    "A PUC Tech surgiu da iniciativa de alunos de Ciência da Computação da PUC-SP que queriam um espaço para aplicar o que aprendem em projetos reais, desenvolver habilidades e se conectar com a tecnologia além da sala de aula.",
+    "Fundada em 2024 e formalizada em 2025, a liga cresceu com o apoio de professores, coordenações e demais estudantes, e hoje se consolida como um polo de inovação e protagonismo estudantil dentro da universidade.",
   ],
 };
 
 export const support = {
   title: "Apoio Institucional",
   logo: "/parceiros/puc-sp.jpg",
-  paragraphs: [
+  intro:
     "A PUC Tech é uma iniciativa constituída por alunos com o apoio de professores da PUC-SP. Acreditamos que o envolvimento institucional é essencial para ampliar nosso impacto e garantir a continuidade das ações.",
-    "Contamos com o suporte da Diretoria da Faculdade de Ciências Exatas e Tecnologia, da Coordenação do Curso de Ciência da Computação e de professores que atuam como tutores acadêmicos, fortalecendo o elo entre ensino, pesquisa, extensão e prática.",
+  backersIntro: "Contamos com o suporte de",
+  backers: [
+    "Diretoria da Faculdade de Ciências Exatas e Tecnologia",
+    "Coordenação do Curso de Ciência da Computação",
+    "Professores que atuam como tutores acadêmicos",
   ],
+  closing: "Juntos, fortalecemos o elo entre ensino, pesquisa, extensão e prática.",
 };
