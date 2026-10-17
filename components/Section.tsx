@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import Reveal from "@/components/Reveal";
 
 export const container = "mx-auto w-full max-w-6xl px-5 sm:px-6";
 
@@ -142,5 +143,36 @@ export function withBold(text: string) {
     ) : (
       part
     ),
+  );
+}
+
+/** Título de seção da home e das páginas internas: título grande, texto logo abaixo. */
+export function Heading({
+  title,
+  href,
+  wide = false,
+  children,
+}: {
+  title: string;
+  href?: string;
+  wide?: boolean; // texto em duas colunas, ocupando a largura toda
+  children?: ReactNode;
+}) {
+  return (
+    <Reveal>
+      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+        <h2 className="text-3xl font-bold tracking-[-0.03em] text-balance md:text-5xl md:leading-[1.05]">
+          {title}
+        </h2>
+        {href && <CdLink href={href} />}
+      </div>
+      {children && <div
+        className={`mt-4 text-lg leading-relaxed text-pretty text-muted ${
+          wide ? "gap-12 space-y-3 md:columns-2 md:space-y-0 [&>p]:break-inside-avoid md:[&>p+p]:mt-0" : "max-w-3xl space-y-3"
+        }`}
+      >
+        {children}
+      </div>}
+    </Reveal>
   );
 }

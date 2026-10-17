@@ -1,11 +1,10 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import AreaIcon from "@/components/AreaIcon";
 import AsciiLogo from "@/components/AsciiLogo";
 import LogoMarquee from "@/components/LogoMarquee";
 import Reveal from "@/components/Reveal";
 import Stats from "@/components/Stats";
-import { CdLink, Stage, withBold } from "@/components/Section";
+import { Heading, Stage, withBold } from "@/components/Section";
 import { socials } from "@/components/SocialIcons";
 import {
   about,
@@ -20,36 +19,6 @@ import { selectionPage } from "@/data/selection";
 
 // Todas as seções seguem o mesmo ritmo: título, texto logo abaixo e o conteúdo.
 const gap = "py-12 md:py-16";
-
-function Heading({
-  title,
-  href,
-  wide = false,
-  children,
-}: {
-  title: string;
-  href?: string;
-  wide?: boolean; // texto em duas colunas, ocupando a largura toda
-  children: ReactNode;
-}) {
-  return (
-    <Reveal>
-      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
-        <h2 className="text-3xl font-bold tracking-[-0.03em] text-balance md:text-5xl md:leading-[1.05]">
-          {title}
-        </h2>
-        {href && <CdLink href={href} />}
-      </div>
-      <div
-        className={`mt-4 text-lg leading-relaxed text-pretty text-muted ${
-          wide ? "gap-12 space-y-3 md:columns-2 md:space-y-0 [&>p]:break-inside-avoid md:[&>p+p]:mt-0" : "max-w-3xl space-y-3"
-        }`}
-      >
-        {children}
-      </div>
-    </Reveal>
-  );
-}
 
 export default function Home() {
   return (
