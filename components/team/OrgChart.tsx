@@ -79,48 +79,59 @@ function Name({ member, className = "" }: { member: Member; className?: string }
 export default function OrgChart() {
   return (
     <div>
-      <div className="flex flex-wrap justify-center gap-x-12 gap-y-6">
-        {executive.map((member) => (
-          <div key={member.name} className="flex items-center gap-3">
-            <Photo member={member} className="size-20" />
-            <div>
-              <Name member={member} className="text-lg" />
-              <p className="mt-0.5 text-sm text-accent-ink">{member.cargo}</p>
+      {/* Presidente e vice ligados por uma linha; dela desce a linha para o grupo. */}
+      <div className="flex flex-wrap items-center justify-center gap-y-6">
+        {executive.map((member, i) => (
+          <div key={member.name} className="flex items-center">
+            {i > 0 && <span aria-hidden className="mx-5 hidden h-px w-16 bg-accent/50 sm:block" />}
+            <div className="flex items-center gap-3">
+              <Photo member={member} className="size-20" />
+              <div>
+                <Name member={member} className="text-lg" />
+                <p className="mt-0.5 text-sm text-accent-ink">{member.cargo}</p>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      <span aria-hidden className="mx-auto mt-5 block h-12 w-px bg-accent/50" />
+      <div aria-hidden className="flex flex-col items-center">
+        <span className="mt-5 h-12 w-px bg-accent/50" />
+        <span className="size-1.5 rounded-full bg-accent" />
+      </div>
 
       {/* No celular o grupo rola na horizontal, para os retângulos continuarem certos. */}
       <div className="-mx-5 overflow-x-auto px-5 pt-3 pb-2 sm:mx-0 sm:px-0">
         <ul
-          className="grid min-w-max sm:min-w-0"
+          className="org grid min-w-max sm:min-w-0"
           style={{ gridTemplateColumns: `repeat(${team.length}, minmax(4.75rem, 1fr))` }}
         >
           {spans.map((span) => (
             <li
               key={span.id}
               aria-hidden
-              className={`relative row-start-1 rounded-2xl border-2 border-dashed ${areaColor[span.id].border}`}
+              className={`org-area-${span.id} relative row-start-1 rounded-2xl border-2 border-dashed ${areaColor[span.id].border}`}
               // Retângulos que se cruzam ficam um pouco mais para dentro, para os dois aparecerem.
               style={{ gridColumn: `${span.start} / ${span.end}`, margin: `${areaIndex(span.id) * 7}px 3px` }}
             >
               <span
-                className={`absolute -top-2 left-3 bg-paper px-1.5 font-mono text-xs leading-none ${areaColor[span.id].text}`}
+                className={`absolute -top-2.5 left-3 z-10 cursor-default bg-paper px-1.5 py-0.5 font-mono text-xs leading-none ${areaColor[span.id].text}`}
               >
                 {labelOf(span.id)}
               </span>
             </li>
           ))}
-          {team.map(({ m }, i) => (
+          {team.map(({ m, areas }, i) => (
             <li
               key={m.name}
-              className="row-start-1 flex flex-col items-center px-1.5 pt-9 pb-7 text-center"
+              data-areas={areas.join(" ")}
+              className="org-member row-start-1 flex flex-col items-center px-1.5 pt-9 pb-7 text-center transition-opacity duration-300"
               style={{ gridColumn: i + 1 }}
             >
-              <Photo member={m} className="size-14" />
+              <Photo
+                member={m}
+                className={`size-14 ${m.presidentOf || m.viceOf ? "ring-2 ring-accent ring-offset-2 ring-offset-paper" : ""}`}
+              />
               <Name member={m} className="mt-2.5 text-sm text-balance" />
               <p className={`mt-0.5 text-xs ${m.presidentOf || m.viceOf ? "text-accent-ink" : "text-muted"}`}>
                 {roleOf(m)}
