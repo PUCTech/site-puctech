@@ -135,3 +135,41 @@ body {
 [data-reveal="hidden"] :is(.timeline-line, .timeline-mark) {
   transition: none;
 }
+
+/* Pontinho que sobe (ou desce) devagar pelo pontilhado, da linha até o marco. */
+.timeline-travel {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+  opacity: 0;
+  animation: 3.5s cubic-bezier(0.45, 0, 0.55, 1) calc(var(--at, 0) * 1.2s) infinite;
+}
+
+.timeline-travel-up {
+  animation-name: travel-up;
+}
+
+.timeline-travel-down {
+  animation-name: travel-down;
+}
+
+@keyframes travel-up {
+  0% { bottom: 0; opacity: 0; }
+  15%, 80% { opacity: 1; }
+  100% { bottom: 100%; opacity: 0; }
+}
+
+@keyframes travel-down {
+  0% { top: 0; opacity: 0; }
+  15%, 80% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-travel {
+    display: none;
+  }
+}

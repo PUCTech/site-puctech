@@ -138,7 +138,9 @@ function Timeline() {
                       className={`absolute top-0 bottom-[5.625rem] w-4 border-b-2 border-dotted border-accent ${
                         flip ? "right-0 rounded-br-xl border-r-2" : "left-0 rounded-bl-xl border-l-2"
                       }`}
-                    />
+                    >
+                      <span className={`timeline-travel timeline-travel-down ${flip ? "-right-[5px]" : "-left-[5px]"}`} />
+                    </span>
                   )}
                   {item.photo && (
                     <Image
@@ -155,6 +157,12 @@ function Timeline() {
                       below ? "-top-[7px]" : "-bottom-[7px]"
                     } ${flip ? "-right-[7px]" : "-left-[7px]"}`}
                   />
+                  {!below && (
+                    <span
+                      aria-hidden
+                      className={`timeline-travel timeline-travel-up ${flip ? "-right-[5px]" : "-left-[5px]"}`}
+                    />
+                  )}
                 </li>
               );
             })}
