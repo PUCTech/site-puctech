@@ -109,3 +109,29 @@ body {
     animation: none;
   }
 }
+
+/* Linha do tempo (/sobre): a linha se desenha da esquerda e cada marco aparece
+   quando ela passa por ele (--at vai de 0 a 1 ao longo da linha). */
+.timeline-line {
+  transform-origin: left;
+  transition: transform 1800ms cubic-bezier(0.65, 0, 0.35, 1) 300ms;
+}
+
+.timeline-mark {
+  transition:
+    opacity 500ms ease calc(300ms + var(--at, 0) * 1800ms),
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1) calc(300ms + var(--at, 0) * 1800ms);
+}
+
+[data-reveal="hidden"] .timeline-line {
+  transform: scaleX(0);
+}
+
+[data-reveal="hidden"] .timeline-mark {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+[data-reveal="hidden"] :is(.timeline-line, .timeline-mark) {
+  transition: none;
+}
