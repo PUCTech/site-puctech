@@ -38,7 +38,10 @@ import {
 } from "next/font/google";
 import { useEffect, useState, type CSSProperties } from "react";
 
-const INTERVAL = 70; // ms em cada fonte: rápido, como um obturador disparando
+// Como um obturador: uma rajada rápida de fontes, depois uma pausa numa delas.
+const FLASH = 70; // ms em cada fonte da rajada
+const BURST = 6; // fontes por rajada
+const HOLD = 1500; // ms parado depois da rajada
 
 // Só baixam quando esta página usa; nenhuma entra no preload do site.
 const playfair = Playfair_Display({ subsets: ["latin"], preload: false, weight: "700", style: "italic" });
@@ -132,17 +135,23 @@ export default function FontCycle({ text, className = "" }: { text: string; clas
       ),
     ).then(() => {
       if (cancelled) return;
-      timer = window.setInterval(() => setIndex((i) => (i + 1) % fonts.length), INTERVAL);
+      let step = 0;
+      const next = () => {
+        setIndex((i) => (i + 1) % fonts.length);
+        step = (step + 1) % BURST;
+        timer = window.setTimeout(next, step === 0 ? HOLD : FLASH);
+      };
+      timer = window.setTimeout(next, HOLD);
     });
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
+      window.clearTimeout(timer);
     };
   }, [text]);
 
   const { style, size = 1 } = fonts[index];
   return (
-    <span className={`flex h-[1.1em] items-center whitespace-nowrap ${className}`}>
+    <span className={`inline-flex h-[1.1em] items-center whitespace-nowrap ${className}`}>
       <span style={style && { ...style, fontSize: `${size}em`, letterSpacing: "normal" }}>{text}</span>
     </span>
   );
