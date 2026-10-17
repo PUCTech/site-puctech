@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
 import Reveal from "@/components/Reveal";
 import { Heading, Stage } from "@/components/Section";
-import FontCycle from "@/components/FontCycle";
+// import FontCycle from "@/components/FontCycle";
 import Typewriter from "@/components/Typewriter";
 import {
   aboutPage,
@@ -163,7 +163,9 @@ export default function SobrePage() {
       <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
         <Reveal>
           <h1 className="text-5xl font-bold tracking-[-0.04em] md:text-7xl">
-            {aboutPage.title} <FontCycle text="PUC Tech" className="text-accent-ink" />
+            {aboutPage.title}
+            {/* Desligado: a troca de fontes fazia o layout pular. */}
+            {/* <FontCycle text="PUC Tech" className="text-accent-ink" /> */}
           </h1>
           <p className="mt-6 max-w-3xl text-xl leading-relaxed text-pretty text-muted md:text-2xl">
             {aboutPage.intro}
