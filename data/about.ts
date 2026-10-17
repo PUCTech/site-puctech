@@ -118,7 +118,13 @@ export const history = {
       photoAlt: "Candidatos em grupos durante a dinâmica do processo seletivo",
     },
     { year: 2026, month: 7, label: "2ª turma de trainees" },
-    { year: 2026, month: 10, label: "Organização da Semana Acadêmica" },
+    {
+      year: 2026,
+      month: 10,
+      label: "Organização da Semana Acadêmica",
+      photo: "/sobre/semana-academica-2026.jpg",
+      photoAlt: "Alunos, professores e membros da PUC Tech reunidos em sala de aula na Semana Acadêmica",
+    },
     {
       year: 2026,
       month: 9,
