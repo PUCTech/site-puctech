@@ -66,6 +66,45 @@ const years = Array.from(
  * numa ponta, o atual na outra) e cada marco fica no seu mês, ligado ao texto
  * por um pontilhado. No celular, os marcos ficam agrupados por ano.
  */
+// Desktop da linha do tempo (a partir de xl, conteúdo com ~1216px ou mais).
+const LABEL_W = 0.145; // largura do texto de um marco (w-44), como fração da linha
+const LEVEL = 120; // altura mínima (px) de um marco acima da linha (livra os anos)
+const STEP = 84; // distância (px) entre alturas: cabe um texto de duas linhas
+
+/**
+ * Alturas dos marcos acima da linha. O texto sai para o lado (direita, ou esquerda
+ * perto do fim); se ele cobrir o pontilhado de um vizinho, fica acima dele; se dois
+ * textos se cruzam sem isso, o de depois sobe. Repete até ninguém se tocar.
+ */
+function aboveLevels(items: { pos: number; flip: boolean }[]) {
+  const span = ({ pos, flip }: { pos: number; flip: boolean }) =>
+    flip ? [pos - LABEL_W, pos] : [pos, pos + LABEL_W];
+  const levels = items.map(() => LEVEL);
+  for (let round = 0; round < 10; round++) {
+    let changed = false;
+    const raise = (i: number, min: number) => {
+      if (levels[i] < min) {
+        levels[i] = min;
+        changed = true;
+      }
+    };
+    for (let a = 0; a < items.length; a++) {
+      for (let b = a + 1; b < items.length; b++) {
+        const [a0, a1] = span(items[a]);
+        const [b0, b1] = span(items[b]);
+        if (a1 <= b0 || b1 <= a0) continue; // textos não se cruzam
+        const bUnderA = items[b].pos >= a0 && items[b].pos <= a1;
+        const aUnderB = items[a].pos >= b0 && items[a].pos <= b1;
+        if (bUnderA && !aUnderB) raise(a, levels[b] + STEP);
+        else if (aUnderB && !bUnderA) raise(b, levels[a] + STEP);
+        else if (Math.abs(levels[a] - levels[b]) < STEP) raise(b, levels[a] + STEP);
+      }
+    }
+    if (!changed) break;
+  }
+  return levels;
+}
+
 function Timeline() {
   // Posição de 0 a 1 na linha: no dia do marco, ou no meio do mês se não tiver dia.
   const at = (year: number, month = 1, day?: number) =>
@@ -73,24 +112,30 @@ function Timeline() {
   const now = new Date();
   const today = at(now.getFullYear(), now.getMonth() + 1);
 
+  const marks = history.milestones.map((item) => ({ item, pos: at(item.year, item.month, item.day), below: Boolean(item.photo) }));
+  const above = marks.filter((m) => !m.below).map((m) => ({ ...m, flip: m.pos > 0.75 }));
+  const levels = aboveLevels(above);
+  // Altura da faixa acima da linha: o marco mais alto mais o texto dele.
+  const lineTop = Math.max(...levels) + 8;
+
   return (
     <>
       {/* Marcos sem foto ficam acima da linha; os com foto, abaixo. */}
       {/* No desktop a linha usa a largura toda da janela (com um limite em telas enormes). */}
-      <div className="relative left-1/2 mt-14 hidden w-screen -translate-x-1/2 px-8 md:block lg:px-12">
-        <div className="relative mx-auto h-[27rem] max-w-[110rem]">
+      <div className="relative left-1/2 mt-14 hidden w-screen -translate-x-1/2 px-8 xl:block xl:px-12">
+        <div className="relative mx-auto max-w-[110rem]" style={{ height: lineTop + 260, "--line": `${lineTop}px` } as CSSProperties}>
           {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
-          <span aria-hidden className="absolute inset-x-0 top-40 h-0.5 bg-border" />
+          <span aria-hidden className="absolute inset-x-0 top-(--line) h-0.5 bg-border" />
           <span
             aria-hidden
-            className="timeline-line absolute left-0 top-40 h-0.5 bg-accent"
+            className="timeline-line absolute left-0 top-(--line) h-0.5 bg-accent"
             style={{ width: `${today * 100}%` }}
           />
           {years.slice(1).map((year, i) => (
             <span
               key={year}
               aria-hidden
-              className="absolute top-38 h-5 w-px bg-border"
+              className="absolute top-[calc(var(--line)-0.5rem)] h-5 w-px bg-border"
               style={{ left: `${((i + 1) / years.length) * 100}%` }}
             />
           ))}
@@ -99,7 +144,7 @@ function Timeline() {
             {years.map((year, i) => (
               <li
                 key={year}
-                className="absolute top-32 z-10 -translate-x-1/2 bg-paper px-1.5 text-lg font-bold tracking-[-0.02em]"
+                className="absolute top-[calc(var(--line)-2rem)] z-10 -translate-x-1/2 bg-paper px-1.5 text-lg font-bold tracking-[-0.02em]"
                 style={{ left: `${((i + 1) / years.length) * 100}%` }}
               >
                 {year}
@@ -108,43 +153,45 @@ function Timeline() {
           </ol>
 
           <ol>
-            {history.milestones.map((item, i) => {
-              const pos = at(item.year, item.month, item.day);
-              const below = Boolean(item.photo);
-              // Posição entre os marcos do mesmo lado, para alternar as alturas.
-              const rank = history.milestones.slice(0, i).filter((m) => Boolean(m.photo) === below).length;
-              // Texto vai para a esquerda perto da ponta direita; as fotos, já da metade em diante.
-              const flip = pos > (below ? 0.5 : 0.75);
-              const height = rank % 2 ? 96 : 160; // px, acima da linha
+            {marks.map(({ item, pos, below }, i) => {
+              const rank = marks.slice(0, i).filter((m) => m.below === below).length;
+              // Fotos alternam o lado (esquerda, direita, esquerda...) para não se encostarem;
+              // perto do fim vão sempre para a esquerda.
+              const flip = below ? rank % 2 === 0 || pos > 0.85 : above[rank].flip;
+              const height = below ? 0 : levels[rank]; // px, acima da linha
               return (
                 <li
                   key={item.label}
                   className={`timeline-mark absolute ${flip ? "-translate-x-full pr-4 text-right" : "pl-4"} ${
-                    // Acima, alturas alternadas para os textos vizinhos não se tocarem.
-                    below ? "top-[calc(10rem+1px)] pt-6" : "bottom-[calc(100%-10rem)]"
+                    below ? "top-[calc(var(--line)+1px)] pt-6" : "bottom-[calc(100%-var(--line))]"
                   }`}
                   style={{ left: `${pos * 100}%`, height: below ? undefined : height, "--at": pos / today } as CSSProperties}
                 >
                   {item.photo && (
                     <>
                       {/* Um caminho só: desce da linha, faz a curva e entra no meio da foto.
-                          Altura fixa = pt-6 + metade da foto (w-60 em 4:3) = 114px. */}
+                          Altura fixa = pt-6 + metade da foto (w-36 em 4:3) = 78px. */}
                       <MarchingDots
-                        length={124}
-                        d={flip ? "M15 0 V100 Q15 114 1 114 H0" : "M1 0 V100 Q1 114 15 114 H16"}
-                        className={`top-0 h-[116px] w-4 ${flip ? "right-0" : "left-0"}`}
+                        length={88}
+                        d={flip ? "M15 0 V64 Q15 78 1 78 H0" : "M1 0 V64 Q1 78 15 78 H16"}
+                        className={`top-0 h-[80px] w-4 ${flip ? "right-0" : "left-0"}`}
                       />
                       <Image
                         src={item.photo}
                         alt={item.photoAlt ?? ""}
                         width={480}
                         height={360}
-                        className={`aspect-[4/3] w-60 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
+                        className={`aspect-[4/3] w-36 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
                       />
                     </>
                   )}
-                  <p className={`font-mono text-sm text-accent-ink ${below ? "mt-3" : ""}`}>{dateLabel(item)}</p>
-                  <p className={`mt-1 font-semibold leading-snug text-balance ${below ? "w-60" : "w-44"}`}>
+                  <p className={`font-mono text-sm text-accent-ink ${below ? "mt-3" : ""}`}>
+                    {/* Embaixo das fotos estreitas, a data curta (28/06/2025) cabe numa linha. */}
+                    {below && item.day && item.month
+                      ? `${String(item.day).padStart(2, "0")}/${String(item.month).padStart(2, "0")}/${item.year}`
+                      : dateLabel(item)}
+                  </p>
+                  <p className={`mt-1 font-semibold leading-snug text-balance ${below ? "w-36 text-sm" : "w-44"}`}>
                     {item.label}
                   </p>
                   <span
@@ -167,7 +214,7 @@ function Timeline() {
         </div>
       </div>
 
-      <ol className="relative mt-12 grid grid-cols-3 md:hidden">
+      <ol className="relative mt-12 grid grid-cols-3 xl:hidden">
         <span
           aria-hidden
           className="timeline-line absolute inset-x-0 top-1.5 h-0.5 bg-gradient-to-r from-accent from-75% to-transparent"
