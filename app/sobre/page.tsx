@@ -69,14 +69,14 @@ const years = Array.from(
  */
 // A linha do tempo rola na horizontal: cada ano tem a mesma largura fixa, então
 // cabe qualquer quantidade de marcos sem apertar.
-const YEAR_PX = 680; // o menor que ainda deixa as fotos em duas fileiras
+const YEAR_PX = 560; // o menor que ainda deixa as fotos em duas fileiras
 const TRACK_PX = years.length * YEAR_PX;
-const LABEL_W = 192 / TRACK_PX; // largura do texto de um marco (w-44 + folga), como fração da linha
-const LEVEL = 120; // altura mínima (px) de um marco acima da linha (livra os anos)
-const STEP = 84; // distância (px) entre alturas: cabe um texto de duas linhas
-const PHOTO_W = 176 / TRACK_PX; // largura de um marco com foto (w-36 + pontilhado), como fração da linha
+const LABEL_W = 160 / TRACK_PX; // largura do texto de um marco (w-36 + folga), como fração da linha
+const LEVEL = 100; // altura mínima (px) de um marco acima da linha (livra os anos)
+const STEP = 64; // distância (px) entre alturas: cabe um texto de duas linhas
+const PHOTO_W = 144 / TRACK_PX; // largura de um marco com foto (w-28 + pontilhado), como fração da linha
 
-const LANE_PX = 236; // altura de uma fileira de fotos (foto + data + até 3 linhas de texto)
+const LANE_PX = 200; // altura de uma fileira de fotos (foto + data + até 3 linhas de texto)
 
 /**
  * Onde cada foto vai embaixo da linha: na primeira fileira em que couber, à direita
@@ -153,10 +153,10 @@ function Timeline() {
     <>
       {/* Marcos sem foto ficam acima da linha; os com foto, abaixo. */}
       {/* No desktop a linha usa a largura toda da janela (com um limite em telas enormes). */}
-      <div className="relative left-1/2 mt-14 w-screen -translate-x-1/2">
+      <div className="mt-12">
         <TimelineScroller>
         <div
-          className="relative mr-28 ml-16"
+          className="relative mx-10"
           style={{ width: TRACK_PX, height: lineTop + 40 + lanes * LANE_PX, "--line": `${lineTop}px` } as CSSProperties}
         >
           {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
@@ -213,27 +213,27 @@ function Timeline() {
                   {item.photo && (
                     <>
                       {/* Um caminho só: desce da linha, faz a curva e entra no meio da foto
-                          (metade da foto w-36 em 4:3 = 54px abaixo do topo dela). */}
+                          (metade da foto w-28 em 4:3 = 42px abaixo do topo dela). */}
                       <MarchingDots
-                        length={drop + 64}
+                        length={drop + 52}
                         d={
                           flip
-                            ? `M15 0 V${drop + 40} Q15 ${drop + 54} 1 ${drop + 54} H0`
-                            : `M1 0 V${drop + 40} Q1 ${drop + 54} 15 ${drop + 54} H16`
+                            ? `M15 0 V${drop + 28} Q15 ${drop + 42} 1 ${drop + 42} H0`
+                            : `M1 0 V${drop + 28} Q1 ${drop + 42} 15 ${drop + 42} H16`
                         }
                         className={`top-0 w-4 ${flip ? "right-0" : "left-0"}`}
-                        style={{ height: drop + 56 }}
+                        style={{ height: drop + 44 }}
                       />
                       <Image
                         src={item.photo}
                         alt={item.photoAlt ?? ""}
                         width={480}
                         height={360}
-                        className={`relative z-10 aspect-[4/3] w-36 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
+                        className={`relative z-10 aspect-[4/3] w-28 rounded-lg object-cover ${flip ? "ml-auto" : ""}`}
                       />
                     </>
                   )}
-                  <p className={`font-mono text-sm text-accent-ink ${below ? "relative z-10 mt-3 bg-paper" : ""}`}>
+                  <p className={`font-mono text-xs text-accent-ink ${below ? "relative z-10 mt-2 bg-paper" : ""}`}>
                     {/* Embaixo das fotos estreitas, a data curta (28/06/2025) cabe numa linha. */}
                     {below && item.day && item.month
                       ? `${String(item.day).padStart(2, "0")}/${String(item.month).padStart(2, "0")}/${item.year}`
@@ -242,7 +242,7 @@ function Timeline() {
                   <p
                     className={`mt-1 font-semibold leading-snug text-balance ${
                       // Fundo sólido: pontilhados das fileiras de baixo passam por trás do texto.
-                      below ? "relative z-10 w-36 bg-paper text-sm" : "w-44"
+                      below ? "relative z-10 w-28 bg-paper text-xs" : "w-36 text-sm"
                     }`}
                   >
                     {item.label}
