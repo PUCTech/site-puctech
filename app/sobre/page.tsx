@@ -78,7 +78,7 @@ function Timeline() {
       {/* Marcos sem foto ficam acima da linha; os com foto, abaixo. */}
       {/* No desktop a linha usa a largura toda da janela (com um limite em telas enormes). */}
       <div className="relative left-1/2 mt-14 hidden w-screen -translate-x-1/2 px-8 md:block lg:px-12">
-        <div className="relative mx-auto h-[27rem] max-w-[110rem]">
+        <div className="relative mx-auto h-[34rem] max-w-[110rem]">
           {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
           <span aria-hidden className="absolute inset-x-0 top-40 h-0.5 bg-border" />
           <span
@@ -94,7 +94,7 @@ function Timeline() {
               style={{ left: `${((i + 1) / years.length) * 100}%` }}
             />
           ))}
-          <ol aria-hidden className="absolute inset-x-0 top-42 flex">
+          <ol aria-hidden className="absolute inset-x-0 bottom-0 flex border-t border-border pt-3">
             {years.map((year, i) => (
               <li
                 key={year}
