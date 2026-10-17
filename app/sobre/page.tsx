@@ -75,75 +75,81 @@ function Timeline() {
 
   return (
     <>
-      <div className="relative mt-14 hidden h-[26rem] md:block">
-        {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
-        <span aria-hidden className="absolute inset-x-0 top-80 h-0.5 bg-border" />
-        <span
-          aria-hidden
-          className="timeline-line absolute left-0 top-80 h-0.5 bg-accent"
-          style={{ width: `${today * 100}%` }}
-        />
-        {years.slice(1).map((year, i) => (
+      {/* Marcos sem foto ficam acima da linha; os com foto, abaixo. */}
+      {/* No desktop a linha usa a largura toda da janela (com um limite em telas enormes). */}
+      <div className="relative left-1/2 mt-14 hidden w-screen -translate-x-1/2 px-8 md:block lg:px-12">
+        <div className="relative mx-auto h-[27rem] max-w-[110rem]">
+          {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
+          <span aria-hidden className="absolute inset-x-0 top-40 h-0.5 bg-border" />
           <span
-            key={year}
             aria-hidden
-            className="absolute top-78 h-5 w-px bg-border"
-            style={{ left: `${((i + 1) / years.length) * 100}%` }}
+            className="timeline-line absolute left-0 top-40 h-0.5 bg-accent"
+            style={{ width: `${today * 100}%` }}
           />
-        ))}
-
-        <ol>
-          {history.milestones.map((item, i) => {
-            const pos = at(item.year, item.month, item.day);
-            // Logo antes de um marco com foto, o texto fica baixo, embaixo da foto.
-            const nextItem = history.milestones[i + 1];
-            const underPhoto = nextItem?.photo && at(nextItem.year, nextItem.month, nextItem.day) - pos < 0.15;
-            const flip = pos > 0.75; // perto da ponta direita, o texto vai para a esquerda
-            return (
-              <li
-                key={item.label}
-                // Alturas alternadas para os textos não se tocarem; o marco com foto vai até o topo.
-                className={`timeline-mark absolute bottom-[calc(100%-20rem)] border-dotted border-accent ${
-                  flip ? "-translate-x-full border-r-2 pr-4 text-right" : "border-l-2 pl-4"
-                } ${item.photo ? "h-80" : underPhoto ? "h-20" : i % 2 ? "h-80" : "h-40"}`}
-                style={{ left: `${pos * 100}%`, "--at": pos / today } as CSSProperties}
-              >
-                {item.photo && (
-                  <Image
-                    src={item.photo}
-                    alt={item.photoAlt ?? ""}
-                    width={448}
-                    height={336}
-                    className={`mb-3 aspect-[4/3] w-48 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
-                  />
-                )}
-                <p className="font-mono text-sm text-accent-ink">{dateLabel(item)}</p>
-                <p className={`mt-1 font-semibold leading-snug text-balance ${item.photo ? "w-60" : "w-44"}`}>
-                  {item.label}
-                </p>
-                <span
-                  aria-hidden
-                  className={`absolute -bottom-[7px] size-3 rounded-full bg-accent ring-4 ring-paper ${
-                    flip ? "-right-[7px]" : "-left-[7px]"
-                  }`}
-                />
-              </li>
-            );
-          })}
-        </ol>
-
-        <ol aria-hidden className="absolute inset-x-0 top-84 flex">
-          {years.map((year, i) => (
-            <li
+          {years.slice(1).map((year, i) => (
+            <span
               key={year}
-              className={`flex-1 text-6xl font-bold tracking-[-0.04em] ${
-                i === 0 ? "text-left" : i === years.length - 1 ? "text-right" : "text-center"
-              }`}
-            >
-              {year}
-            </li>
+              aria-hidden
+              className="absolute top-38 h-5 w-px bg-border"
+              style={{ left: `${((i + 1) / years.length) * 100}%` }}
+            />
           ))}
-        </ol>
+          <ol aria-hidden className="absolute inset-x-0 top-42 flex">
+            {years.map((year, i) => (
+              <li
+                key={year}
+                className={`flex-1 text-2xl font-bold tracking-[-0.03em] ${
+                  i === 0 ? "text-left" : i === years.length - 1 ? "text-right" : "text-center"
+                }`}
+              >
+                {year}
+              </li>
+            ))}
+          </ol>
+
+          <ol>
+            {history.milestones.map((item, i) => {
+              const pos = at(item.year, item.month, item.day);
+              const below = Boolean(item.photo);
+              // Posição entre os marcos do mesmo lado, para alternar as alturas.
+              const rank = history.milestones.slice(0, i).filter((m) => Boolean(m.photo) === below).length;
+              // Texto vai para a esquerda perto da ponta direita; as fotos, já da metade em diante.
+              const flip = pos > (below ? 0.5 : 0.75);
+              return (
+                <li
+                  key={item.label}
+                  className={`timeline-mark absolute border-dotted border-accent ${
+                    flip ? "-translate-x-full border-r-2 pr-4 text-right" : "border-l-2 pl-4"
+                  } ${
+                    // Acima, alturas alternadas para os textos vizinhos não se tocarem.
+                    below ? "top-[calc(10rem+1px)] pt-12" : `bottom-[calc(100%-10rem)] ${rank % 2 ? "h-24" : "h-40"}`
+                  }`}
+                  style={{ left: `${pos * 100}%`, "--at": pos / today } as CSSProperties}
+                >
+                  <p className="font-mono text-sm text-accent-ink">{dateLabel(item)}</p>
+                  <p className={`mt-1 font-semibold leading-snug text-balance ${below ? "w-60" : "w-44"}`}>
+                    {item.label}
+                  </p>
+                  {item.photo && (
+                    <Image
+                      src={item.photo}
+                      alt={item.photoAlt ?? ""}
+                      width={480}
+                      height={360}
+                      className={`mt-3 aspect-[4/3] w-60 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
+                    />
+                  )}
+                  <span
+                    aria-hidden
+                    className={`absolute size-3 rounded-full bg-accent ring-4 ring-paper ${
+                      below ? "-top-[7px]" : "-bottom-[7px]"
+                    } ${flip ? "-right-[7px]" : "-left-[7px]"}`}
+                  />
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
 
       <ol className="relative mt-12 grid grid-cols-3 md:hidden">
@@ -259,7 +265,7 @@ export default function SobrePage() {
         </Reveal>
       </Stage>
 
-      <Stage id="historia" className={gap}>
+      <Stage id="historia" className={`${gap} overflow-x-clip`}>
         <Heading title={history.title} wide>
           {history.paragraphs.map((text) => (
             <p key={text}>{text}</p>
