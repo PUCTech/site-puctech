@@ -266,7 +266,6 @@ function Timeline() {
           </ol>
         </div>
         </TimelineScroller>
-        <p aria-hidden className="mt-2 text-center font-mono text-xs text-muted">← role para ver o começo</p>
       </div>
     </>
   );
