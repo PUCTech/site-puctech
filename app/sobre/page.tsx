@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Reveal from "@/components/Reveal";
 import { Heading, Stage } from "@/components/Section";
 // import FontCycle from "@/components/FontCycle";
+import TimelineScroller from "@/components/TimelineScroller";
 import Typewriter from "@/components/Typewriter";
 import {
   aboutPage,
@@ -66,11 +67,14 @@ const years = Array.from(
  * numa ponta, o atual na outra) e cada marco fica no seu mês, ligado ao texto
  * por um pontilhado. No celular, os marcos ficam agrupados por ano.
  */
-// Desktop da linha do tempo (a partir de xl, conteúdo com ~1216px ou mais).
-const LABEL_W = 0.145; // largura do texto de um marco (w-44), como fração da linha
+// A linha do tempo rola na horizontal: cada ano tem a mesma largura fixa, então
+// cabe qualquer quantidade de marcos sem apertar.
+const YEAR_PX = 760;
+const TRACK_PX = years.length * YEAR_PX;
+const LABEL_W = 192 / TRACK_PX; // largura do texto de um marco (w-44 + folga), como fração da linha
 const LEVEL = 120; // altura mínima (px) de um marco acima da linha (livra os anos)
 const STEP = 84; // distância (px) entre alturas: cabe um texto de duas linhas
-const PHOTO_W = 0.135; // largura de um marco com foto (w-36 + pontilhado), como fração da linha
+const PHOTO_W = 176 / TRACK_PX; // largura de um marco com foto (w-36 + pontilhado), como fração da linha
 
 /**
  * Lado de cada foto embaixo da linha: à direita se couber sem encostar na anterior,
@@ -127,7 +131,7 @@ function Timeline() {
   const today = at(now.getFullYear(), now.getMonth() + 1);
 
   const marks = history.milestones.map((item) => ({ item, pos: at(item.year, item.month, item.day), below: Boolean(item.photo) }));
-  const above = marks.filter((m) => !m.below).map((m) => ({ ...m, flip: m.pos > 0.75 }));
+  const above = marks.filter((m) => !m.below).map((m) => ({ ...m, flip: m.pos + LABEL_W > 1 }));
   const levels = aboveLevels(above);
   const photoFlips = photoSides(marks.filter((m) => m.below).map((m) => m.pos));
   // Altura da faixa acima da linha: o marco mais alto mais o texto dele.
@@ -137,8 +141,12 @@ function Timeline() {
     <>
       {/* Marcos sem foto ficam acima da linha; os com foto, abaixo. */}
       {/* No desktop a linha usa a largura toda da janela (com um limite em telas enormes). */}
-      <div className="relative left-1/2 mt-14 hidden w-screen -translate-x-1/2 px-8 xl:block xl:px-12">
-        <div className="relative mx-auto max-w-[110rem]" style={{ height: lineTop + 260, "--line": `${lineTop}px` } as CSSProperties}>
+      <div className="relative left-1/2 mt-14 w-screen -translate-x-1/2">
+        <TimelineScroller>
+        <div
+          className="relative mr-28 ml-16"
+          style={{ width: TRACK_PX, height: lineTop + 260, "--line": `${lineTop}px` } as CSSProperties}
+        >
           {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
           <span aria-hidden className="absolute inset-x-0 top-(--line) h-0.5 bg-border" />
           <span
@@ -225,46 +233,9 @@ function Timeline() {
             })}
           </ol>
         </div>
+        </TimelineScroller>
+        <p aria-hidden className="mt-2 text-center font-mono text-xs text-muted">← role para ver o começo</p>
       </div>
-
-      <ol
-        className="relative mt-12 grid xl:hidden"
-        style={{ gridTemplateColumns: `repeat(${years.length}, minmax(0, 1fr))` }}
-      >
-        <span
-          aria-hidden
-          className="timeline-line absolute inset-x-0 top-1.5 h-0.5 bg-gradient-to-r from-accent from-75% to-transparent"
-        />
-        {years.map((year) => (
-          <li key={year} className="relative pr-4">
-            <span aria-hidden className="block size-3.5 rounded-full border-2 border-accent bg-paper" />
-            <p className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">{year}</p>
-            <ul className="mt-2 space-y-1 text-[15px] leading-snug text-pretty text-muted">
-              {history.milestones
-                .filter((item) => item.year === year)
-                .map((item) => (
-                  <li key={item.label}>
-                    {item.month && (
-                      <span className="capitalize">
-                        {[item.day, monthName(item.month)].filter(Boolean).join(" de ")}:{" "}
-                      </span>
-                    )}
-                    {item.label}
-                    {item.photo && (
-                      <Image
-                        src={item.photo}
-                        alt={item.photoAlt ?? ""}
-                        width={320}
-                        height={240}
-                        className="mt-2 aspect-[4/3] w-full rounded-lg object-cover"
-                      />
-                    )}
-                  </li>
-                ))}
-            </ul>
-          </li>
-        ))}
-      </ol>
     </>
   );
 }
