@@ -21,10 +21,11 @@ export default function TimelineScroller({ children }: { children: ReactNode }) 
     const tick = () => {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      // 0 quando a faixa aparece embaixo da tela, 1 quando some em cima.
-      const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)));
+      // Começa quando o topo da faixa passa de 85% da tela e chega ao fim quando ele
+      // alcança 15%: a faixa inteira passa enquanto ela ainda está toda à vista.
+      const progress = Math.min(1, Math.max(0, (vh * 0.85 - rect.top) / (vh * 0.7)));
       const target = progress * (el.scrollWidth - el.clientWidth);
-      x += (target - x) * 0.08; // aproxima aos poucos: o atraso dá a sensação de parallax
+      x += (target - x) * 0.14; // aproxima aos poucos: o atraso dá a sensação de parallax
       if (Math.abs(target - x) > 0.1) el.scrollLeft = x;
       frame = requestAnimationFrame(tick);
     };
