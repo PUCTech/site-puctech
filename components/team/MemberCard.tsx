@@ -2,9 +2,9 @@ import Image from "next/image";
 import type { Member } from "@/data/team";
 
 export const membersGrid =
-  "grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5";
+  "grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
 
-export const featuredGrid = "grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3";
+export const featuredGrid = "grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 lg:grid-cols-4";
 
 type MemberCardProps = {
   member: Member;
@@ -36,12 +36,8 @@ export default function MemberCard({
 
   return (
     <article className="group relative">
-      {/* Sem caixa: só a foto. Quem tem destaque ganha um anel ciano. */}
-      <div
-        className={`relative aspect-square overflow-hidden rounded-2xl bg-surface ${
-          highlight ? "ring-4 ring-accent ring-offset-4 ring-offset-paper" : ""
-        }`}
-      >
+      {/* Sem caixa: só a foto. O destaque vem do tamanho e do cargo em ciano. */}
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-surface">
         {member.photo ? (
           <Image
             src={member.photo}
@@ -71,9 +67,7 @@ export default function MemberCard({
         )}
 
         {badge && (
-          <p className="mt-2 inline-block rounded-full bg-surface px-2.5 py-0.5 text-xs font-medium">
-            {badge}
-          </p>
+          <p className="mt-1.5 font-mono text-xs text-accent-ink">{badge}</p>
         )}
 
         {member.linkedin && (
