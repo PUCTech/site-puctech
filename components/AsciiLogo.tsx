@@ -127,11 +127,18 @@ export default function AsciiLogo({
     let cancelled = false;
     let setup: (() => void) | null = null;
 
-    document.fonts.ready.then(() => {
+    const family =
+      getComputedStyle(document.documentElement).getPropertyValue("--font-bricolage").trim() ||
+      "sans-serif";
+    // A Bricolage só é usada no canvas, então o fonts.ready não espera por ela: sem
+    // pedir explicitamente, na primeira visita (sem cache) o canvas desenhava vazio.
+    const fontsReady = Promise.all([
+      document.fonts.ready,
+      document.fonts.load(`800 100px ${family}`, TEXT),
+    ]).catch(() => undefined);
+
+    fontsReady.then(() => {
       if (cancelled) return;
-      const family =
-        getComputedStyle(document.documentElement).getPropertyValue("--font-bricolage").trim() ||
-        "sans-serif";
 
       let cols = 0;
       let rows = 0;

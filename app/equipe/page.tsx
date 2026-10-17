@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Block, SectionNav, SidebarLayout } from "@/components/Section";
+import Reveal from "@/components/Reveal";
+import { Heading, Stage } from "@/components/Section";
 import MemberCard, {
   featuredGrid,
   membersGrid,
 } from "@/components/team/MemberCard";
-import CurrentTeam from "@/components/team/CurrentTeam";
+import MembersWall from "@/components/team/MembersWall";
+import OrgChart from "@/components/team/OrgChart";
 import {
   advisors,
-  executive,
   founders,
   groupDescriptions,
   honorary,
   idealizers,
+  members,
   strategic,
   type Member,
 } from "@/data/team";
@@ -22,6 +24,9 @@ export const metadata: Metadata = {
   description:
     "Conheça os tutores, fundadores e a equipe atual da PUC Tech, a primeira liga de ciência e tecnologia da PUC-SP.",
 };
+
+// Mesmo ritmo da home e do /sobre.
+const gap = "py-12 md:py-16";
 
 // Grupo de pessoas. Se estiver vazio, a seção não aparece.
 function MemberGroup({
@@ -42,69 +47,98 @@ function MemberGroup({
   if (members.length === 0) return null;
 
   return (
-    <Block id={id} title={title} subtitle={subtitle}>
-      <div className={highlight ? featuredGrid : membersGrid}>
+    <Stage id={id} className={gap}>
+      <Heading title={title}>
+        <p>{subtitle}</p>
+      </Heading>
+      <Reveal delay={150}>
+        <div className={`mt-10 ${highlight ? featuredGrid : membersGrid}`}>
+          {members.map((member) => (
+            <MemberCard
+              key={member.name}
+              member={member}
+              role={role}
+              variant={highlight ? "highlight" : "default"}
+            />
+          ))}
+        </div>
+      </Reveal>
+    </Stage>
+  );
+}
+
+// Grupo pequeno, em meia largura: título menor e fotos menores.
+function CompactGroup({
+  title,
+  subtitle,
+  members,
+  role,
+}: {
+  title: string;
+  subtitle: string;
+  members: Member[];
+  role: string;
+}) {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold tracking-[-0.02em] md:text-3xl">{title}</h2>
+      <p className="mt-3 leading-relaxed text-pretty text-muted">{subtitle}</p>
+      <div className="mt-8 flex flex-wrap gap-x-6 gap-y-8">
         {members.map((member) => (
-          <MemberCard
-            key={member.name}
-            member={member}
-            role={role}
-            variant={highlight ? "highlight" : "default"}
-          />
+          <div key={member.name} className="w-36">
+            <MemberCard member={member} role={role} />
+          </div>
         ))}
       </div>
-    </Block>
+    </div>
   );
 }
 
 export default function EquipePage() {
-  // Atalhos só para os grupos que têm gente (os vazios não aparecem).
-  const nav = [
-    { id: "tutores", label: "Tutores", show: advisors.length > 0 },
-    { id: "honorarios", label: "Membros Honorários", show: honorary.length > 0 },
-    { id: "fundadores", label: "Fundadores", show: founders.length > 0 },
-    { id: "diretoria-executiva", label: "Diretoria Executiva", show: executive.length > 0 },
-    { id: "diretorias-estrategicas", label: "Diretorias Estratégicas", show: strategic.length > 0 },
-    { id: "areas-operacionais", label: "Áreas Operacionais", show: true },
-    { id: "idealizadores", label: "Idealizadores", show: idealizers.length > 0 },
-  ].filter((item) => item.show);
-
   return (
-    <SidebarLayout
-      title="Equipe"
-      intro={
-        <p>
-          As pessoas que constroem a PUC Tech todos os dias, da orientação
-          acadêmica aos estudantes que fazem a liga acontecer.
+    <main>
+      <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
+        <h1 className="fade-in text-5xl font-bold tracking-[-0.04em] md:text-7xl">Equipe</h1>
+        <p className="fade-in mt-6 max-w-3xl text-xl leading-relaxed text-pretty text-muted [animation-delay:250ms] md:text-2xl">
+          As pessoas que constroem a PUC Tech todos os dias, da orientação acadêmica aos
+          estudantes que fazem a liga acontecer.
         </p>
-      }
-      aside={<SectionNav items={nav} />}
-    >
-      <div id="conheca-os-membros" className="scroll-mt-24 pb-12 md:pb-16">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[16/9]">
-          <Image
-            src="/equipe/grupo-puctech.jpg"
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 800px, 100vw"
-            priority
-            className="object-cover"
-          />
-        </div>
-        <p className="mt-8 max-w-[62ch] text-lg leading-relaxed md:text-xl">
-          A PUC Tech é formada por uma comunidade de estudantes engajados,
-          orientadores e parceiros que acreditam no protagonismo estudantil
-          como motor da transformação na universidade e na sociedade.
-        </p>
-      </div>
+      </Stage>
 
-      <MemberGroup
-        id="tutores"
-        title="Tutores"
-        subtitle={groupDescriptions.tutores}
-        members={advisors}
-        role="Tutor(a)"
-      />
+      <Stage id="conheca-os-membros">
+        <Reveal>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[21/9]">
+            <Image
+              src="/equipe/grupo-puctech.jpg"
+              alt="Membros da PUC Tech reunidos"
+              fill
+              sizes="(min-width: 1152px) 1152px, 100vw"
+              priority
+              className="object-cover"
+            />
+          </div>
+          <p className="mt-8 max-w-3xl text-lg leading-relaxed text-pretty text-muted">
+            A PUC Tech é formada por uma comunidade de estudantes engajados, orientadores e
+            parceiros que acreditam no protagonismo estudantil como motor da transformação na
+            universidade e na sociedade.
+          </p>
+        </Reveal>
+      </Stage>
+
+      {/* Tutores e fundadores lado a lado: grupos pequenos, em meia largura. */}
+      <Stage id="tutores" className={gap}>
+        <Reveal>
+          <div className="grid gap-14 md:grid-cols-2 md:gap-16">
+            <CompactGroup title="Tutores" subtitle={groupDescriptions.tutores} members={advisors} role="Tutor(a)" />
+            <CompactGroup
+              title="Fundadores"
+              subtitle={groupDescriptions.fundadores}
+              members={founders}
+              role="Fundador(a)"
+            />
+          </div>
+        </Reveal>
+      </Stage>
 
       <MemberGroup
         id="honorarios"
@@ -114,21 +148,16 @@ export default function EquipePage() {
         role="Membro honorário"
       />
 
-      <MemberGroup
-        id="fundadores"
-        title="Fundadores"
-        subtitle={groupDescriptions.fundadores}
-        members={founders}
-        role="Fundador(a)"
-      />
-
-      <MemberGroup
-        id="diretoria-executiva"
-        title="Diretoria Executiva"
-        subtitle={groupDescriptions.diretoriaExecutiva}
-        members={executive}
-        highlight
-      />
+      <Stage id="diretoria-executiva" className={gap}>
+        <Heading title="Diretoria Executiva">
+          <p>{groupDescriptions.diretoriaExecutiva}</p>
+        </Heading>
+        <Reveal delay={150}>
+          <div className="mt-12">
+            <OrgChart />
+          </div>
+        </Reveal>
+      </Stage>
 
       <MemberGroup
         id="diretorias-estrategicas"
@@ -138,13 +167,19 @@ export default function EquipePage() {
         highlight
       />
 
-      <Block
-        id="areas-operacionais"
-        title="Áreas Operacionais"
-        subtitle={groupDescriptions.areasOperacionais}
-      >
-        <CurrentTeam />
-      </Block>
+      {/* Todo mundo da liga (sem trainees por enquanto), com o LinkedIn de cada um. */}
+      <Stage id="membros" className={gap}>
+        <Heading title="Membros">
+          <p>Quem faz a PUC Tech acontecer no dia a dia. Filtre por área e clique em alguém para ver o LinkedIn.</p>
+        </Heading>
+        <Reveal delay={150}>
+          <div className="mt-10">
+            <MembersWall
+              people={members.filter((m) => m.group === "membro").sort((a, b) => a.name.localeCompare(b.name))}
+            />
+          </div>
+        </Reveal>
+      </Stage>
 
       <MemberGroup
         id="idealizadores"
@@ -152,6 +187,8 @@ export default function EquipePage() {
         subtitle={groupDescriptions.idealizadores}
         members={idealizers}
       />
-    </SidebarLayout>
+
+      <div className="pb-12 md:pb-16" />
+    </main>
   );
 }

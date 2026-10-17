@@ -190,3 +190,10 @@ body {
     animation: none;
   }
 }
+
+/* Organograma (/equipe): passar o mouse no nome de uma área apaga quem não é dela. */
+.org:has(.org-area-marketing > span:hover) .org-member:not([data-areas~="marketing"]),
+.org:has(.org-area-eventos > span:hover) .org-member:not([data-areas~="eventos"]),
+.org:has(.org-area-pessoas > span:hover) .org-member:not([data-areas~="pessoas"]) {
+  opacity: 0.2;
+}
