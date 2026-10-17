@@ -69,7 +69,7 @@ const years = Array.from(
  */
 // A linha do tempo rola na horizontal: cada ano tem a mesma largura fixa, então
 // cabe qualquer quantidade de marcos sem apertar.
-const YEAR_PX = 760;
+const YEAR_PX = 680; // o menor que ainda deixa as fotos em duas fileiras
 const TRACK_PX = years.length * YEAR_PX;
 const LABEL_W = 192 / TRACK_PX; // largura do texto de um marco (w-44 + folga), como fração da linha
 const LEVEL = 120; // altura mínima (px) de um marco acima da linha (livra os anos)
@@ -204,6 +204,8 @@ function Timeline() {
                       left: `${pos * 100}%`,
                       height: below ? undefined : height,
                       paddingTop: below ? drop : undefined,
+                      // Fileiras de cima por cima: os pontilhados das de baixo passam por trás delas.
+                      zIndex: below ? 10 - slots[rank].lane : undefined,
                       "--at": pos / today,
                     } as CSSProperties
                   }
