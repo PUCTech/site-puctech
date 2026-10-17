@@ -7,9 +7,9 @@ import MemberCard, {
   membersGrid,
 } from "@/components/team/MemberCard";
 import CurrentTeam from "@/components/team/CurrentTeam";
+import OrgChart from "@/components/team/OrgChart";
 import {
   advisors,
-  executive,
   founders,
   groupDescriptions,
   honorary,
@@ -66,6 +66,33 @@ function MemberGroup({
   );
 }
 
+// Grupo pequeno, em meia largura: título menor e fotos menores.
+function CompactGroup({
+  title,
+  subtitle,
+  members,
+  role,
+}: {
+  title: string;
+  subtitle: string;
+  members: Member[];
+  role: string;
+}) {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold tracking-[-0.02em] md:text-3xl">{title}</h2>
+      <p className="mt-3 leading-relaxed text-pretty text-muted">{subtitle}</p>
+      <div className="mt-8 flex flex-wrap gap-x-6 gap-y-8">
+        {members.map((member) => (
+          <div key={member.name} className="w-32">
+            <MemberCard member={member} role={role} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function EquipePage() {
   return (
     <main>
@@ -97,13 +124,20 @@ export default function EquipePage() {
         </Reveal>
       </Stage>
 
-      <MemberGroup
-        id="tutores"
-        title="Tutores"
-        subtitle={groupDescriptions.tutores}
-        members={advisors}
-        role="Tutor(a)"
-      />
+      {/* Tutores e fundadores lado a lado: grupos pequenos, em meia largura. */}
+      <Stage id="tutores" className={gap}>
+        <Reveal>
+          <div className="grid gap-14 md:grid-cols-2 md:gap-16">
+            <CompactGroup title="Tutores" subtitle={groupDescriptions.tutores} members={advisors} role="Tutor(a)" />
+            <CompactGroup
+              title="Fundadores"
+              subtitle={groupDescriptions.fundadores}
+              members={founders}
+              role="Fundador(a)"
+            />
+          </div>
+        </Reveal>
+      </Stage>
 
       <MemberGroup
         id="honorarios"
@@ -113,21 +147,16 @@ export default function EquipePage() {
         role="Membro honorário"
       />
 
-      <MemberGroup
-        id="fundadores"
-        title="Fundadores"
-        subtitle={groupDescriptions.fundadores}
-        members={founders}
-        role="Fundador(a)"
-      />
-
-      <MemberGroup
-        id="diretoria-executiva"
-        title="Diretoria Executiva"
-        subtitle={groupDescriptions.diretoriaExecutiva}
-        members={executive}
-        highlight
-      />
+      <Stage id="diretoria-executiva" className={gap}>
+        <Heading title="Diretoria Executiva">
+          <p>{groupDescriptions.diretoriaExecutiva}</p>
+        </Heading>
+        <Reveal delay={150}>
+          <div className="mt-12">
+            <OrgChart />
+          </div>
+        </Reveal>
+      </Stage>
 
       <MemberGroup
         id="diretorias-estrategicas"
