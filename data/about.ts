@@ -63,7 +63,13 @@ export const history = {
   title: "História da PUC Tech",
   // Marcos da linha do tempo, em ordem. Sem `month`, o marco fica no começo do ano.
   milestones: [
-    { year: 2024, label: "Fundação da liga" },
+    {
+      year: 2025,
+      month: 1,
+      label: "Fundação da liga",
+      photo: "/sobre/fundacao-2025.jpg",
+      photoAlt: "Fundadores da PUC Tech reunidos em volta de uma mesa, com o kanban da liga na tela",
+    },
     { year: 2025, label: "Formalização" },
     {
       year: 2025,
