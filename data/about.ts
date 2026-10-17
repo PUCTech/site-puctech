@@ -65,7 +65,16 @@ export const history = {
   milestones: [
     { year: 2024, label: "Fundação da liga" },
     { year: 2025, label: "Formalização" },
+    {
+      year: 2025,
+      month: 6,
+      day: 28,
+      label: "Primeiro dia da PUC Tech",
+      photo: "/sobre/primeiro-dia-2025.jpg",
+      photoAlt: "Membros da PUC Tech e professores reunidos em um auditório da PUC-SP",
+    },
     { year: 2025, month: 7, label: "1ª turma de trainees" },
+    { year: 2025, month: 10, label: "Organização da Semana Acadêmica" },
     {
       year: 2025,
       month: 11,
@@ -75,6 +84,7 @@ export const history = {
       photoAlt: "Grupo da PUC Tech em frente ao painel da Amazon no escritório da AWS",
     },
     { year: 2026, month: 7, label: "2ª turma de trainees" },
+    { year: 2026, month: 10, label: "Organização da Semana Acadêmica" },
     {
       year: 2026,
       month: 9,
