@@ -2,13 +2,11 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-const SPEED = 18; // px por segundo: bem devagar
-const END_PAUSE = 2500; // ms parado no fim antes de voltar ao começo
-
 /**
- * Faixa da linha do tempo que anda sozinha, devagar, para a direita, sem barra de
- * rolagem. Para quando o mouse está em cima ou alguém toca/rola; no fim, espera e
- * volta suave ao começo. Com movimento reduzido, fica parada (dá para rolar).
+ * Faixa da linha do tempo em parallax: conforme a página rola para baixo, ela anda
+ * para o lado, do começo (2024) ao fim, sem barra de rolagem. O movimento segue a
+ * rolagem com um pouco de atraso, para ficar macio. Com movimento reduzido, fica
+ * parada e dá para rolar com a mão.
  */
 export default function TimelineScroller({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -17,48 +15,21 @@ export default function TimelineScroller({ children }: { children: ReactNode }) 
     const el = ref.current;
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    let paused = false;
-    let x = el.scrollLeft; // posição com fração: scrollLeft sozinho arredonda e trava devagar
-    let last = performance.now();
-    let waitUntil = 0;
+    let x = el.scrollLeft; // posição atual, com fração (scrollLeft sozinho arredonda)
     let frame = 0;
 
-    const tick = (now: number) => {
-      const dt = Math.min(now - last, 100) / 1000;
-      last = now;
-      const max = el.scrollWidth - el.clientWidth;
-      if (paused || now < waitUntil) {
-        x = el.scrollLeft; // segue o que a pessoa rolou
-      } else if (x >= max - 1) {
-        waitUntil = now + END_PAUSE;
-        setTimeout(() => {
-          el.scrollTo({ left: 0, behavior: "smooth" });
-        }, END_PAUSE - 1200);
-      } else {
-        x += SPEED * dt;
-        el.scrollLeft = x;
-      }
+    const tick = () => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 quando a faixa aparece embaixo da tela, 1 quando some em cima.
+      const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)));
+      const target = progress * (el.scrollWidth - el.clientWidth);
+      x += (target - x) * 0.08; // aproxima aos poucos: o atraso dá a sensação de parallax
+      if (Math.abs(target - x) > 0.1) el.scrollLeft = x;
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
-
-    const pause = () => (paused = true);
-    const resume = () => (paused = false);
-    el.addEventListener("pointerenter", pause);
-    el.addEventListener("pointerleave", resume);
-    el.addEventListener("touchstart", pause, { passive: true });
-    el.addEventListener("touchend", resume);
-    el.addEventListener("focusin", pause);
-    el.addEventListener("focusout", resume);
-    return () => {
-      cancelAnimationFrame(frame);
-      el.removeEventListener("pointerenter", pause);
-      el.removeEventListener("pointerleave", resume);
-      el.removeEventListener("touchstart", pause);
-      el.removeEventListener("touchend", resume);
-      el.removeEventListener("focusin", pause);
-      el.removeEventListener("focusout", resume);
-    };
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   return (
