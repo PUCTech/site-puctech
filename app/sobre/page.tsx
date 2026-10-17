@@ -50,6 +50,10 @@ const valueIcons: Record<string, ReactNode> = {
 const monthName = (month: number) =>
   new Date(2000, month - 1).toLocaleString("pt-BR", { month: "long" });
 
+// "17 de setembro de 2026", "julho de 2025" ou só "2024".
+const dateLabel = ({ year, month, day }: { year: number; month?: number; day?: number }) =>
+  [day, month && monthName(month), year].filter(Boolean).join(" de ");
+
 // Anos da linha do tempo: do primeiro marco até o ano atual (do build).
 const firstYear = history.milestones[0].year;
 const years = Array.from(
@@ -63,46 +67,60 @@ const years = Array.from(
  * por um pontilhado. No celular, os marcos ficam agrupados por ano.
  */
 function Timeline() {
-  // Posição de 0 a 1 na linha, no meio do mês do marco.
-  const at = (year: number, month = 1) => ((year - firstYear) * 12 + month - 0.5) / (years.length * 12);
+  // Posição de 0 a 1 na linha: no dia do marco, ou no meio do mês se não tiver dia.
+  const at = (year: number, month = 1, day?: number) =>
+    ((year - firstYear) * 12 + month - 1 + (day ? day / 31 : 0.5)) / (years.length * 12);
   const now = new Date();
   const today = at(now.getFullYear(), now.getMonth() + 1);
 
   return (
     <>
-      <div className="relative mt-14 hidden h-[19rem] md:block">
+      <div className="relative mt-14 hidden h-[26rem] md:block">
         {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
-        <span aria-hidden className="absolute inset-x-0 top-52 h-0.5 bg-border" />
+        <span aria-hidden className="absolute inset-x-0 top-80 h-0.5 bg-border" />
         <span
           aria-hidden
-          className="timeline-line absolute left-0 top-52 h-0.5 bg-accent"
+          className="timeline-line absolute left-0 top-80 h-0.5 bg-accent"
           style={{ width: `${today * 100}%` }}
         />
         {years.slice(1).map((year, i) => (
           <span
             key={year}
             aria-hidden
-            className="absolute top-50 h-5 w-px bg-border"
+            className="absolute top-78 h-5 w-px bg-border"
             style={{ left: `${((i + 1) / years.length) * 100}%` }}
           />
         ))}
 
         <ol>
           {history.milestones.map((item, i) => {
-            const pos = at(item.year, item.month);
+            const pos = at(item.year, item.month, item.day);
+            // Logo antes de um marco com foto, o texto fica baixo, embaixo da foto.
+            const nextItem = history.milestones[i + 1];
+            const underPhoto = nextItem?.photo && at(nextItem.year, nextItem.month, nextItem.day) - pos < 0.15;
             const flip = pos > 0.75; // perto da ponta direita, o texto vai para a esquerda
             return (
               <li
                 key={item.label}
-                className={`timeline-mark absolute bottom-[calc(100%-13rem)] border-dotted border-accent ${
+                // Alturas alternadas para os textos não se tocarem; o marco com foto vai até o topo.
+                className={`timeline-mark absolute bottom-[calc(100%-20rem)] border-dotted border-accent ${
                   flip ? "-translate-x-full border-r-2 pr-4 text-right" : "border-l-2 pl-4"
-                } ${i % 2 ? "h-28" : "h-44"}`}
+                } ${item.photo ? "h-80" : underPhoto ? "h-20" : i % 2 ? "h-80" : "h-40"}`}
                 style={{ left: `${pos * 100}%`, "--at": pos / today } as CSSProperties}
               >
-                <p className="font-mono text-sm text-accent-ink">
-                  {item.month ? `${monthName(item.month)} de ${item.year}` : item.year}
+                {item.photo && (
+                  <Image
+                    src={item.photo}
+                    alt={item.photoAlt ?? ""}
+                    width={448}
+                    height={336}
+                    className={`mb-3 aspect-[4/3] w-48 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
+                  />
+                )}
+                <p className="font-mono text-sm text-accent-ink">{dateLabel(item)}</p>
+                <p className={`mt-1 font-semibold leading-snug text-balance ${item.photo ? "w-60" : "w-44"}`}>
+                  {item.label}
                 </p>
-                <p className="mt-1 w-44 font-semibold leading-snug">{item.label}</p>
                 <span
                   aria-hidden
                   className={`absolute -bottom-[7px] size-3 rounded-full bg-accent ring-4 ring-paper ${
@@ -114,7 +132,7 @@ function Timeline() {
           })}
         </ol>
 
-        <ol aria-hidden className="absolute inset-x-0 top-56 flex">
+        <ol aria-hidden className="absolute inset-x-0 top-84 flex">
           {years.map((year, i) => (
             <li
               key={year}
@@ -142,8 +160,21 @@ function Timeline() {
                 .filter((item) => item.year === year)
                 .map((item) => (
                   <li key={item.label}>
-                    {item.month && <span className="capitalize">{monthName(item.month)}: </span>}
+                    {item.month && (
+                      <span className="capitalize">
+                        {[item.day, monthName(item.month)].filter(Boolean).join(" de ")}:{" "}
+                      </span>
+                    )}
                     {item.label}
+                    {item.photo && (
+                      <Image
+                        src={item.photo}
+                        alt={item.photoAlt ?? ""}
+                        width={320}
+                        height={240}
+                        className="mt-2 aspect-[4/3] w-full rounded-lg object-cover"
+                      />
+                    )}
                   </li>
                 ))}
             </ul>

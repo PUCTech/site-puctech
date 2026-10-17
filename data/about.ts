@@ -67,7 +67,22 @@ export const history = {
     { year: 2025, label: "Formalização" },
     { year: 2025, month: 7, label: "1ª turma de trainees" },
     { year: 2026, month: 7, label: "2ª turma de trainees" },
-  ] as { year: number; month?: number; label: string }[],
+    {
+      year: 2026,
+      month: 9,
+      day: 17,
+      label: "Visita ao campus de engenharia do Google, no Butantã",
+      photo: "/sobre/visita-google-2026.jpg",
+      photoAlt: "Membros da PUC Tech com camisetas da liga em frente ao logo do Google",
+    },
+  ] as {
+    year: number;
+    month?: number;
+    day?: number;
+    label: string;
+    photo?: string;
+    photoAlt?: string;
+  }[],
   paragraphs: [
     "A PUC Tech surgiu da iniciativa de alunos de Ciência da Computação da PUC-SP que queriam um espaço para aplicar o que aprendem em projetos reais, desenvolver habilidades e se conectar com a tecnologia além da sala de aula.",
     "Fundada em 2024 e formalizada em 2025, a liga cresceu com o apoio de professores, coordenações e demais estudantes, e hoje se consolida como um polo de inovação e protagonismo estudantil dentro da universidade.",
