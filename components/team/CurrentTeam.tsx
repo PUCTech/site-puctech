@@ -37,13 +37,14 @@ const sections: {
     highlight: false,
     grid: membersGrid,
   },
-  {
-    key: "trainee",
-    levels: ["trainee"],
-    title: "Trainees",
-    highlight: false,
-    grid: membersGrid,
-  },
+  // Trainees escondidos por enquanto.
+  // {
+  //   key: "trainee",
+  //   levels: ["trainee"],
+  //   title: "Trainees",
+  //   highlight: false,
+  //   grid: membersGrid,
+  // },
 ];
 
 const labelOf = (id: AreaId) =>
