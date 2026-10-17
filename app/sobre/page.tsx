@@ -119,10 +119,11 @@ function Timeline() {
                 <li
                   key={item.label}
                   className={`timeline-mark absolute border-dotted border-accent ${
-                    flip ? "-translate-x-full border-r-2 pr-4 text-right" : "border-l-2 pl-4"
+                    flip ? "-translate-x-full pr-4 text-right" : "pl-4"
+                  } ${below ? "" : flip ? "border-r-2" : "border-l-2"
                   } ${
                     // Acima, alturas alternadas para os textos vizinhos não se tocarem.
-                    below ? "top-[calc(10rem+1px)] pt-12" : `bottom-[calc(100%-10rem)] ${rank % 2 ? "h-24" : "h-40"}`
+                    below ? "top-[calc(10rem+1px)] pt-6" : `bottom-[calc(100%-10rem)] ${rank % 2 ? "h-24" : "h-40"}`
                   }`}
                   style={{ left: `${pos * 100}%`, "--at": pos / today } as CSSProperties}
                 >
@@ -130,6 +131,15 @@ function Timeline() {
                   <p className={`mt-1 font-semibold leading-snug text-balance ${below ? "w-60" : "w-44"}`}>
                     {item.label}
                   </p>
+                  {item.photo && (
+                    // O pontilhado desce da linha e faz a curva até o meio da foto (w-60 em 4:3).
+                    <span
+                      aria-hidden
+                      className={`absolute top-0 bottom-[5.625rem] w-4 border-b-2 border-dotted border-accent ${
+                        flip ? "right-0 rounded-br-xl border-r-2" : "left-0 rounded-bl-xl border-l-2"
+                      }`}
+                    />
+                  )}
                   {item.photo && (
                     <Image
                       src={item.photo}
