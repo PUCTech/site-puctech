@@ -2,8 +2,8 @@ import Image from "next/image";
 import { areaInfo, executive, members, type AreaId, type Member } from "@/data/team";
 
 // Pessoa no organograma: foto redonda e nome ao lado, sem caixa.
-function Node({ member, role, size = "sm" }: { member: Member; role: string; size?: "sm" | "lg" }) {
-  const photo = size === "lg" ? "size-20" : "size-12";
+function Node({ member, role, size = "sm" }: { member: Member; role: string; size?: "xs" | "sm" | "lg" }) {
+  const photo = size === "lg" ? "size-20" : size === "sm" ? "size-12" : "size-9";
   return (
     <div className="flex items-center gap-3 text-left">
       <div className={`relative shrink-0 overflow-hidden rounded-full bg-surface ${photo}`}>
@@ -24,7 +24,7 @@ function Node({ member, role, size = "sm" }: { member: Member; role: string; siz
         ) : (
           <p className="font-semibold leading-tight">{member.name}</p>
         )}
-        <p className="mt-0.5 text-sm text-accent-ink">{role}</p>
+        <p className={`mt-0.5 text-sm ${size === "xs" ? "text-muted" : "text-accent-ink"}`}>{role}</p>
       </div>
     </div>
   );
@@ -34,6 +34,16 @@ const leadersOf = (area: AreaId) => [
   ...members.filter((m) => m.presidentOf?.includes(area)).map((m) => ({ m, role: "Coordenador(a)" })),
   ...members.filter((m) => m.viceOf?.includes(area)).map((m) => ({ m, role: "Vice-coordenador(a)" })),
 ];
+
+// Membros da área que não a coordenam (trainees ficam de fora por enquanto).
+const membersOf = (area: AreaId) =>
+  members.filter(
+    (m) =>
+      m.group === "membro" &&
+      m.areas?.includes(area) &&
+      !m.presidentOf?.includes(area) &&
+      !m.viceOf?.includes(area),
+  );
 
 /**
  * Organograma como no Teams: diretoria executiva no topo e uma linha que desce
@@ -53,6 +63,7 @@ export default function OrgChart() {
       <ul className="mt-8 grid gap-10 sm:mt-0 sm:grid-cols-3 sm:gap-0">
         {areaInfo.map((area, i) => {
           const leaders = leadersOf(area.id);
+          const team = membersOf(area.id);
           return (
             <li key={area.id} className="relative flex flex-col items-center sm:px-4">
               {/* Linha horizontal que liga as áreas, mais o tracinho que desce para cada uma. */}
@@ -71,6 +82,17 @@ export default function OrgChart() {
                   <p className="text-sm text-muted">Coordenação a definir</p>
                 )}
               </div>
+              {/* Abaixo da coordenação, um tracinho e a equipe da área. */}
+              {team.length > 0 && (
+                <>
+                  <span aria-hidden className="mt-5 h-6 w-px bg-accent/50" />
+                  <div className="mt-5 space-y-3">
+                    {team.map((m) => (
+                      <Node key={m.name} member={m} role="Membro" size="xs" />
+                    ))}
+                  </div>
+                </>
+              )}
             </li>
           );
         })}
