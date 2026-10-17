@@ -315,15 +315,17 @@ export default function SobrePage() {
           </Reveal>
         </div>
         <Reveal delay={150}>
-          <p className="mt-12 text-muted">{support.backersIntro}</p>
-          <ul className="mt-4 grid gap-x-10 gap-y-6 sm:grid-cols-3">
-            {support.backers.map((name) => (
-              <li key={name} className="border-t-2 border-accent pt-4 text-lg font-semibold leading-snug text-balance">
-                {name}
+          <p className="mt-14 font-mono text-sm text-accent-ink">{support.backersIntro}</p>
+          {/* Lista em linhas, no mesmo tom numerado do "Por que e como". */}
+          <ol className="mt-4 divide-y divide-border border-y border-border">
+            {support.backers.map((name, index) => (
+              <li key={name} className="grid grid-cols-[2.25rem_1fr] items-baseline py-5">
+                <span className="font-mono text-sm text-accent-ink">{String(index + 1).padStart(2, "0")}</span>
+                <span className="text-xl font-semibold tracking-[-0.015em] text-balance md:text-2xl">{name}</span>
               </li>
             ))}
-          </ul>
-          <p className="mt-8 text-pretty text-muted">{support.closing}</p>
+          </ol>
+          <p className="mt-6 text-lg text-pretty text-muted">{support.closing}</p>
         </Reveal>
       </Stage>
     </main>
