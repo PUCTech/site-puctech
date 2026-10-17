@@ -71,8 +71,8 @@ const years = Array.from(
 // cabe qualquer quantidade de marcos sem apertar.
 const YEAR_PX = 880; // fotos a dois meses de distância cabem lado a lado
 const MONTH_PX = YEAR_PX / 12;
-// Trechos sem nada por mais de MAX_GAP meses viram um pontilhado curto (GAP_PX),
-// em vez de linha vazia: a linha só gasta espaço onde aconteceu alguma coisa.
+// Trechos sem nada por mais de MAX_GAP meses ficam curtos (GAP_PX): a linha só
+// gasta espaço onde aconteceu alguma coisa.
 const MAX_GAP = 4;
 const GAP_PX = 96;
 
@@ -195,17 +195,6 @@ function Timeline() {
             className="timeline-line absolute left-0 top-(--line) h-0.5 bg-accent"
             style={{ width: `${today * 100}%` }}
           />
-          {/* Trechos encurtados: pontilhado por cima da linha. */}
-          {gaps.map(([a]) => (
-            <span
-              key={a}
-              aria-hidden
-              className="absolute top-(--line) h-0.5 bg-paper"
-              style={{ left: px(a), width: GAP_PX }}
-            >
-              <span className="block border-t-2 border-dotted border-accent/70" />
-            </span>
-          ))}
           {years.slice(1).map((year, i) => (
             <span
               key={year}
