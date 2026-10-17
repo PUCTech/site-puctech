@@ -1,20 +1,6 @@
 import Image from "next/image";
+import { areaColor, areaIndex, areasOf, labelOf } from "@/components/team/areas";
 import { areaInfo, executive, members, type AreaId, type Member } from "@/data/team";
-
-// Cor de cada área: o retângulo pontilhado e o rótulo dele.
-const areaColor: Record<AreaId, { border: string; text: string }> = {
-  marketing: { border: "border-accent", text: "text-accent-ink" },
-  eventos: { border: "border-amber-400", text: "text-amber-600 dark:text-amber-300" },
-  pessoas: { border: "border-fuchsia-400", text: "text-fuchsia-600 dark:text-fuchsia-300" },
-};
-
-const areaIndex = (id: AreaId) => areaInfo.findIndex((area) => area.id === id);
-const labelOf = (id: AreaId) => areaInfo[areaIndex(id)].label;
-
-const areasOf = (m: Member): AreaId[] =>
-  Array.from(new Set([...(m.areas ?? []), ...(m.presidentOf ?? []), ...(m.viceOf ?? [])])).sort(
-    (a, b) => areaIndex(a) - areaIndex(b),
-  );
 
 const roleOf = (m: Member) => {
   const president = m.presidentOf?.[0];
