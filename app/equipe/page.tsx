@@ -6,7 +6,6 @@ import MemberCard, {
   featuredGrid,
   membersGrid,
 } from "@/components/team/MemberCard";
-import AreasOverview from "@/components/team/AreasOverview";
 import MembersWall from "@/components/team/MembersWall";
 import OrgChart from "@/components/team/OrgChart";
 import {
@@ -167,17 +166,6 @@ export default function EquipePage() {
         members={strategic}
         highlight
       />
-
-      <Stage id="areas-operacionais" className={gap}>
-        <Heading title="Áreas Operacionais">
-          <p>{groupDescriptions.areasOperacionais}</p>
-        </Heading>
-        <Reveal delay={150}>
-          <div className="mt-10">
-            <AreasOverview />
-          </div>
-        </Reveal>
-      </Stage>
 
       {/* Todo mundo da liga (sem trainees por enquanto), com o LinkedIn de cada um. */}
       <Stage id="membros" className={gap}>
