@@ -69,8 +69,24 @@ const years = Array.from(
  */
 // A linha do tempo rola na horizontal: cada ano tem a mesma largura fixa, então
 // cabe qualquer quantidade de marcos sem apertar.
-const YEAR_PX = 760;
-const TRACK_PX = years.length * YEAR_PX;
+// Cada ano tem a largura de que precisa: um ano com fotos muito próximas estica até
+// elas caberem lado a lado; um ano calmo fica com o mínimo.
+const MIN_YEAR_PX = 760;
+const MAX_YEAR_PX = 2200;
+const monthOf = ({ month = 1, day }: { month?: number; day?: number }) =>
+  month - 1 + (day ? day / 31 : 0.5); // meses desde o começo do ano
+const yearWidths = years.map((year) => {
+  const photos = history.milestones
+    .filter((m) => m.year === year && m.photo)
+    .map(monthOf)
+    .sort((a, b) => a - b);
+  const gaps = photos.slice(1).map((m, i) => m - photos[i]);
+  const tightest = Math.min(...gaps, Infinity); // menor distância, em meses, entre duas fotos
+  // 176px de foto precisam caber nesse intervalo de meses.
+  return Math.round(Math.min(MAX_YEAR_PX, Math.max(MIN_YEAR_PX, (176 * 12) / tightest)));
+});
+const yearStarts = yearWidths.map((_, i) => yearWidths.slice(0, i).reduce((a, b) => a + b, 0));
+const TRACK_PX = yearWidths.reduce((a, b) => a + b, 0);
 const LABEL_W = 192 / TRACK_PX; // largura do texto de um marco (w-44 + folga), como fração da linha
 const LEVEL = 120; // altura mínima (px) de um marco acima da linha (livra os anos)
 const STEP = 84; // distância (px) entre alturas: cabe um texto de duas linhas
@@ -136,8 +152,11 @@ function aboveLevels(items: { pos: number; flip: boolean }[]) {
 
 function Timeline() {
   // Posição de 0 a 1 na linha: no dia do marco, ou no meio do mês se não tiver dia.
-  const at = (year: number, month = 1, day?: number) =>
-    ((year - firstYear) * 12 + month - 1 + (day ? day / 31 : 0.5)) / (years.length * 12);
+  // Posição de 0 a 1 na linha, dentro da largura do próprio ano.
+  const at = (year: number, month?: number, day?: number) => {
+    const i = Math.min(year - firstYear, years.length - 1);
+    return (yearStarts[i] + (monthOf({ month, day }) / 12) * yearWidths[i]) / TRACK_PX;
+  };
   const now = new Date();
   const today = at(now.getFullYear(), now.getMonth() + 1);
 
@@ -171,7 +190,7 @@ function Timeline() {
               key={year}
               aria-hidden
               className="absolute top-[calc(var(--line)-0.5rem)] h-5 w-px bg-border"
-              style={{ left: `${((i + 1) / years.length) * 100}%` }}
+              style={{ left: `${((yearStarts[i] + yearWidths[i]) / TRACK_PX) * 100}%` }}
             />
           ))}
           {/* Cada ano fica centralizado no tracinho onde ele termina, logo acima da linha. */}
@@ -180,7 +199,7 @@ function Timeline() {
               <li
                 key={year}
                 className="absolute top-[calc(var(--line)-2rem)] z-10 -translate-x-1/2 bg-paper px-1.5 text-lg font-bold tracking-[-0.02em]"
-                style={{ left: `${((i + 1) / years.length) * 100}%` }}
+                style={{ left: `${((yearStarts[i] + yearWidths[i]) / TRACK_PX) * 100}%` }}
               >
                 {year}
               </li>
