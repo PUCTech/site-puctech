@@ -13,7 +13,7 @@ export const siteConfig = {
     instagram: "https://www.instagram.com/puctechsp/",
     linkedin: "https://www.linkedin.com/company/puctechsp/",
     tiktok: "https://www.tiktok.com/@puctechsp",
-    x: "https://x.com/puctechsp",
+    x: "https://x.com/puctechsp_",
     allLinks: "/links",
   },
 };
