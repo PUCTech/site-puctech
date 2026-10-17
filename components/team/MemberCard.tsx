@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { LinkedinIcon } from "@/components/SocialIcons";
 import type { Member } from "@/data/team";
 
@@ -11,7 +12,7 @@ type MemberCardProps = {
   member: Member;
   role?: string; // texto abaixo do nome (ex.: "Membro", "Presidente")
   variant?: "default" | "highlight";
-  badge?: string;
+  badge?: ReactNode;
 };
 
 const TITLES = ["prof.", "profa."];
@@ -54,6 +55,15 @@ export default function MemberCard({
             {getInitials(member.name)}
           </span>
         )}
+        {member.linkedin && (
+          // No hover, sobe uma faixa escura com o "linkedin ↗" em mono, no tom de terminal.
+          <span
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 flex translate-y-full items-end bg-gradient-to-t from-black/75 to-transparent px-3 pt-10 pb-3 font-mono text-xs text-white transition-transform duration-300 ease-out group-hover:translate-y-0"
+          >
+            linkedin ↗
+          </span>
+        )}
       </div>
 
       <div className="mt-3 flex items-start justify-between gap-2">
@@ -77,7 +87,7 @@ export default function MemberCard({
           {title && (
             <p className={`mt-1 text-sm ${highlight ? "font-medium text-accent-ink" : "text-muted"}`}>{title}</p>
           )}
-          {badge && <p className="mt-1 font-mono text-xs text-accent-ink">{badge}</p>}
+          {badge && <div className="mt-1.5 font-mono text-xs">{badge}</div>}
         </div>
         {member.linkedin && (
           <LinkedinIcon className="mt-0.5 size-4 shrink-0 text-muted transition-colors group-hover:text-accent-ink" />
