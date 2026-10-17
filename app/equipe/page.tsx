@@ -7,6 +7,7 @@ import MemberCard, {
   membersGrid,
 } from "@/components/team/MemberCard";
 import AreasOverview from "@/components/team/AreasOverview";
+import { areasOf, labelOf } from "@/components/team/areas";
 import OrgChart from "@/components/team/OrgChart";
 import {
   advisors,
@@ -14,6 +15,7 @@ import {
   groupDescriptions,
   honorary,
   idealizers,
+  members,
   strategic,
   type Member,
 } from "@/data/team";
@@ -173,6 +175,28 @@ export default function EquipePage() {
         <Reveal delay={150}>
           <div className="mt-10">
             <AreasOverview />
+          </div>
+        </Reveal>
+      </Stage>
+
+      {/* Todo mundo da liga (sem trainees por enquanto), com o LinkedIn de cada um. */}
+      <Stage id="membros" className={gap}>
+        <Heading title="Membros">
+          <p>Quem faz a PUC Tech acontecer no dia a dia. Clique em alguém para ver o LinkedIn.</p>
+        </Heading>
+        <Reveal delay={150}>
+          <div className={`mt-10 ${membersGrid}`}>
+            {members
+              .filter((m) => m.group === "membro")
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((m) => (
+                <MemberCard
+                  key={m.name}
+                  member={m}
+                  role={m.presidentOf ? "Coordenação" : m.viceOf ? "Vice-coordenação" : "Membro"}
+                  badge={areasOf(m).map(labelOf).join(" · ") || undefined}
+                />
+              ))}
           </div>
         </Reveal>
       </Stage>
