@@ -94,12 +94,13 @@ function Timeline() {
               style={{ left: `${((i + 1) / years.length) * 100}%` }}
             />
           ))}
-          {/* Cada ano fica no fim do seu trecho, logo acima da linha. */}
-          <ol aria-hidden className="absolute inset-x-0 top-32 flex">
-            {years.map((year) => (
+          {/* Cada ano fica centralizado no tracinho onde ele termina, logo acima da linha. */}
+          <ol aria-hidden>
+            {years.map((year, i) => (
               <li
                 key={year}
-                className="flex-1 pr-3 text-right text-lg font-bold tracking-[-0.02em]"
+                className="absolute top-32 z-10 -translate-x-1/2 bg-paper px-1.5 text-lg font-bold tracking-[-0.02em]"
+                style={{ left: `${((i + 1) / years.length) * 100}%` }}
               >
                 {year}
               </li>
