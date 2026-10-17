@@ -118,10 +118,7 @@ function Timeline() {
               return (
                 <li
                   key={item.label}
-                  className={`timeline-mark absolute border-dotted border-accent ${
-                    flip ? "-translate-x-full pr-4 text-right" : "pl-4"
-                  } ${below ? "" : flip ? "border-r-2" : "border-l-2"
-                  } ${
+                  className={`timeline-mark absolute ${flip ? "-translate-x-full pr-4 text-right" : "pl-4"} ${
                     // Acima, alturas alternadas para os textos vizinhos não se tocarem.
                     below ? "top-[calc(10rem+1px)] pt-6" : `bottom-[calc(100%-10rem)] ${rank % 2 ? "h-24" : "h-40"}`
                   }`}
@@ -133,13 +130,17 @@ function Timeline() {
                   </p>
                   {item.photo && (
                     // O pontilhado desce da linha e faz a curva até o meio da foto (w-60 em 4:3).
-                    <span
-                      aria-hidden
-                      className={`absolute top-0 bottom-[5.625rem] w-4 border-b-2 border-dotted border-accent ${
-                        flip ? "right-0 rounded-br-xl border-r-2" : "left-0 rounded-bl-xl border-l-2"
-                      }`}
-                    >
-                      <span className={`timeline-travel timeline-travel-down ${flip ? "-right-[5px]" : "-left-[5px]"}`} />
+                    // Descida e trecho até a foto andam; só a curvinha do canto fica parada.
+                    <span aria-hidden className={`absolute top-0 bottom-[5.625rem] w-4 ${flip ? "right-0" : "left-0"}`}>
+                      <span className={`dots-y dots-down absolute top-0 bottom-3 ${flip ? "right-0" : "left-0"}`} />
+                      <span
+                        className={`absolute bottom-0 size-3 border-b-2 border-dotted border-accent ${
+                          flip ? "right-0 rounded-br-xl border-r-2" : "left-0 rounded-bl-xl border-l-2"
+                        }`}
+                      />
+                      <span
+                        className={`dots-x absolute bottom-0 ${flip ? "right-3 left-0 dots-left" : "left-3 right-0 dots-right"}`}
+                      />
                     </span>
                   )}
                   {item.photo && (
@@ -158,10 +159,7 @@ function Timeline() {
                     } ${flip ? "-right-[7px]" : "-left-[7px]"}`}
                   />
                   {!below && (
-                    <span
-                      aria-hidden
-                      className={`timeline-travel timeline-travel-up ${flip ? "-right-[5px]" : "-left-[5px]"}`}
-                    />
+                    <span aria-hidden className={`dots-y dots-up absolute inset-y-0 ${flip ? "right-0" : "left-0"}`} />
                   )}
                 </li>
               );
