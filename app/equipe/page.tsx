@@ -84,7 +84,7 @@ function CompactGroup({
       <p className="mt-3 leading-relaxed text-pretty text-muted">{subtitle}</p>
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-8">
         {members.map((member) => (
-          <div key={member.name} className="w-32">
+          <div key={member.name} className="w-36">
             <MemberCard member={member} role={role} />
           </div>
         ))}

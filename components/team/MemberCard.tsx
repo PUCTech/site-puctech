@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { LinkedinIcon } from "@/components/SocialIcons";
 import type { Member } from "@/data/team";
 
 export const membersGrid =
@@ -36,50 +37,50 @@ export default function MemberCard({
 
   return (
     <article className="group relative">
-      {/* Sem caixa: só a foto. O destaque vem do tamanho e do cargo em ciano. */}
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-surface">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-surface">
         {member.photo ? (
           <Image
             src={member.photo}
             alt={`Foto de ${member.name}`}
             fill
-            sizes={highlight ? "(min-width: 768px) 260px, 50vw" : "(min-width: 768px) 180px, 50vw"}
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            sizes={highlight ? "(min-width: 768px) 260px, 50vw" : "(min-width: 768px) 200px, 50vw"}
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
         ) : (
           <span
             aria-hidden
-            className="flex size-full items-center justify-center font-display text-3xl font-bold text-accent-ink"
+            className="flex size-full items-center justify-center font-mono text-2xl text-accent-ink"
           >
             {getInitials(member.name)}
           </span>
         )}
       </div>
 
-      <div className="pt-4">
-        <h3 className={`font-display leading-tight font-bold ${highlight ? "text-lg" : ""}`}>
-          {member.name}
-        </h3>
-        {title && (
-          <p className={`mt-0.5 text-sm ${highlight ? "font-semibold text-accent-ink" : "text-muted"}`}>
-            {title}
-          </p>
-        )}
-
-        {badge && (
-          <p className="mt-1.5 font-mono text-xs text-accent-ink">{badge}</p>
-        )}
-
+      <div className="mt-3 flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className={`leading-tight font-semibold text-balance ${highlight ? "text-lg" : ""}`}>
+            {member.linkedin ? (
+              // O card inteiro é o link (pelo ::after), o nome é só o texto dele.
+              <a
+                href={member.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${member.name}, LinkedIn (abre em nova aba)`}
+                className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-accent-ink"
+              >
+                {member.name}
+              </a>
+            ) : (
+              member.name
+            )}
+          </h3>
+          {title && (
+            <p className={`mt-1 text-sm ${highlight ? "font-medium text-accent-ink" : "text-muted"}`}>{title}</p>
+          )}
+          {badge && <p className="mt-1 font-mono text-xs text-accent-ink">{badge}</p>}
+        </div>
         {member.linkedin && (
-          <a
-            href={member.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`LinkedIn de ${member.name} (abre em nova aba)`}
-            className="mt-2 block text-sm font-semibold underline decoration-transparent underline-offset-4 transition-colors after:absolute after:inset-0 hover:decoration-current focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-accent-ink after:rounded-2xl"
-          >
-            LinkedIn ↗
-          </a>
+          <LinkedinIcon className="mt-0.5 size-4 shrink-0 text-muted transition-colors group-hover:text-accent-ink" />
         )}
       </div>
     </article>
