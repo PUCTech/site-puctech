@@ -74,29 +74,21 @@ const TRACK_PX = years.length * YEAR_PX;
 const LABEL_W = 192 / TRACK_PX; // largura do texto de um marco (w-44 + folga), como fração da linha
 const LEVEL = 120; // altura mínima (px) de um marco acima da linha (livra os anos)
 const STEP = 84; // distância (px) entre alturas: cabe um texto de duas linhas
-const PHOTO_W = 176 / TRACK_PX; // largura de um marco com foto (w-36 + pontilhado), como fração da linha
 
-const LANE_PX = 236; // altura de uma fileira de fotos (foto + data + até 3 linhas de texto)
+const PHOTO_PX = 144; // largura da foto (w-36)
+const PHOTO_GAP = 24; // espaço mínimo entre duas fotos
 
 /**
- * Onde cada foto vai embaixo da linha: na primeira fileira em que couber, à direita
- * e senão à esquerda, sem encostar em nenhuma outra. Fileiras de baixo têm o
- * pontilhado mais comprido (ele passa por trás das fotos de cima).
+ * Onde cada foto começa (px), numa fileira só embaixo da linha: no próprio marco,
+ * ou empurrada para a direita se encostaria na foto anterior. O pontilhado então
+ * desce do marco, anda de lado e entra na foto por cima.
  */
-function photoSlots(positions: number[]) {
-  const lanes: [number, number][][] = []; // trechos já ocupados em cada fileira
+function photoLefts(positions: number[]) {
+  let end = -Infinity;
   return positions.map((pos) => {
-    for (let lane = 0; ; lane++) {
-      const taken = (lanes[lane] ??= []);
-      const fits = ([a, b]: [number, number]) => a >= 0 && b <= 1 && taken.every(([x, y]) => b <= x || a >= y);
-      const right: [number, number] = [pos, pos + PHOTO_W];
-      const left: [number, number] = [pos - PHOTO_W, pos];
-      const span = fits(right) ? right : fits(left) ? left : null;
-      if (span) {
-        taken.push(span);
-        return { lane, flip: span === left };
-      }
-    }
+    const left = Math.max(pos, end + PHOTO_GAP);
+    end = left + PHOTO_PX;
+    return left;
   });
 }
 
@@ -144,8 +136,9 @@ function Timeline() {
   const marks = history.milestones.map((item) => ({ item, pos: at(item.year, item.month, item.day), below: Boolean(item.photo) }));
   const above = marks.filter((m) => !m.below).map((m) => ({ ...m, flip: m.pos + LABEL_W > 1 }));
   const levels = aboveLevels(above);
-  const slots = photoSlots(marks.filter((m) => m.below).map((m) => m.pos));
-  const lanes = Math.max(1, ...slots.map((slot) => slot.lane + 1));
+  const photoX = photoLefts(marks.filter((m) => m.below).map((m) => m.pos * TRACK_PX));
+  // Se a última foto foi empurrada além do fim da linha, a faixa cresce junto.
+  const width = Math.max(TRACK_PX, (photoX.at(-1) ?? 0) + PHOTO_PX);
   // Altura da faixa acima da linha: o marco mais alto mais o texto dele.
   const lineTop = Math.max(...levels) + 8;
 
@@ -157,21 +150,21 @@ function Timeline() {
         <TimelineScroller>
         <div
           className="relative mr-28 ml-16"
-          style={{ width: TRACK_PX, height: lineTop + 40 + lanes * LANE_PX, "--line": `${lineTop}px` } as CSSProperties}
+          style={{ width, height: lineTop + 290, "--line": `${lineTop}px` } as CSSProperties}
         >
           {/* Até hoje a linha é cheia; o resto do ano atual fica apagado. */}
           <span aria-hidden className="absolute inset-x-0 top-(--line) h-0.5 bg-border" />
           <span
             aria-hidden
             className="timeline-line absolute left-0 top-(--line) h-0.5 bg-accent"
-            style={{ width: `${today * 100}%` }}
+            style={{ width: today * TRACK_PX }}
           />
           {years.slice(1).map((year, i) => (
             <span
               key={year}
               aria-hidden
               className="absolute top-[calc(var(--line)-0.5rem)] h-5 w-px bg-border"
-              style={{ left: `${((i + 1) / years.length) * 100}%` }}
+              style={{ left: (i + 1) * YEAR_PX }}
             />
           ))}
           {/* Cada ano fica centralizado no tracinho onde ele termina, logo acima da linha. */}
@@ -180,7 +173,7 @@ function Timeline() {
               <li
                 key={year}
                 className="absolute top-[calc(var(--line)-2rem)] z-10 -translate-x-1/2 bg-paper px-1.5 text-lg font-bold tracking-[-0.02em]"
-                style={{ left: `${((i + 1) / years.length) * 100}%` }}
+                style={{ left: (i + 1) * YEAR_PX }}
               >
                 {year}
               </li>
@@ -190,44 +183,42 @@ function Timeline() {
           <ol>
             {marks.map(({ item, pos, below }, i) => {
               const rank = marks.slice(0, i).filter((m) => m.below === below).length;
-              const flip = below ? slots[rank].flip : above[rank].flip;
-              const drop = below ? 24 + slots[rank].lane * LANE_PX : 0; // px da linha até a foto
+              const flip = !below && above[rank].flip;
+              // Embaixo: quanto a foto foi empurrada para a direita do marco (px).
+              const shift = below ? photoX[rank] - pos * TRACK_PX : 0;
+              const enter = shift + 24; // onde o pontilhado entra no topo da foto
+              const bend = rank % 2 ? 26 : 14; // altura do trecho de lado, alternada para vizinhos não se juntarem
               const height = below ? 0 : levels[rank]; // px, acima da linha
               return (
                 <li
                   key={item.label}
-                  className={`timeline-mark absolute ${flip ? "-translate-x-full pr-4 text-right" : "pl-4"} ${
+                  className={`timeline-mark absolute ${below ? "" : flip ? "-translate-x-full pr-4 text-right" : "pl-4"} ${
                     below ? "top-[calc(var(--line)+1px)]" : "bottom-[calc(100%-var(--line))]"
                   }`}
                   style={
                     {
-                      left: `${pos * 100}%`,
+                      left: below ? photoX[rank] : pos * TRACK_PX,
                       height: below ? undefined : height,
-                      paddingTop: below ? drop : undefined,
+                      paddingTop: below ? 40 : undefined,
                       "--at": pos / today,
                     } as CSSProperties
                   }
                 >
                   {item.photo && (
                     <>
-                      {/* Um caminho só: desce da linha, faz a curva e entra no meio da foto
-                          (metade da foto w-36 em 4:3 = 54px abaixo do topo dela). */}
+                      {/* Desce do marco, curva, anda de lado até a foto e curva para dentro dela. */}
                       <MarchingDots
-                        length={drop + 64}
-                        d={
-                          flip
-                            ? `M15 0 V${drop + 40} Q15 ${drop + 54} 1 ${drop + 54} H0`
-                            : `M1 0 V${drop + 40} Q1 ${drop + 54} 15 ${drop + 54} H16`
-                        }
-                        className={`top-0 w-4 ${flip ? "right-0" : "left-0"}`}
-                        style={{ height: drop + 56 }}
+                        length={enter + 40}
+                        d={`M1 0 V${bend - 12} Q1 ${bend} 13 ${bend} H${enter - 12} Q${enter} ${bend} ${enter} ${bend + 12} V40`}
+                        className="top-0"
+                        style={{ left: -shift, width: enter + 2, height: 40 }}
                       />
                       <Image
                         src={item.photo}
                         alt={item.photoAlt ?? ""}
                         width={480}
                         height={360}
-                        className={`relative z-10 aspect-[4/3] w-36 rounded-xl object-cover ${flip ? "ml-auto" : ""}`}
+                        className="relative z-10 aspect-[4/3] w-36 rounded-xl object-cover"
                       />
                     </>
                   )}
@@ -249,7 +240,8 @@ function Timeline() {
                     aria-hidden
                     className={`absolute size-3 rounded-full bg-accent ring-4 ring-paper ${
                       below ? "-top-[7px]" : "-bottom-[7px]"
-                    } ${flip ? "-right-[7px]" : "-left-[7px]"}`}
+                    } ${below ? "" : flip ? "-right-[7px]" : "-left-[7px]"}`}
+                    style={below ? { left: -shift - 5 } : undefined}
                   />
                   {!below && (
                     <MarchingDots
