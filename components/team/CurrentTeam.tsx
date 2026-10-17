@@ -98,7 +98,7 @@ export default function CurrentTeam() {
       <div
         role="tablist"
         aria-label="Filtrar equipe por área"
-        className="inline-flex flex-wrap gap-1 rounded-3xl bg-surface p-1.5 sm:rounded-full"
+        className="flex flex-wrap gap-x-8 gap-y-2 border-b border-border"
       >
         {tabs.map((tab) => (
           <button
@@ -109,10 +109,10 @@ export default function CurrentTeam() {
             aria-selected={active === tab.id}
             aria-controls="team-panel"
             onClick={() => setActive(tab.id)}
-            className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
+            className={`-mb-px border-b-2 pb-3 text-lg font-semibold transition-colors ${
               active === tab.id
-                ? "bg-ink text-paper"
-                : "text-muted hover:text-ink"
+                ? "border-accent text-ink"
+                : "border-transparent text-muted hover:text-ink"
             }`}
           >
             {tab.label}
@@ -149,7 +149,7 @@ export default function CurrentTeam() {
 
           return (
             <div key={section.key}>
-              <h3 className="font-display text-xl font-bold">{section.title}</h3>
+              <h3 className="font-mono text-sm text-accent-ink">{section.title}</h3>
               <div className={`mt-6 ${section.grid}`}>
                 {people.map((member) => (
                   <MemberCard
