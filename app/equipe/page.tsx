@@ -6,7 +6,7 @@ import MemberCard, {
   featuredGrid,
   membersGrid,
 } from "@/components/team/MemberCard";
-import CurrentTeam from "@/components/team/CurrentTeam";
+import AreasOverview from "@/components/team/AreasOverview";
 import OrgChart from "@/components/team/OrgChart";
 import {
   advisors,
@@ -172,7 +172,7 @@ export default function EquipePage() {
         </Heading>
         <Reveal delay={150}>
           <div className="mt-10">
-            <CurrentTeam />
+            <AreasOverview />
           </div>
         </Reveal>
       </Stage>
