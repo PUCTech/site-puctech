@@ -1,15 +1,24 @@
 ---
-title: "CareOn"
-summary: "Aplicativo de gestão de saúde rotineira: remédios, compromissos de saúde e consulta de preços."
-area: "Engenharia de Software"
-status: "concluido"
-order: 1
-tech: [React Native, Expo, TypeScript, Python, Django, PostgreSQL]
+title: CareOn
+summary: >-
+  Aplicativo de gestão de saúde rotineira: remédios, compromissos de saúde e
+  consulta de preços.
+area: Engenharia de Software
+status: concluido
+period: '2026.1'
+tech:
+  - React Native
+  - Expo
+  - TypeScript
+  - Python
+  - Django
+  - PostgreSQL
 team:
-  - "Pedro Bizzari"
-  - "Liam Lopes"
-  - "João Victor Pereira Bicalho"
-repo: "https://github.com/PedroBZR12/careon"
+  - Pedro Bizzari
+  - Liam Vedovato Lopes
+  - João Vitor P Bicalho
+repo: 'https://github.com/PedroBZR12/careon'
+order: 1
 ---
 
 ## Descrição
