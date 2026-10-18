@@ -1,0 +1,65 @@
+import Image from "next/image";
+import Link from "next/link";
+import { Notice } from "@/components/admin/forms";
+import { button } from "@/components/Section";
+import { areaInfo, groups } from "@/data/team";
+import { loadMembers } from "@/lib/admin-data";
+
+const areaLabel = (id: string) => areaInfo.find((area) => area.id === id)?.label ?? id;
+
+export default async function AdminMembers({ searchParams }: { searchParams: Promise<{ ok?: string }> }) {
+  const [{ ok }, { members }] = await Promise.all([searchParams, loadMembers()]);
+  // Guarda a posição de cada pessoa na lista: é ela que identifica quem editar.
+  const indexed = members.map((member, index) => ({ member, index }));
+
+  return (
+    <>
+      <Notice ok={ok} />
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-[-0.03em] md:text-5xl">Membros</h1>
+          <p className="mt-3 text-lg text-muted">{members.length} pessoas no site.</p>
+        </div>
+        <Link href="/admin/membros/novo" className={`${button.base} ${button.primary}`}>
+          Nova pessoa
+        </Link>
+      </div>
+
+      <div className="mt-12 space-y-14">
+        {groups.map((group) => {
+          const people = indexed.filter(({ member }) => member.group === group.id);
+          if (people.length === 0) return null;
+          return (
+            <section key={group.id}>
+              <h2 className="font-mono text-sm text-muted">
+                {group.label} <span className="opacity-60">{people.length}</span>
+              </h2>
+              <ul className="mt-4 border-b border-border">
+                {people.map(({ member, index }) => (
+                  <li key={index} className="border-t border-border">
+                    <Link href={`/admin/membros/${index}`} className="group flex items-center gap-4 py-4">
+                      {member.photo ? (
+                        <Image src={member.photo} alt="" width={44} height={44} className="size-11 rounded-full object-cover" />
+                      ) : (
+                        <span aria-hidden className="size-11 rounded-full bg-surface" />
+                      )}
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-semibold underline decoration-transparent decoration-2 underline-offset-4 transition-colors group-hover:decoration-accent">
+                          {member.name}
+                        </span>
+                        <span className="block truncate font-mono text-sm text-muted">
+                          {[member.cargo, ...(member.areas ?? []).map(areaLabel)].filter(Boolean).join(" · ") || "—"}
+                        </span>
+                      </span>
+                      <span className="font-mono text-sm text-muted group-hover:text-ink">editar →</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+    </>
+  );
+}
