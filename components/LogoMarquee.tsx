@@ -1,12 +1,11 @@
 import Image from "next/image";
 
-// logoDark: logo colorido (sem o filtro preto/branco), com a versão para o modo escuro.
+// logoDark: versão do logo para o modo escuro (texto claro).
 type Partner = { name: string; logo?: string; logoDark?: string; href?: string };
 
 // Faixa de logos que rola sem parar (marquee). A lista é duplicada, então andar
 // metade da largura fecha o ciclo sem "pulo". Passar o mouse pausa.
-// Logos .svg/.png com fundo transparente viram pretos (brancos no modo escuro);
-// .jpg (com fundo) ficam em tons de cinza até ganharem uma versão vetorial.
+// Logos em cores originais. Os que têm texto claro/escuro ganham logoDark para o modo escuro.
 export default function LogoMarquee({ partners }: { partners: Partner[] }) {
   const image = (partner: Partner, hidden: boolean, src: string, className: string, decorative = hidden) => (
     <Image
@@ -28,14 +27,7 @@ export default function LogoMarquee({ partners }: { partners: Partner[] }) {
         {image(partner, hidden, partner.logoDark, "hidden dark:block", true)}
       </>
     ) : (
-      image(
-        partner,
-        hidden,
-        partner.logo,
-        `opacity-70 transition-opacity hover:opacity-100 ${
-          partner.logo.endsWith(".jpg") ? "rounded-lg grayscale" : "brightness-0 dark:invert"
-        }`,
-      )
+      image(partner, hidden, partner.logo, partner.logo.endsWith(".jpg") ? "rounded-lg" : "")
     );
     return (
       <li
