@@ -1,13 +1,15 @@
 import Image from "next/image";
 import { areaColor, areaIndex, areasOf, labelOf } from "@/components/team/areas";
-import { areaInfo, executive, members, type AreaId, type Member } from "@/data/team";
+import { areaInfo, cargoIn, executive, members, teamPage, type AreaId, type Member } from "@/data/team";
+import type { Lang } from "@/lib/i18n";
 
-const roleOf = (m: Member) => {
+const roleOf = (m: Member, lang: Lang) => {
+  const roles = teamPage[lang].roles;
   const president = m.presidentOf?.[0];
-  if (president) return `Coord. ${labelOf(president)}`;
+  if (president) return roles.leadOf.replace("{area}", labelOf(president, lang));
   const vice = m.viceOf?.[0];
-  if (vice) return `Vice-coord. ${labelOf(vice)}`;
-  return "Membro";
+  if (vice) return roles.viceOf.replace("{area}", labelOf(vice, lang));
+  return roles.member;
 };
 
 // Ordem que deixa cada área num bloco contínuo: pela primeira área e depois pela
@@ -62,7 +64,7 @@ function Name({ member, className = "" }: { member: Member; className?: string }
  * Organograma: diretoria executiva no topo, uma linha descendo e todo mundo num
  * grupo só. Retângulos pontilhados coloridos mostram de que área cada um é.
  */
-export default function OrgChart() {
+export default function OrgChart({ lang }: { lang: Lang }) {
   return (
     <div>
       {/* Presidente e vice ligados por uma linha; dela desce a linha para o grupo. */}
@@ -74,7 +76,7 @@ export default function OrgChart() {
               <Photo member={member} className="size-20" />
               <div>
                 <Name member={member} className="text-lg" />
-                <p className="mt-0.5 text-sm text-accent-ink">{member.cargo}</p>
+                <p className="mt-0.5 text-sm text-accent-ink">{cargoIn(member.cargo, lang)}</p>
               </div>
             </div>
           </div>
@@ -103,7 +105,7 @@ export default function OrgChart() {
               <span
                 className={`absolute -top-2.5 left-3 z-10 cursor-default bg-paper px-1.5 py-0.5 font-mono text-xs leading-none ${areaColor[span.id].text}`}
               >
-                {labelOf(span.id)}
+                {labelOf(span.id, lang)}
               </span>
             </li>
           ))}
@@ -120,7 +122,7 @@ export default function OrgChart() {
               />
               <Name member={m} className="mt-2.5 text-sm text-balance" />
               <p className={`mt-0.5 text-xs ${m.presidentOf || m.viceOf ? "text-accent-ink" : "text-muted"}`}>
-                {roleOf(m)}
+                {roleOf(m, lang)}
               </p>
             </li>
           ))}
@@ -131,7 +133,7 @@ export default function OrgChart() {
       <ul className="sr-only">
         {areaInfo.map((area) => (
           <li key={area.id}>
-            {area.label}:{" "}
+            {area.name[lang]}:{" "}
             {team
               .filter(({ areas }) => areas.includes(area.id))
               .map(({ m }) => m.name)

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Notice } from "@/components/admin/forms";
-import { statusLabel } from "@/components/ProjectsShowcase";
+import { projectStatuses } from "@/data/projects";
 import { button } from "@/components/Section";
 import { loadProjects } from "@/lib/admin-data";
 
@@ -36,7 +36,7 @@ export default async function AdminProjects({ searchParams }: { searchParams: Pr
                 </span>
                 <span className="mt-1 block font-mono text-sm text-muted">
                   /projetos/{project.slug}
-                  {[project.area, statusLabel(project.status)].filter(Boolean).map((item) => ` · ${item}`)}
+                  {[project.area, projectStatuses.find((s) => s.id === project.status)?.label].filter(Boolean).map((item) => ` · ${item}`)}
                 </span>
               </span>
               <span className="font-mono text-sm text-muted group-hover:text-ink">editar →</span>

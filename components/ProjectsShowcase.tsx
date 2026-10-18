@@ -1,13 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
-import { projectStatuses, type Project, type ProjectStatus } from "@/data/projects";
+import { areaName, projectsPage, projectStatuses, type Project, type ProjectStatus } from "@/data/projects";
+import type { Lang } from "@/lib/i18n";
 
-export const statusLabel = (id?: ProjectStatus) => projectStatuses.find((item) => item.id === id)?.label;
+const statusName = (id: ProjectStatus | undefined, lang: Lang) =>
+  projectStatuses.find((item) => item.id === id)?.name[lang];
+
+/** Área · status · período, no idioma da página. */
+export const projectMeta = (project: Project, lang: Lang) =>
+  [areaName(project.area, lang), statusName(project.status, lang), project.period].filter(Boolean).join(" · ");
 
 /** Lista de projetos; cada um leva para a sua página (/projetos/slug). */
-export default function ProjectsShowcase({ projects }: { projects: Project[] }) {
+export default function ProjectsShowcase({ projects, lang }: { projects: Project[]; lang: Lang }) {
   if (projects.length === 0) {
-    return <p className="text-lg text-muted">Em breve, os projetos da PUC Tech vão aparecer aqui.</p>;
+    return <p className="text-lg text-muted">{projectsPage[lang].empty}</p>;
   }
 
   return (
@@ -35,7 +41,7 @@ export default function ProjectsShowcase({ projects }: { projects: Project[] }) 
                 </p>
               )}
               <p className="mt-8 font-mono text-sm text-muted">
-                {[project.area, statusLabel(project.status), project.period].filter(Boolean).join(" · ")}
+                {projectMeta(project, lang)}
               </p>
               {project.tech && project.tech.length > 0 && (
                 <p className="mt-2 font-mono text-sm leading-relaxed text-accent-ink">{project.tech.join(" / ")}</p>

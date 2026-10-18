@@ -3,7 +3,8 @@
 import { useState } from "react";
 import MemberCard from "@/components/team/MemberCard";
 import { areaColor, areasOf, labelOf } from "@/components/team/areas";
-import { areaInfo, type AreaId, type Member } from "@/data/team";
+import { areaInfo, teamPage, type AreaId, type Member } from "@/data/team";
+import type { Lang } from "@/lib/i18n";
 
 // Cor do pontinho de cada área (o mesmo tom do contorno no organograma).
 const dot: Record<AreaId, string> = {
@@ -20,20 +21,21 @@ const cell =
  * Todo mundo, com filtro por área. Filtrar não tira ninguém da grade: quem não é
  * da área só apaga, como no hover do organograma, e o layout não pula.
  */
-export default function MembersWall({ people }: { people: Member[] }) {
+export default function MembersWall({ people, lang }: { people: Member[]; lang: Lang }) {
+  const t = teamPage[lang];
   const [area, setArea] = useState<AreaId | null>(null);
   const filters = [
-    { id: null, label: "Todos", count: people.length },
+    { id: null, label: t.all, count: people.length },
     ...areaInfo.map((a) => ({
       id: a.id,
-      label: a.label,
+      label: a.name[lang],
       count: people.filter((m) => areasOf(m).includes(a.id)).length,
     })),
   ];
 
   return (
     <div>
-      <div role="group" aria-label="Filtrar por área" className="flex flex-wrap gap-2">
+      <div role="group" aria-label={t.filter} className="flex flex-wrap gap-2">
         {filters.map((f) => {
           const active = area === f.id;
           const color = f.id ? areaColor[f.id] : { border: "border-ink", text: "text-ink" };
@@ -66,14 +68,15 @@ export default function MembersWall({ people }: { people: Member[] }) {
             >
               <MemberCard
                 member={m}
-                role={m.presidentOf ? "Coordenação" : m.viceOf ? "Vice-coordenação" : "Membro"}
+                lang={lang}
+                role={m.presidentOf ? t.roles.lead : m.viceOf ? t.roles.vice : t.roles.member}
                 badge={
                   areas.length > 0 && (
                     <span className="flex flex-wrap gap-x-3 gap-y-1">
                       {areas.map((id) => (
                         <span key={id} className={`inline-flex items-center gap-1.5 ${areaColor[id].text}`}>
                           <span aria-hidden className={`size-1.5 rounded-full ${dot[id]}`} />
-                          {labelOf(id)}
+                          {labelOf(id, lang)}
                         </span>
                       ))}
                     </span>

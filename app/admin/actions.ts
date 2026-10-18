@@ -154,7 +154,16 @@ export async function deleteProject(_: FormState, form: FormData): Promise<FormS
     const path = `${PROJECTS}/${slug}.md`;
     const current = await readFile(path);
     if (current.sha !== str(form, "sha")) throw new Error("Este projeto mudou. Recarregue antes de apagar.");
-    await commit(`chore(content): remove project ${slug} (via /admin)`, [{ path, content: null }]);
+    // Leva junto as traduções (content/projetos/en e es), quando existirem.
+    const translations: string[] = [];
+    for (const lang of ["en", "es"]) {
+      const files = await listFiles(`${PROJECTS}/${lang}`).catch(() => [] as string[]);
+      if (files.includes(`${slug}.md`)) translations.push(`${PROJECTS}/${lang}/${slug}.md`);
+    }
+    await commit(`chore(content): remove project ${slug} (via /admin)`, [
+      { path, content: null },
+      ...translations.map((file) => ({ path: file, content: null })),
+    ]);
     return "/admin/projetos?ok=apagado";
   });
 }

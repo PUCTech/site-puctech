@@ -23,6 +23,11 @@ export default async function EditProject({ params }: { params: Promise<{ slug: 
         {project ? project.title : "Novo projeto"}
       </h1>
       {project && <p className="mt-3 font-mono text-sm text-muted">/projetos/{project.slug}</p>}
+      <p className="mt-3 max-w-2xl text-sm text-muted">
+        Aqui é o texto em português. As versões em inglês e espanhol ficam em{" "}
+        <code className="font-mono">content/projetos/en/</code> e <code className="font-mono">es/</code>, no GitHub;
+        sem tradução, o site mostra o português.
+      </p>
 
       <AdminForm action={saveProject} submit={isNew ? "Criar projeto" : "Salvar"} className="mt-12 max-w-3xl">
         <input type="hidden" name="original" value={project?.slug ?? ""} />

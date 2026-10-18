@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { ui } from "@/data/ui";
+import { langInfo } from "@/lib/i18n";
+import { getLang } from "@/lib/lang";
 import { siteConfig } from "@/lib/site";
 
 // Só para desenhar as letras do "PUCTech" em ASCII na abertura; os títulos usam a Figtree.
@@ -16,28 +19,24 @@ const body = Figtree({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: "PUC Tech | A Primeira Liga de Ciência e Tecnologia da PUC-SP",
-    template: "%s | PUC Tech",
-  },
-  description:
-    "A primeira liga de ciência e tecnologia da PUC-SP, formada por estudantes que acreditam no protagonismo estudantil como motor de transformação.",
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    siteName: "PUC Tech",
-  },
-  twitter: {
-    card: "summary_large_image",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLang();
+  const t = ui[lang].site;
+  return {
+    metadataBase: new URL(siteConfig.url),
+    title: { default: t.title, template: "%s | PUC Tech" },
+    description: t.description,
+    openGraph: { type: "website", locale: langInfo[lang].og, siteName: "PUC Tech" },
+    twitter: { card: "summary_large_image" },
+  };
+}
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+// O idioma vem do cookie (lib/lang.ts): a mesma página, no idioma escolhido no cabeçalho.
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const lang = await getLang();
   return (
     <html
-      lang="pt-BR"
+      lang={langInfo[lang].html}
       suppressHydrationWarning
       className={`${display.variable} ${body.variable} h-full antialiased`}
     >
@@ -50,9 +49,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="font-sans" suppressHydrationWarning>
-        <Header />
+        <Header lang={lang} />
         {children}
-        <Footer />
+        <Footer lang={lang} />
       </body>
     </html>
   );

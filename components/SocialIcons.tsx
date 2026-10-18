@@ -1,3 +1,5 @@
+import { ui } from "@/data/ui";
+import type { Lang } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 type IconProps = { className?: string };
@@ -88,14 +90,14 @@ export function GithubIcon({ className }: IconProps) {
   );
 }
 
-// Redes da PUC Tech (rodapé e home).
-export const socials = [
+// Redes da PUC Tech (rodapé e home). O último leva para a /linktree, no idioma da página.
+export const socials = (lang: Lang) => [
   { label: "GitHub", href: siteConfig.links.github, Icon: GithubIcon },
   { label: "LinkedIn", href: siteConfig.links.linkedin, Icon: LinkedinIcon },
   { label: "Instagram", href: siteConfig.links.instagram, Icon: InstagramIcon },
   { label: "TikTok", href: siteConfig.links.tiktok, Icon: TiktokIcon },
   { label: "X", href: siteConfig.links.x, Icon: XIcon },
-  { label: "Nossos links", href: siteConfig.links.allLinks, Icon: LinkIcon },
+  { label: ui[lang].allLinks, href: siteConfig.links.allLinks, Icon: LinkIcon },
 ];
 
 export function ExternalIcon({ className }: IconProps) {

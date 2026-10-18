@@ -10,7 +10,8 @@
 //                 Se ficar vazio (""), o botão aparece desativado com "em breve".
 //   icon        → "github" | "instagram" | "linkedin" | "tiktok" | "x" | "link" (padrão: "link")
 
-import { selectionPage } from "@/data/selection";
+import { selection } from "@/data/selection";
+import type { Lang } from "@/lib/i18n";
 import { siteConfig } from "@/lib/site";
 
 export type LinkIconId =
@@ -28,26 +29,28 @@ export type LinkItem = {
   icon?: LinkIconId;
 };
 
-export const linksPage = {
-  title: "PUC Tech",
-  tagline: "A Primeira Liga de Ciência e Tecnologia da PUC-SP",
+// Os três primeiros links (páginas do site) mudam com o idioma; as redes são iguais em todos.
+const site: Record<Lang, { site: string; selection: string; projects: string; projectsText: string }> = {
+  pt: { site: "Nosso site", selection: "Processo seletivo", projects: "Nossos projetos", projectsText: "O que já construímos" },
+  en: { site: "Our website", selection: "Selection process", projects: "Our projects", projectsText: "What we've built" },
+  es: { site: "Nuestro sitio", selection: "Proceso de selección", projects: "Nuestros proyectos", projectsText: "Lo que ya construimos" },
 };
 
-export const links: LinkItem[] = [
+export const links = (lang: Lang): LinkItem[] => [
   {
-    label: "Nosso site",
+    label: site[lang].site,
     // O endereço do site sem o "https://", ex.: puctech.com.br
     description: siteConfig.url.replace(/^https?:\/\//, ""),
     href: "/",
   },
   {
-    label: "Processo seletivo",
-    description: selectionPage.badge,
+    label: site[lang].selection,
+    description: selection[lang].badge,
     href: "/processo-seletivo",
   },
   {
-    label: "Nossos projetos",
-    description: "O que já construímos",
+    label: site[lang].projects,
+    description: site[lang].projectsText,
     href: "/projetos",
   },
   {

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getProjects } from "@/lib/projects";
 import { siteConfig } from "@/lib/site";
 
+// Um endereço por página: o idioma é escolhido no cabeçalho, não muda a URL.
 const pages = [
   "",
   "/sobre",

@@ -6,41 +6,36 @@ import { Heading, Stage } from "@/components/Section";
 // import FontCycle from "@/components/FontCycle";
 import TimelineScroller from "@/components/TimelineScroller";
 import Typewriter from "@/components/Typewriter";
-import {
-  aboutPage,
-  difference,
-  history,
-  support,
-  values,
-  vision,
-} from "@/data/about";
+import { about, milestones, supportLogo, valueIcons } from "@/data/about";
+import { langInfo, type Lang } from "@/lib/i18n";
+import { getLang } from "@/lib/lang";
 
-export const metadata: Metadata = {
-  title: "Sobre nós",
-  description:
-    "Conheça a visão, os valores e a história da PUC Tech, a primeira liga de ciência e tecnologia da PUC-SP.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLang();
+  const t = about[lang];
+  return { title: t.title, description: t.description };
+}
 
 // Ícones de linha para os valores, no mesmo traço do AreaIcon (estilo Lucide).
-const valueIcons: Record<string, ReactNode> = {
-  "Protagonismo Estudantil": (
+const icons: Record<(typeof valueIcons)[number], ReactNode> = {
+  rocket: (
     <>
       <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
       <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
       <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
     </>
   ),
-  "Colaboração e Comunidade": (
+  people: (
     <>
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
       <circle cx="9" cy="7" r="4" />
     </>
   ),
-  "Excelência e Aprendizado Contínuo": <path d="M22 10v6M2 10l10-5 10 5-10 5zM6 12v5c3 3 9 3 12 0v-5" />,
-  "Inovação com Responsabilidade": (
+  graduation: <path d="M22 10v6M2 10l10-5 10 5-10 5zM6 12v5c3 3 9 3 12 0v-5" />,
+  idea: (
     <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4" />
   ),
-  "Conexão com o Mundo Real": (
+  globe: (
     <>
       <circle cx="12" cy="12" r="10" />
       <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20" />
@@ -48,15 +43,30 @@ const valueIcons: Record<string, ReactNode> = {
   ),
 };
 
-const monthName = (month: number) =>
-  new Date(2000, month - 1).toLocaleString("pt-BR", { month: "long" });
+type When = { year: number; month?: number; day?: number };
 
-// "17 de setembro de 2026", "julho de 2025" ou só "2024".
-const dateLabel = ({ year, month, day }: { year: number; month?: number; day?: number }) =>
-  [day, month && monthName(month), year].filter(Boolean).join(" de ");
+// Data por extenso no idioma: "17 de setembro de 2026" / "September 17, 2026", "julho de 2025" ou só "2024".
+const dateLabel = ({ year, month, day }: When, lang: Lang) =>
+  month
+    ? new Date(Date.UTC(year, month - 1, day ?? 1)).toLocaleDateString(langInfo[lang].intl, {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "long",
+        ...(day ? { day: "numeric" } : {}),
+      })
+    : String(year);
+
+// Data curta, para baixo das fotos estreitas: 28/06/2025 (ou 06/28/2025 em inglês).
+const shortDate = ({ year, month, day }: When, lang: Lang) =>
+  new Date(Date.UTC(year, month! - 1, day)).toLocaleDateString(langInfo[lang].intl, {
+    timeZone: "UTC",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
 // Anos da linha do tempo: do primeiro marco até o ano atual (do build).
-const firstYear = history.milestones[0].year;
+const firstYear = milestones[0].year;
 const years = Array.from(
   { length: new Date().getFullYear() - firstYear + 1 },
   (_, i) => firstYear + i,
@@ -79,7 +89,7 @@ const GAP_PX = 96;
 /** Meses desde o começo do primeiro ano: no dia, ou no meio do mês. */
 const monthsOf = (year: number, month = 1, day?: number) =>
   (year - firstYear) * 12 + month - 1 + (day ? day / 31 : 0.5);
-const eventMonths = history.milestones.map((m) => monthsOf(m.year, m.month, m.day)).sort((a, b) => a - b);
+const eventMonths = milestones.map((m) => monthsOf(m.year, m.month, m.day)).sort((a, b) => a - b);
 const START = eventMonths[0] - 1; // a linha começa um mês antes do primeiro marco
 const END = years.length * 12; // e termina no fim do ano atual
 const gaps = eventMonths
@@ -164,13 +174,13 @@ function aboveLevels(items: { pos: number; flip: boolean }[]) {
   return levels;
 }
 
-function Timeline() {
+function Timeline({ lang }: { lang: Lang }) {
   // Posição de 0 a 1 na linha: no dia do marco, ou no meio do mês se não tiver dia.
   const at = (year: number, month?: number, day?: number) => px(monthsOf(year, month, day)) / TRACK_PX;
   const now = new Date();
   const today = px(Math.min(END, monthsOf(now.getFullYear(), now.getMonth() + 1))) / TRACK_PX;
 
-  const marks = history.milestones.map((item) => ({ item, pos: at(item.year, item.month, item.day), below: Boolean(item.photo) }));
+  const marks = milestones.map((item) => ({ item, pos: at(item.year, item.month, item.day), below: Boolean(item.photo) }));
   const above = marks.filter((m) => !m.below).map((m) => ({ ...m, flip: m.pos + LABEL_W > 1 }));
   const levels = aboveLevels(above);
   const slots = photoSlots(marks.filter((m) => m.below).map((m) => m.pos));
@@ -225,7 +235,7 @@ function Timeline() {
               const height = below ? 0 : levels[rank]; // px, acima da linha
               return (
                 <li
-                  key={item.label}
+                  key={`${item.year}-${item.month}-${item.label.pt}`}
                   className={`timeline-mark absolute ${flip ? "-translate-x-full pr-4 text-right" : "pl-4"} ${
                     below ? "top-[calc(var(--line)+1px)]" : "bottom-[calc(100%-var(--line))]"
                   }`}
@@ -256,7 +266,7 @@ function Timeline() {
                       />
                       <Image
                         src={item.photo}
-                        alt={item.photoAlt ?? ""}
+                        alt={item.photoAlt?.[lang] ?? ""}
                         width={480}
                         height={360}
                         className={`relative z-10 aspect-[4/3] w-36 rounded-lg object-cover ${flip ? "ml-auto" : ""}`}
@@ -265,9 +275,7 @@ function Timeline() {
                   )}
                   <p className={`font-mono text-sm text-accent-ink ${below ? "relative z-10 mt-2 bg-paper" : ""}`}>
                     {/* Embaixo das fotos estreitas, a data curta (28/06/2025) cabe numa linha. */}
-                    {below && item.day && item.month
-                      ? `${String(item.day).padStart(2, "0")}/${String(item.month).padStart(2, "0")}/${item.year}`
-                      : dateLabel(item)}
+                    {below && item.day && item.month ? shortDate(item, lang) : dateLabel(item, lang)}
                   </p>
                   <p
                     className={`mt-1 font-semibold leading-snug text-balance ${
@@ -275,7 +283,7 @@ function Timeline() {
                       below ? "relative z-10 w-36 bg-paper text-sm" : "w-44 text-base"
                     }`}
                   >
-                    {item.label}
+                    {item.label[lang]}
                   </p>
                   <span
                     aria-hidden
@@ -341,7 +349,9 @@ function MarchingDots({
 // Mesmo ritmo da home: título, texto logo abaixo e o conteúdo.
 const gap = "py-12 md:py-16";
 
-export default function SobrePage() {
+export default async function SobrePage() {
+  const lang = await getLang();
+  const { difference, vision, values, history, support, ...aboutPage } = about[lang];
   return (
     <main>
       <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
@@ -390,7 +400,7 @@ export default function SobrePage() {
         <Heading title={values.title} />
         <Reveal delay={150}>
           <ul className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-            {values.items.map((value) => (
+            {values.items.map((value, index) => (
               <li key={value.title} className="grid grid-cols-[2.5rem_1fr] content-start items-center gap-y-1.5">
                 <svg
                   viewBox="0 0 24 24"
@@ -402,7 +412,7 @@ export default function SobrePage() {
                   aria-hidden
                   className="size-6 text-accent-ink"
                 >
-                  {valueIcons[value.title]}
+                  {icons[valueIcons[index]]}
                 </svg>
                 <p className="font-semibold leading-snug text-balance">{value.title}</p>
                 <p className="col-start-2 text-[15px] leading-relaxed text-pretty text-muted">{value.text}</p>
@@ -419,7 +429,7 @@ export default function SobrePage() {
           ))}
         </Heading>
         <Reveal delay={150}>
-          <Timeline />
+          <Timeline lang={lang} />
         </Reveal>
       </Stage>
 
@@ -431,8 +441,8 @@ export default function SobrePage() {
           <Reveal delay={150}>
             <figure className="flex items-center gap-4 md:flex-col md:items-start">
               <Image
-                src={support.logo}
-                alt="Logo da PUC-SP"
+                src={supportLogo}
+                alt={support.logoAlt}
                 width={160}
                 height={160}
                 className="size-20 rounded-2xl object-cover md:size-32"

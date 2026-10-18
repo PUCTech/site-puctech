@@ -22,7 +22,7 @@ Requer Node.js 20.9 ou superior (exigência do Next.js 16).
 
 | Rota                 | Arquivo                            | Conteúdo                                                                                     |
 | -------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------- |
-| `/`                  | `app/page.tsx`                     | Home com hero, sobre, números, projetos (áreas), parceiros e redes sociais                   |
+| `/`                  | `app/page.tsx`                   | Home com hero, sobre, números, projetos (áreas), parceiros e redes sociais                   |
 | `/sobre`             | `app/sobre/page.tsx`               | Diferença da liga, visão, valores, história e apoio institucional                            |
 | `/equipe`            | `app/equipe/page.tsx`              | Foto da equipe, introdução, tutores, fundadores, diretoria e áreas operacionais (com abas)   |
 | `/projetos`          | `app/projetos/page.tsx`            | Áreas de atuação e a seção de projetos (filtros, carrossel e lista completa)                 |
@@ -152,11 +152,31 @@ A regra geral: **o conteúdo fica em `content/`, `data/` e `lib/site.ts`; a apar
 | Título e descrição de cada página no Google                    | `metadata` no `page.tsx` da página                   |
 | Imagem de prévia ao compartilhar o link                        | `app/opengraph-image.tsx`                            |
 | Favicon                                                        | `app/icon.png`                                       |
-| Ordem das seções da home                                       | `app/page.tsx`                                       |
+| Ordem das seções da home                                       | `app/page.tsx`                                     |
 | Páginas listadas no sitemap                                    | `app/sitemap.ts`                                     |
 | Cabeçalhos de segurança                                        | `next.config.ts`                                     |
 
 ---
+
+## Idiomas (português, inglês e espanhol)
+
+O site existe em três idiomas, no mesmo endereço (como no site da Peacore). O PT · EN · ES no
+cabeçalho grava a escolha num cookie (`lang`) e o servidor já manda a página no idioma; sem
+escolha, português. O `/admin` é só em português. O Google vê a versão em português.
+
+- **Textos das páginas:** cada arquivo de `data/` tem um bloco `pt`, um `en` e um `es` com a
+  mesma estrutura. Mudou um texto em português, mude também nos outros dois (o TypeScript reclama
+  se faltar um campo). Os marcos da linha do tempo (`data/about.ts`) e as áreas dos projetos
+  (`data/projects.ts`) têm o texto nos três idiomas lado a lado.
+- **Menu, rodapé e botões:** `data/ui.ts`.
+- **Projetos:** o `.md` de `content/projetos/` é o português. A tradução fica em
+  `content/projetos/en/` e `content/projetos/es/`, com o mesmo nome de arquivo, só com `title`,
+  `summary` e as seções (`## Description`, `## Goal and scope`, `## Results and lessons learned`;
+  em espanhol, `## Descripción`, `## Objetivo y alcance`, `## Resultados y aprendizajes`).
+  Sem tradução, a página mostra o português. Editar pelo `/admin` muda só o português.
+- **Cargos** (Presidente, Tutora...): a tradução fica em `data/team.ts` → `cargos`.
+- **Como funciona:** `lib/lang.ts` lê o cookie (`getLang()`), e cada página pega os textos do
+  idioma. As definições dos idiomas ficam em `lib/i18n.ts`.
 
 ## Conteúdo
 

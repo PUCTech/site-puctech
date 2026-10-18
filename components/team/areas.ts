@@ -1,4 +1,5 @@
 import { areaInfo, type AreaId, type Member } from "@/data/team";
+import type { Lang } from "@/lib/i18n";
 
 // Cor de cada área (organograma e Áreas Operacionais): contorno pontilhado e texto.
 export const areaColor: Record<AreaId, { border: string; text: string }> = {
@@ -8,7 +9,7 @@ export const areaColor: Record<AreaId, { border: string; text: string }> = {
 };
 
 export const areaIndex = (id: AreaId) => areaInfo.findIndex((area) => area.id === id);
-export const labelOf = (id: AreaId) => areaInfo[areaIndex(id)].label;
+export const labelOf = (id: AreaId, lang: Lang) => areaInfo[areaIndex(id)].name[lang];
 
 /** Áreas de alguém (como membro ou na coordenação), na ordem do areaInfo. */
 export const areasOf = (m: Member): AreaId[] =>

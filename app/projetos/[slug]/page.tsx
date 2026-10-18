@@ -2,22 +2,25 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { statusLabel } from "@/components/ProjectsShowcase";
+import { projectMeta } from "@/components/ProjectsShowcase";
 import Reveal from "@/components/Reveal";
 import { CdLink, Stage, button } from "@/components/Section";
+import { projectsPage } from "@/data/projects";
 import { allMembers } from "@/data/team";
+import { getLang } from "@/lib/lang";
 import { getProject, getProjects } from "@/lib/projects";
 
-type Props = { params: Promise<{ slug: string }> };
-
-export function generateStaticParams() {
-  return getProjects().map((project) => ({ slug: project.slug }));
-}
+type Props = PageProps<"/projetos/[slug]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const project = getProject((await params).slug);
+  const lang = await getLang();
+  const { slug } = await params;
+  const project = getProject(slug, lang);
   if (!project) return {};
-  return { title: project.title, description: project.summary ?? project.description };
+  return {
+    title: project.title,
+    description: project.summary ?? project.description,
+  };
 }
 
 // Nome na equipe do projeto -> pessoa da lista de membros (inclusive quem já saiu),
@@ -40,25 +43,27 @@ const memberNamed = (name: string) => {
 const paragraphs = (text: string) => text.split("\n\n").map((p) => <p key={p}>{p}</p>);
 
 export default async function ProjectPage({ params }: Props) {
+  const lang = await getLang();
   const { slug } = await params;
-  const projects = getProjects();
+  const t = projectsPage[lang];
+  const projects = getProjects(lang);
   const index = projects.findIndex((project) => project.slug === slug);
   if (index === -1) notFound();
   const project = projects[index];
   const next = projects[(index + 1) % projects.length];
 
   const sections = [
-    { title: "Sobre o projeto", text: project.description },
-    { title: "Objetivo e escopo", text: project.objective },
-    { title: "Resultados e aprendizados", text: project.results },
+    { title: t.sections.description, text: project.description },
+    { title: t.sections.objective, text: project.objective },
+    { title: t.sections.results, text: project.results },
   ].filter((section) => section.text);
 
   return (
     <main>
       <Stage className="pt-12 pb-12 md:pt-20 md:pb-16">
-        <CdLink href="/projetos" />
+        <CdLink href={"/projetos"} />
         <p className="fade-in mt-10 font-mono text-sm text-accent-ink">
-          {[project.area, statusLabel(project.status), project.period].filter(Boolean).join(" · ")}
+          {projectMeta(project, lang)}
         </p>
         <h1 className="fade-in mt-3 text-4xl font-bold tracking-[-0.04em] text-balance md:text-7xl">
           {project.title}
@@ -106,7 +111,7 @@ export default async function ProjectPage({ params }: Props) {
           <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start">
             {project.tech && project.tech.length > 0 && (
               <div>
-                <h2 className="font-mono text-sm text-muted">stack</h2>
+                <h2 className="font-mono text-sm text-muted">{t.stack}</h2>
                 <ul className="mt-3 space-y-1.5 font-mono text-[15px] text-accent-ink">
                   {project.tech.map((item) => (
                     <li key={item}>{item}</li>
@@ -116,7 +121,7 @@ export default async function ProjectPage({ params }: Props) {
             )}
             {project.team && project.team.length > 0 && (
               <div>
-                <h2 className="font-mono text-sm text-muted">equipe</h2>
+                <h2 className="font-mono text-sm text-muted">{t.team}</h2>
                 <ul className="mt-4 space-y-3">
                   {project.team.map((name) => {
                     const member = memberNamed(name);
@@ -159,7 +164,7 @@ export default async function ProjectPage({ params }: Props) {
                 rel="noopener noreferrer"
                 className={`${button.base} ${button.primary}`}
               >
-                Ver repositório ↗
+                {t.repo} ↗
               </a>
             )}
           </aside>
@@ -169,7 +174,7 @@ export default async function ProjectPage({ params }: Props) {
       {projects.length > 1 && (
         <Stage className="pb-20 md:pb-28">
           <Link href={`/projetos/${next.slug}`} className="group block border-t border-border pt-10">
-            <span className="font-mono text-sm text-muted">próximo projeto</span>
+            <span className="font-mono text-sm text-muted">{t.next}</span>
             <span className="mt-2 block text-3xl font-bold tracking-[-0.03em] underline decoration-transparent decoration-2 underline-offset-[6px] transition-colors group-hover:decoration-accent md:text-5xl">
               {next.title} <span className="text-accent-ink transition-transform group-hover:translate-x-1">→</span>
             </span>

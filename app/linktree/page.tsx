@@ -9,12 +9,21 @@ import {
   TiktokIcon,
   XIcon,
 } from "@/components/SocialIcons";
-import { links, linksPage, type LinkItem } from "@/data/links";
+import { links, type LinkItem } from "@/data/links";
+import { ui } from "@/data/ui";
+import type { Lang } from "@/lib/i18n";
+import { getLang } from "@/lib/lang";
 
-export const metadata: Metadata = {
-  title: "Links",
-  description: "Processo seletivo, projetos e as redes da PUC Tech: GitHub, LinkedIn, Instagram, TikTok e X.",
+const descriptions: Record<Lang, string> = {
+  pt: "Processo seletivo, projetos e as redes da PUC Tech: GitHub, LinkedIn, Instagram, TikTok e X.",
+  en: "PUC Tech's selection process, projects and social media: GitHub, LinkedIn, Instagram, TikTok and X.",
+  es: "Proceso de selección, proyectos y redes de PUC Tech: GitHub, LinkedIn, Instagram, TikTok y X.",
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLang();
+  return { title: "Links", description: descriptions[lang] };
+}
 
 const icons = {
   github: GithubIcon,
@@ -72,17 +81,18 @@ function Row({ item }: { item: LinkItem }) {
   );
 }
 
-export default function LinktreePage() {
+export default async function LinktreePage() {
+  const lang = await getLang();
   return (
     <main className="mx-auto w-full max-w-md px-5 pt-16 pb-16 md:pt-24 md:pb-24">
       {/* Sem cabeçalho nesta página (veja o Header): o logo abre a página. */}
       <h1>
         <Logo className="h-auto w-44" alt="PUC Tech" eager />
       </h1>
-      <p className="mt-3 text-pretty text-muted">{linksPage.tagline}</p>
+      <p className="mt-3 text-pretty text-muted">{ui[lang].site.tagline}</p>
 
       <ul className="mt-10 border-b border-border">
-        {links.map((item) => (
+        {links(lang).map((item) => (
           <li key={item.label} className="border-t border-border">
             <Row item={item} />
           </li>

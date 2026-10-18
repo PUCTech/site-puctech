@@ -1,7 +1,9 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { LinkedinIcon } from "@/components/SocialIcons";
-import type { Member } from "@/data/team";
+import { cargoIn, teamPage, type Member } from "@/data/team";
+import { ui } from "@/data/ui";
+import type { Lang } from "@/lib/i18n";
 
 export const membersGrid =
   "grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
@@ -10,6 +12,7 @@ export const featuredGrid = "grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 lg
 
 type MemberCardProps = {
   member: Member;
+  lang: Lang;
   role?: string; // texto abaixo do nome (ex.: "Membro", "Presidente")
   variant?: "default" | "highlight";
   badge?: ReactNode;
@@ -29,12 +32,13 @@ function getInitials(name: string) {
 
 export default function MemberCard({
   member,
+  lang,
   role,
   variant = "default",
   badge,
 }: MemberCardProps) {
   const highlight = variant === "highlight";
-  const title = member.cargo ?? role;
+  const title = cargoIn(member.cargo, lang) ?? role;
 
   return (
     <article className="group relative">
@@ -42,7 +46,7 @@ export default function MemberCard({
         {member.photo ? (
           <Image
             src={member.photo}
-            alt={`Foto de ${member.name}`}
+            alt={`${teamPage[lang].photoOf} ${member.name}`}
             fill
             sizes={highlight ? "(min-width: 768px) 260px, 50vw" : "(min-width: 768px) 200px, 50vw"}
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
@@ -75,7 +79,7 @@ export default function MemberCard({
                 href={member.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`${member.name}, LinkedIn (abre em nova aba)`}
+                aria-label={`${member.name}, LinkedIn (${ui[lang].newTab})`}
                 className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-accent-ink"
               >
                 {member.name}

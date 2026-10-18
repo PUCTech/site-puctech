@@ -6,21 +6,18 @@ import Reveal from "@/components/Reveal";
 import Stats from "@/components/Stats";
 import { Heading, Stage, withBold } from "@/components/Section";
 import { socials } from "@/components/SocialIcons";
-import {
-  about,
-  hero,
-  partners,
-  partnersIntro,
-  projectsIntro,
-  socialIntro,
-} from "@/data/home";
+import { home, partners, stats } from "@/data/home";
 import { projectAreas } from "@/data/projects";
-import { selectionPage } from "@/data/selection";
+import { selection } from "@/data/selection";
+import { getLang } from "@/lib/lang";
 
 // Todas as seções seguem o mesmo ritmo: título, texto logo abaixo e o conteúdo.
 const gap = "py-12 md:py-16";
 
-export default function Home() {
+export default async function Home() {
+  const lang = await getLang();
+  const { hero, numbers, about, statLabels, projectsIntro, partnersIntro, socialIntro } = home[lang];
+  const selectionPage = selection[lang];
   return (
     <main>
       {/* Abertura: a chuva de caracteres ocupa a tela toda. */}
@@ -34,12 +31,12 @@ export default function Home() {
 
       {/* Números: logo abaixo da abertura, com respiro em cima. */}
       <Stage className="pt-16 pb-14 md:pt-28 md:pb-20">
-        <h2 className="sr-only">Nossos números</h2>
-        <Stats />
+        <h2 className="sr-only">{numbers}</h2>
+        <Stats stats={stats.map((stat, i) => ({ ...stat, label: statLabels[i] }))} />
       </Stage>
 
       <Stage id="sobre" className={gap}>
-        <Heading title={about.title} href="/sobre" wide>
+        <Heading title={about.title} href={"/sobre"} wide>
           {about.paragraphs.map((text) => (
             <p key={text}>{withBold(text)}</p>
           ))}
@@ -47,7 +44,7 @@ export default function Home() {
       </Stage>
 
       <Stage id="projetos" className={gap}>
-        <Heading title="Projetos" href="/projetos">
+        <Heading title={projectsIntro.title} href={"/projetos"}>
           <p>{projectsIntro.text}</p>
         </Heading>
         <Reveal delay={150}>
@@ -55,8 +52,8 @@ export default function Home() {
             {projectAreas.map((area) => (
               <li key={area.title}>
                 <AreaIcon title={area.title} className="size-7 text-accent-ink" />
-                <p className="mt-4 font-semibold leading-snug">{area.title}</p>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-pretty text-muted">{area.text}</p>
+                <p className="mt-4 font-semibold leading-snug">{area.name[lang]}</p>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-pretty text-muted">{area.text[lang]}</p>
               </li>
             ))}
           </ul>
@@ -67,7 +64,7 @@ export default function Home() {
       <Stage className="bg-accent text-on-accent">
         <Reveal>
           <Link
-            href="/processo-seletivo"
+            href={"/processo-seletivo"}
             className="group flex flex-col gap-4 py-14 md:flex-row md:items-end md:justify-between md:py-16"
           >
             <span>
@@ -77,7 +74,7 @@ export default function Home() {
               </span>
             </span>
             <span className="font-mono text-sm underline decoration-on-accent/30 underline-offset-4 group-hover:decoration-on-accent">
-              cd /processo-seletivo
+              cd {"/processo-seletivo"}
             </span>
           </Link>
         </Reveal>
@@ -103,7 +100,7 @@ export default function Home() {
         </Heading>
         <Reveal delay={150}>
           <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-4">
-            {socials.map(({ label, href, Icon }) => (
+            {socials(lang).map(({ label, href, Icon }) => (
               <li key={label}>
                 <a
                   href={href}

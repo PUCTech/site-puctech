@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { stats } from "@/data/home";
 
 const DURATION = 1600; // ms
 const STAGGER = 90; // ms entre um número e o próximo
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 
 // Os números sobem de 0 até o valor quando aparecem na tela, uma vez só.
-export default function Stats() {
+export default function Stats({ stats }: { stats: { value: number; suffix: string; label: string }[] }) {
   const ref = useRef<HTMLDListElement>(null);
   // Começa no valor final: sem JavaScript (ou antes de hidratar) os números já estão certos.
   const [progress, setProgress] = useState(1);
@@ -41,7 +40,7 @@ export default function Stats() {
       observer.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [stats.length]);
 
   const total = DURATION + STAGGER * (stats.length - 1);
   const valueAt = (value: number, index: number) => {

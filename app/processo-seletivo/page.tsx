@@ -2,17 +2,21 @@ import type { Metadata } from "next";
 import Reveal from "@/components/Reveal";
 import { Heading, Stage, button, withBold } from "@/components/Section";
 import { ExternalIcon } from "@/components/SocialIcons";
-import { apply, prepare, selectionPage } from "@/data/selection";
+import { applyUrl, cs50, selection } from "@/data/selection";
+import { getLang } from "@/lib/lang";
 
-export const metadata: Metadata = {
-  title: "Processo Seletivo",
-  description:
-    "Saiba como se preparar para o próximo processo seletivo da PUC Tech, previsto para o primeiro semestre de 2027.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLang();
+  const t = selection[lang];
+  return { title: t.title, description: t.description };
+}
 
-const { video } = prepare;
+const { video } = cs50;
 
-export default function ProcessoSeletivoPage() {
+export default async function ProcessoSeletivoPage() {
+  const lang = await getLang();
+  const selectionPage = selection[lang];
+  const { prepare } = selectionPage;
   return (
     <main>
       <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
@@ -46,7 +50,7 @@ export default function ProcessoSeletivoPage() {
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
             <p className="font-mono text-sm text-muted">{video.title} · Harvard</p>
             <a
-              href={prepare.linkUrl}
+              href={cs50.url}
               target="_blank"
               rel="noopener noreferrer"
               className={`${button.base} ${button.outline}`}
@@ -65,19 +69,19 @@ export default function ProcessoSeletivoPage() {
             <p className="max-w-2xl text-3xl font-bold tracking-[-0.035em] text-balance md:text-5xl">
               {selectionPage.badge}
             </p>
-            {apply.applyUrl ? (
+            {applyUrl ? (
               <a
-                href={apply.applyUrl}
+                href={applyUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${button.base} bg-ink text-paper hover:bg-paper hover:text-ink`}
               >
-                {apply.applyLabel}
+                {selectionPage.applyLabel}
                 <ExternalIcon className="size-4" />
               </a>
             ) : (
               <span className="rounded-full border border-dashed border-on-accent/40 px-5 py-2.5 font-mono text-sm">
-                {apply.soonLabel}
+                {selectionPage.soonLabel}
               </span>
             )}
           </div>

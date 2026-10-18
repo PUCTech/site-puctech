@@ -18,10 +18,11 @@ export const siteConfig = {
   },
 };
 
+// Menu do site. O texto de cada item fica em data/ui.ts (nav), em cada idioma.
 export const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Sobre Nós", href: "/sobre" },
-  { label: "Membros", href: "/membros" },
-  { label: "Projetos", href: "/projetos" },
-  { label: "Processo Seletivo", href: "/processo-seletivo" },
-];
+  { key: "home", href: "/" },
+  { key: "about", href: "/sobre" },
+  { key: "members", href: "/membros" },
+  { key: "projects", href: "/projetos" },
+  { key: "selection", href: "/processo-seletivo" },
+] as const;

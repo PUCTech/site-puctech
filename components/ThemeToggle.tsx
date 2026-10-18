@@ -2,7 +2,7 @@
 
 // Alterna entre claro e escuro. A troca usa View Transitions (fade da página
 // inteira) quando o navegador suporta; sem suporte, troca direto.
-export default function ThemeToggle() {
+export default function ThemeToggle({ label, title }: { label: string; title: string }) {
   const toggle = () => {
     const apply = () => {
       const dark = document.documentElement.classList.toggle("dark");
@@ -19,8 +19,8 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Alternar tema claro e escuro"
-      title="Alternar tema"
+      aria-label={label}
+      title={title}
       className="inline-flex size-10 items-center justify-center rounded-full text-muted transition-colors hover:text-ink"
     >
       {/* Lua no claro, sol no escuro: o CSS escolhe qual mostrar, sem esperar o JavaScript. */}

@@ -12,25 +12,28 @@ import {
   advisors,
   executive,
   founders,
-  groupDescriptions,
   honorary,
   idealizers,
   members,
   strategic,
+  teamPage,
   type Member,
 } from "@/data/team";
+import type { Lang } from "@/lib/i18n";
+import { getLang } from "@/lib/lang";
 
-export const metadata: Metadata = {
-  title: "Membros",
-  description:
-    "Conheça os tutores, fundadores e a equipe atual da PUC Tech, a primeira liga de ciência e tecnologia da PUC-SP.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLang();
+  const t = teamPage[lang];
+  return { title: t.title, description: t.description };
+}
 
 // Mesmo ritmo da home e do /sobre.
 const gap = "py-12 md:py-16";
 
 // Grupo de pessoas. Se estiver vazio, a seção não aparece.
 function MemberGroup({
+  lang,
   id,
   title,
   subtitle,
@@ -38,6 +41,7 @@ function MemberGroup({
   role,
   highlight = false,
 }: {
+  lang: Lang;
   id: string;
   title: string;
   subtitle: string;
@@ -58,6 +62,7 @@ function MemberGroup({
             <MemberCard
               key={member.name}
               member={member}
+              lang={lang}
               role={role}
               variant={highlight ? "highlight" : "default"}
             />
@@ -70,11 +75,13 @@ function MemberGroup({
 
 // Grupo pequeno, em meia largura: título menor e fotos menores.
 function CompactGroup({
+  lang,
   title,
   subtitle,
   members,
   role,
 }: {
+  lang: Lang;
   title: string;
   subtitle: string;
   members: Member[];
@@ -87,7 +94,7 @@ function CompactGroup({
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-8">
         {members.map((member) => (
           <div key={member.name} className="w-36">
-            <MemberCard member={member} role={role} />
+            <MemberCard member={member} lang={lang} role={role} />
           </div>
         ))}
       </div>
@@ -95,14 +102,16 @@ function CompactGroup({
   );
 }
 
-export default function EquipePage() {
+export default async function MembrosPage() {
+  const lang = await getLang();
+  const t = teamPage[lang];
+  const g = t.groups;
   return (
     <main>
       <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
-        <h1 className="fade-in text-4xl font-bold tracking-[-0.04em] md:text-6xl">Membros</h1>
+        <h1 className="fade-in text-4xl font-bold tracking-[-0.04em] md:text-6xl">{t.title}</h1>
         <p className="fade-in mt-6 max-w-3xl text-lg leading-relaxed text-pretty text-muted [animation-delay:250ms] md:text-xl">
-          As pessoas que constroem a PUC Tech todos os dias, da orientação acadêmica aos
-          estudantes que fazem a liga acontecer.
+          {t.intro}
         </p>
       </Stage>
 
@@ -111,7 +120,7 @@ export default function EquipePage() {
           <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[21/9]">
             <Image
               src="/equipe/grupo-puctech.jpg"
-              alt="Membros da PUC Tech reunidos"
+              alt={t.groupPhotoAlt}
               fill
               sizes="(min-width: 1152px) 1152px, 100vw"
               priority
@@ -119,9 +128,7 @@ export default function EquipePage() {
             />
           </div>
           <p className="mt-8 max-w-3xl text-lg leading-relaxed text-pretty text-muted">
-            A PUC Tech é formada por uma comunidade de estudantes engajados, orientadores e
-            parceiros que acreditam no protagonismo estudantil como motor da transformação na
-            universidade e na sociedade.
+            {t.community}
           </p>
         </Reveal>
       </Stage>
@@ -130,52 +137,62 @@ export default function EquipePage() {
       <Stage id="tutores" className={gap}>
         <Reveal>
           <div className="grid gap-14 md:grid-cols-2 md:gap-16">
-            <CompactGroup title="Tutores" subtitle={groupDescriptions.tutores} members={advisors} role="Tutor" />
             <CompactGroup
-              title="Fundadores"
-              subtitle={groupDescriptions.fundadores}
+              lang={lang}
+              title={g.tutores.title}
+              subtitle={g.tutores.text}
+              members={advisors}
+              role={t.roles.tutor}
+            />
+            <CompactGroup
+              lang={lang}
+              title={g.fundadores.title}
+              subtitle={g.fundadores.text}
               members={founders}
-              role="Fundador"
+              role={t.roles.founder}
             />
           </div>
         </Reveal>
       </Stage>
 
       <MemberGroup
+        lang={lang}
         id="honorarios"
-        title="Membros Honorários"
-        subtitle={groupDescriptions.honorarios}
+        title={g.honorarios.title}
+        subtitle={g.honorarios.text}
         members={honorary}
-        role="Membro honorário"
+        role={t.roles.honorary}
       />
 
       <Stage id="diretoria-executiva" className={gap}>
-        <Heading title="Organograma">
-          <p>{groupDescriptions.diretoriaExecutiva}</p>
+        <Heading title={g.organograma.title}>
+          <p>{g.organograma.text}</p>
         </Heading>
         <Reveal delay={150}>
           <div className="mt-12">
-            <OrgChart />
+            <OrgChart lang={lang} />
           </div>
         </Reveal>
       </Stage>
 
       <MemberGroup
+        lang={lang}
         id="diretorias-estrategicas"
-        title="Diretorias Estratégicas"
-        subtitle={groupDescriptions.diretoriasEstrategicas}
+        title={g.diretoriasEstrategicas.title}
+        subtitle={g.diretoriasEstrategicas.text}
         members={strategic}
         highlight
       />
 
       {/* Todo mundo da liga (sem trainees por enquanto), com o LinkedIn de cada um. */}
       <Stage id="integrantes" className={gap}>
-        <Heading title="Integrantes">
-          <p>Quem faz a PUC Tech acontecer no dia a dia. Filtre por área e clique em alguém para ver o LinkedIn.</p>
+        <Heading title={g.integrantes.title}>
+          <p>{g.integrantes.text}</p>
         </Heading>
         <Reveal delay={150}>
           <div className="mt-10">
             <MembersWall
+              lang={lang}
               people={[
                 ...executive,
                 ...members.filter((m) => m.group === "membro").sort((a, b) => a.name.localeCompare(b.name)),
@@ -186,9 +203,10 @@ export default function EquipePage() {
       </Stage>
 
       <MemberGroup
+        lang={lang}
         id="idealizadores"
-        title="Idealizadores"
-        subtitle={groupDescriptions.idealizadores}
+        title={g.idealizadores.title}
+        subtitle={g.idealizadores.text}
         members={idealizers}
       />
 
