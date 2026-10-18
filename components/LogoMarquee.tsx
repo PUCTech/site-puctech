@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-type Partner = { name: string; logo?: string };
+// logoDark: logo colorido (sem o filtro preto/branco), com a versão para o modo escuro.
+type Partner = { name: string; logo?: string; logoDark?: string };
 
 // Faixa de logos que rola sem parar (marquee). A lista é duplicada, então andar
 // metade da largura fecha o ciclo sem "pulo". Passar o mouse pausa.
@@ -11,18 +12,33 @@ export default function LogoMarquee({ partners }: { partners: Partner[] }) {
     <li
       key={hidden ? `copia-${partner.name}` : partner.name}
       aria-hidden={hidden || undefined}
-      className={`flex h-16 w-40 shrink-0 items-center justify-center ${hidden ? "motion-reduce:hidden" : ""}`}
+      className={`flex h-24 w-56 shrink-0 items-center justify-center ${hidden ? "motion-reduce:hidden" : ""}`}
     >
       {partner.logo ? (
-        <Image
-          src={partner.logo}
-          alt={hidden ? "" : partner.name}
-          width={160}
-          height={64}
-          className={`max-h-14 w-auto object-contain opacity-70 transition-opacity hover:opacity-100 ${
-            partner.logo.endsWith(".jpg") ? "rounded-lg grayscale" : "brightness-0 dark:invert"
-          }`}
-        />
+        partner.logoDark ? (
+          <>
+            {[partner.logo, partner.logoDark].map((src, dark) => (
+              <Image
+                key={src}
+                src={src}
+                alt={hidden || dark ? "" : partner.name}
+                width={224}
+                height={96}
+                className={`max-h-20 w-auto object-contain ${dark ? "hidden dark:block" : "dark:hidden"}`}
+              />
+            ))}
+          </>
+        ) : (
+          <Image
+            src={partner.logo}
+            alt={hidden ? "" : partner.name}
+            width={224}
+            height={96}
+            className={`max-h-20 w-auto object-contain opacity-70 transition-opacity hover:opacity-100 ${
+              partner.logo.endsWith(".jpg") ? "rounded-lg grayscale" : "brightness-0 dark:invert"
+            }`}
+          />
+        )
       ) : (
         <span className="font-semibold text-muted">{partner.name}</span>
       )}

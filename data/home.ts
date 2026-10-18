@@ -40,8 +40,8 @@ export const partnersIntro = {
 
 // Para mostrar o logo de um parceiro, coloque o arquivo em public/parceiros/
 // e acrescente logo: "/parceiros/nome.png". Sem logo, aparece o nome em texto.
-export const partners: { name: string; logo?: string }[] = [
-  { name: "PUC-SP", logo: "/parceiros/puc-sp.png" },
+export const partners: { name: string; logo?: string; logoDark?: string }[] = [
+  { name: "PUC-SP", logo: "/parceiros/puc-sp.png", logoDark: "/parceiros/puc-sp-dark.png" },
   { name: "Amazon AWS", logo: "/parceiros/amazon-aws.svg" },
   { name: "Blumi Talents", logo: "/parceiros/blumi-talents.jpg" },
   { name: "Peacore", logo: "/parceiros/peacore.jpg" },
