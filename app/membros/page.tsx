@@ -20,7 +20,7 @@ import {
 } from "@/data/team";
 
 export const metadata: Metadata = {
-  title: "Equipe",
+  title: "Membros",
   description:
     "Conheça os tutores, fundadores e a equipe atual da PUC Tech, a primeira liga de ciência e tecnologia da PUC-SP.",
 };
@@ -98,8 +98,8 @@ export default function EquipePage() {
   return (
     <main>
       <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
-        <h1 className="fade-in text-5xl font-bold tracking-[-0.04em] md:text-7xl">Equipe</h1>
-        <p className="fade-in mt-6 max-w-3xl text-xl leading-relaxed text-pretty text-muted [animation-delay:250ms] md:text-2xl">
+        <h1 className="fade-in text-4xl font-bold tracking-[-0.04em] md:text-6xl">Membros</h1>
+        <p className="fade-in mt-6 max-w-3xl text-lg leading-relaxed text-pretty text-muted [animation-delay:250ms] md:text-xl">
           As pessoas que constroem a PUC Tech todos os dias, da orientação acadêmica aos
           estudantes que fazem a liga acontecer.
         </p>
@@ -129,12 +129,12 @@ export default function EquipePage() {
       <Stage id="tutores" className={gap}>
         <Reveal>
           <div className="grid gap-14 md:grid-cols-2 md:gap-16">
-            <CompactGroup title="Tutores" subtitle={groupDescriptions.tutores} members={advisors} role="Tutor(a)" />
+            <CompactGroup title="Tutores" subtitle={groupDescriptions.tutores} members={advisors} role="Tutor" />
             <CompactGroup
               title="Fundadores"
               subtitle={groupDescriptions.fundadores}
               members={founders}
-              role="Fundador(a)"
+              role="Fundador"
             />
           </div>
         </Reveal>
