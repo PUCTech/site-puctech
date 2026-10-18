@@ -13,6 +13,12 @@ export const prepare = {
   text: "Para se adiantar, recomendamos o curso **CS50 de Harvard**. Ele vai te dar base em diversos conteúdos que abordamos na liga, permitindo que você participe dos nossos projetos e iniciativas!",
   linkLabel: "Conhecer o CS50",
   linkUrl: "https://www.edx.org/learn/computer-science/harvard-university-cs50-s-introduction-to-computer-science",
+  // Vídeo que toca na página: o id do YouTube (o que vem depois de youtu.be/) e a playlist.
+  video: {
+    id: "h6lqxDwUmJQ",
+    playlist: "PLhQjrBD2T383q7Vn8QnTsVgSvyLpsqL_R",
+    title: "CS50x 2025 - Introduction",
+  },
 };
 
 // Botão do processo seletivo. Enquanto `applyUrl` estiver vazio, o botão aparece

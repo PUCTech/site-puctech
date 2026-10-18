@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Block, SidebarLayout, button, withBold } from "@/components/Section";
+import Reveal from "@/components/Reveal";
+import { Heading, Stage, button, withBold } from "@/components/Section";
 import { ExternalIcon } from "@/components/SocialIcons";
 import { apply, prepare, selectionPage } from "@/data/selection";
 
@@ -9,56 +10,79 @@ export const metadata: Metadata = {
     "Saiba como se preparar para o próximo processo seletivo da PUC Tech, previsto para o primeiro semestre de 2027.",
 };
 
+const { video } = prepare;
+
 export default function ProcessoSeletivoPage() {
   return (
-    <SidebarLayout title={selectionPage.title}>
-      <Block>
-        <p className="font-display text-2xl leading-snug font-semibold tracking-[-0.015em] text-balance text-muted md:text-[2rem]">
+    <main>
+      <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
+        <p className="fade-in flex items-center gap-2.5 font-mono text-sm text-accent-ink">
+          <span aria-hidden className="size-2 rounded-full bg-accent" />
+          {selectionPage.badge}
+        </p>
+        <h1 className="fade-in mt-5 text-4xl font-bold tracking-[-0.04em] md:text-6xl">{selectionPage.title}</h1>
+        <p className="fade-in mt-6 max-w-3xl text-lg leading-relaxed text-pretty text-muted [animation-delay:250ms] md:text-xl [&_strong]:text-ink">
           {withBold(selectionPage.intro)}
         </p>
-      </Block>
+      </Stage>
 
-      {/* Duas colunas separadas por uma linha: como se preparar | inscrição. */}
-      <div className="grid border-t border-border pt-12 md:grid-cols-2 md:pt-16">
-        <Block title={prepare.title}>
-          <p className="leading-relaxed text-muted">{withBold(prepare.text)}</p>
-          <a
-            href={prepare.linkUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${button.base} ${button.dark} mt-6`}
-          >
-            {prepare.linkLabel}
-            <ExternalIcon className="size-4" />
-          </a>
-        </Block>
-
-        <section className="flex flex-col items-start justify-between gap-8 border-t border-border py-12 md:border-t-0 md:border-l md:py-0 md:pl-10">
-          <p className="font-display text-3xl leading-tight font-bold tracking-[-0.02em] text-balance md:text-4xl">
-            <span aria-hidden className="mb-4 block size-3 rounded-full bg-accent" />
-            {selectionPage.badge}
-          </p>
-          {apply.applyUrl ? (
+      <Stage id="como-se-preparar" className="py-12 md:py-16">
+        <Heading title={prepare.title}>
+          <p>{withBold(prepare.text)}</p>
+        </Heading>
+        <Reveal delay={150}>
+          {/* O vídeo toca aqui mesmo; youtube-nocookie não grava cookies até a pessoa dar play. */}
+          <div className="mt-10 aspect-video overflow-hidden rounded-2xl bg-surface">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${video.id}?list=${video.playlist}&rel=0&modestbranding=1`}
+              title={video.title}
+              loading="lazy"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
+              className="size-full"
+            />
+          </div>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <p className="font-mono text-sm text-muted">{video.title} · Harvard</p>
             <a
-              href={apply.applyUrl}
+              href={prepare.linkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`${button.base} ${button.primary}`}
+              className={`${button.base} ${button.outline}`}
             >
-              {apply.applyLabel}
+              {prepare.linkLabel}
               <ExternalIcon className="size-4" />
             </a>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="cursor-not-allowed rounded-full border border-dashed border-border px-5 py-2.5 text-left text-[15px] font-semibold text-muted"
-            >
-              {apply.soonLabel}
-            </button>
-          )}
-        </section>
-      </div>
-    </SidebarLayout>
+          </div>
+        </Reveal>
+      </Stage>
+
+      {/* Inscrição: a faixa de cor, como na home. */}
+      <Stage className="mt-12 bg-accent text-on-accent md:mt-16">
+        <Reveal>
+          <div className="flex flex-col gap-8 py-14 md:flex-row md:items-end md:justify-between md:py-20">
+            <p className="max-w-2xl text-3xl font-bold tracking-[-0.035em] text-balance md:text-5xl">
+              {selectionPage.badge}
+            </p>
+            {apply.applyUrl ? (
+              <a
+                href={apply.applyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${button.base} bg-ink text-paper hover:bg-paper hover:text-ink`}
+              >
+                {apply.applyLabel}
+                <ExternalIcon className="size-4" />
+              </a>
+            ) : (
+              <span className="rounded-full border border-dashed border-on-accent/40 px-5 py-2.5 font-mono text-sm">
+                {apply.soonLabel}
+              </span>
+            )}
+          </div>
+        </Reveal>
+      </Stage>
+    </main>
   );
 }
