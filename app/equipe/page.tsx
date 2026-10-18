@@ -129,12 +129,12 @@ export default function EquipePage() {
       <Stage id="tutores" className={gap}>
         <Reveal>
           <div className="grid gap-14 md:grid-cols-2 md:gap-16">
-            <CompactGroup title="Tutores" subtitle={groupDescriptions.tutores} members={advisors} role="Tutor(a)" />
+            <CompactGroup title="Tutores" subtitle={groupDescriptions.tutores} members={advisors} role="Tutor" />
             <CompactGroup
               title="Fundadores"
               subtitle={groupDescriptions.fundadores}
               members={founders}
-              role="Fundador(a)"
+              role="Fundador"
             />
           </div>
         </Reveal>

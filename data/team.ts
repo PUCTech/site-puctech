@@ -51,7 +51,7 @@ export const areaInfo: AreaInfo[] = [
 
 export const members: Member[] = [
   // Orientadores
-  { name: "Profa. Cristiana", group: "orientador", photo: "/equipe/profa-cristiana.jpg", linkedin: "http://lattes.cnpq.br/9085326429110439" },
+  { name: "Profa. Cristiana", group: "orientador", cargo: "Tutora", photo: "/equipe/profa-cristiana.jpg", linkedin: "http://lattes.cnpq.br/9085326429110439" },
   { name: "Prof. Daniel Gatti", group: "orientador", photo: "/equipe/prof-daniel-gatti.jpg", linkedin: "https://www.linkedin.com/in/dgatti/" },
 
   // Fundadores
