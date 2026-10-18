@@ -182,7 +182,8 @@ function Timeline() {
     <>
       {/* Marcos sem foto ficam acima da linha; os com foto, abaixo. */}
       {/* No desktop a linha usa a largura toda da janela (com um limite em telas enormes). */}
-      <div className="mt-12">
+      {/* A linha do tempo sai do container e usa a largura da janela, para caber inteira. */}
+      <div className="relative left-1/2 mt-12 w-screen -translate-x-1/2 px-4 md:px-8">
         <TimelineScroller>
         <div
           className="relative mx-10"
