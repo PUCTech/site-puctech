@@ -1,149 +1,60 @@
-"use client";
+import Image from "next/image";
+import Link from "next/link";
+import { projectStatuses, type Project, type ProjectStatus } from "@/data/projects";
 
-import { useState, type ReactNode } from "react";
-import ProjectModal from "@/components/ProjectModal";
-import ProjectTile from "@/components/ProjectTile";
-import { SidebarLayout } from "@/components/Section";
-import {
-  projectAreas,
-  projectStatuses,
-  type Project,
-  type ProjectArea,
-  type ProjectStatus,
-} from "@/data/projects";
+export const statusLabel = (id?: ProjectStatus) => projectStatuses.find((item) => item.id === id)?.label;
 
-const option = (active: boolean) =>
-  `rounded-full px-3.5 py-1.5 text-left text-sm font-medium transition-colors ${
-    active ? "bg-ink text-paper" : "bg-surface text-muted hover:text-ink"
-  }`;
-
-// Filtro de escolha única, com "" = sem filtro.
-function Filter<T extends string>({
-  label,
-  options,
-  value,
-  onChange,
-}: {
-  label: string;
-  options: { value: T | ""; label: string }[];
-  value: T | "";
-  onChange: (value: T | "") => void;
-}) {
-  return (
-    <fieldset>
-      <legend className="mb-2.5 text-sm font-semibold">{label}</legend>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map((item) => (
-          <button
-            key={item.value}
-            type="button"
-            aria-pressed={value === item.value}
-            onClick={() => onChange(item.value)}
-            className={option(value === item.value)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-    </fieldset>
-  );
-}
-
-export default function ProjectsShowcase({
-  title,
-  intro,
-  projects,
-  children,
-}: {
-  title: string;
-  intro: string;
-  projects: Project[];
-  children?: ReactNode;
-}) {
-  const [area, setArea] = useState<ProjectArea | "">("");
-  const [status, setStatus] = useState<ProjectStatus | "">("");
-  const [selected, setSelected] = useState<Project | null>(null);
-  const [open, setOpen] = useState(false);
-
-  const visible = projects.filter(
-    (project) =>
-      (!area || project.area === area) &&
-      (!status || project.status === status),
-  );
+/** Lista de projetos; cada um leva para a sua página (/projetos/slug). */
+export default function ProjectsShowcase({ projects }: { projects: Project[] }) {
+  if (projects.length === 0) {
+    return <p className="text-lg text-muted">Em breve, os projetos da PUC Tech vão aparecer aqui.</p>;
+  }
 
   return (
-    <SidebarLayout
-      title={title}
-      intro={<p>{intro}</p>}
-      aside={
-        projects.length > 0 && (
-          <div className="space-y-6">
-            <Filter
-              label="Área"
-              value={area}
-              onChange={setArea}
-              options={[
-                { value: "", label: "Todas as áreas" },
-                ...projectAreas.map((item) => ({ value: item.title, label: item.title })),
-              ]}
-            />
-            <Filter
-              label="Status"
-              value={status}
-              onChange={setStatus}
-              options={[
-                { value: "", label: "Todos os status" },
-                ...projectStatuses.map((item) => ({ value: item.id, label: item.label })),
-              ]}
-            />
-            <p className="text-sm text-muted" aria-live="polite">
-              {visible.length} {visible.length === 1 ? "projeto" : "projetos"}
-            </p>
-          </div>
-        )
-      }
-    >
-      {projects.length === 0 ? (
-        <p className="text-lg text-muted">
-          Em breve, os projetos da PUC Tech vão aparecer aqui.
-        </p>
-      ) : visible.length === 0 ? (
-        <div>
-          <p className="text-lg">Nenhum projeto encontrado com esses filtros.</p>
-          <button
-            type="button"
-            onClick={() => {
-              setArea("");
-              setStatus("");
-            }}
-            className="mt-3 font-semibold text-accent-ink underline underline-offset-4 hover:text-ink"
+    <ol className="border-b border-border">
+      {projects.map((project, index) => (
+        <li key={project.slug} className="border-t border-border">
+          <Link
+            href={`/projetos/${project.slug}`}
+            className="group grid grid-cols-[2.5rem_1fr] gap-y-6 py-14 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-ink sm:grid-cols-[3.5rem_1fr_auto] sm:gap-x-10 md:py-20"
           >
-            Limpar filtros
-          </button>
-        </div>
-      ) : (
-        <ul className="grid gap-x-8 gap-y-12 pb-12 sm:grid-cols-2 md:pb-16">
-          {visible.map((project) => (
-            <li key={project.slug}>
-              <button
-                type="button"
-                aria-haspopup="dialog"
-                onClick={() => {
-                  setSelected(project);
-                  setOpen(true);
-                }}
-                className="group block h-full w-full cursor-pointer rounded-2xl text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-ink"
-              >
-                <ProjectTile project={project} />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {children}
-
-      <ProjectModal project={selected} open={open} onClose={() => setOpen(false)} />
-    </SidebarLayout>
+            <span className="pt-3 font-mono text-sm text-accent-ink">{String(index + 1).padStart(2, "0")}</span>
+            <div className="min-w-0">
+              <h2 className="text-3xl font-bold tracking-[-0.03em] text-balance underline decoration-transparent decoration-2 underline-offset-[6px] transition-colors group-hover:decoration-accent md:text-5xl">
+                {project.title}
+                <span
+                  aria-hidden
+                  className="ml-3 inline-block text-accent-ink opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100"
+                >
+                  →
+                </span>
+              </h2>
+              {project.summary && (
+                <p className="mt-5 max-w-2xl text-lg leading-relaxed text-pretty text-muted md:text-xl">
+                  {project.summary}
+                </p>
+              )}
+              <p className="mt-8 font-mono text-sm text-muted">
+                {[project.area, statusLabel(project.status), project.period].filter(Boolean).join(" · ")}
+              </p>
+              {project.tech && project.tech.length > 0 && (
+                <p className="mt-2 font-mono text-sm leading-relaxed text-accent-ink">{project.tech.join(" / ")}</p>
+              )}
+            </div>
+            {project.image && (
+              <div className="relative col-start-2 aspect-[16/10] w-full overflow-hidden rounded-2xl sm:col-start-3 sm:row-start-1 sm:w-72 md:w-[26rem]">
+                <Image
+                  src={project.image}
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 416px, (min-width: 640px) 288px, 100vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
+            )}
+          </Link>
+        </li>
+      ))}
+    </ol>
   );
 }
