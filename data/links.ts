@@ -1,4 +1,4 @@
-// Links da página /links (o "Nossos links" do rodapé e das redes).
+// Links da página /linktree (o "Nossos links" do rodapé e o link da bio nas redes).
 //
 // COMO EDITAR: adicione, edite ou apague objetos na lista `links`.
 // A ordem da lista é a ordem na página.
@@ -10,6 +10,7 @@
 //                 Se ficar vazio (""), o botão aparece desativado com "em breve".
 //   icon        → "github" | "instagram" | "linkedin" | "tiktok" | "x" | "link" (padrão: "link")
 
+import { selectionPage } from "@/data/selection";
 import { siteConfig } from "@/lib/site";
 
 export type LinkIconId =
@@ -33,6 +34,16 @@ export const linksPage = {
 };
 
 export const links: LinkItem[] = [
+  {
+    label: "Processo seletivo",
+    description: selectionPage.badge,
+    href: "/processo-seletivo",
+  },
+  {
+    label: "Nossos projetos",
+    description: "O que já construímos",
+    href: "/projetos",
+  },
   {
     label: "GitHub",
     description: "PUCTech",

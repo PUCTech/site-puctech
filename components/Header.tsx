@@ -30,6 +30,9 @@ export default function Header() {
         : "text-muted hover:text-ink"
     }`;
 
+  // A /linktree é a página do link da bio: fica sem cabeçalho, só os links.
+  if (pathname === "/linktree") return null;
+
   return (
     <header
       className={`sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out ${

@@ -7,7 +7,10 @@ const nextConfig: NextConfig = {
   // Fotos do /admin vão no corpo da ação (até 4 MB, validado lá; o padrão do Next é 1 MB).
   experimental: { serverActions: { bodySizeLimit: "5mb" } },
   async redirects() {
-    return [{ source: "/equipe", destination: "/membros", permanent: true }];
+    return [
+      { source: "/equipe", destination: "/membros", permanent: true },
+      { source: "/links", destination: "/linktree", permanent: true },
+    ];
   },
   async headers() {
     return [

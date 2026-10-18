@@ -8,7 +8,7 @@ const pages = [
   "/membros",
   "/projetos",
   "/processo-seletivo",
-  "/links",
+  "/linktree",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
