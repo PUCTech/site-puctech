@@ -544,7 +544,7 @@ const CLAUDE: [string, number][] = [
   ["* Brewed for 24s", FAINT],
 ];
 
-const ROUTES = ["/", "/", "/", "/sobre", "/equipe", "/projetos", "/processo-seletivo"];
+const ROUTES = ["/", "/", "/", "/sobre", "/membros", "/projetos", "/processo-seletivo"];
 const devLine = (): [string, number][] => {
   if (Math.random() < 0.18) return [[" ✓ Compiled in " + (12 + ((Math.random() * 25) | 0)) + "ms", SOFT]];
   const total = 14 + ((Math.random() * 60) | 0);

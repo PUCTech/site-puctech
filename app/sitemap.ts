@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site";
 const pages = [
   "",
   "/sobre",
-  "/equipe",
+  "/membros",
   "/projetos",
   "/processo-seletivo",
   "/links",
