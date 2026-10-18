@@ -346,12 +346,12 @@ export default function SobrePage() {
     <main>
       <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
         <Reveal>
-          <h1 className="fade-in text-5xl font-bold tracking-[-0.04em] md:text-7xl">
+          <h1 className="fade-in text-4xl font-bold tracking-[-0.04em] md:text-6xl">
             {aboutPage.title}
             {/* Desligado: a troca de fontes fazia o layout pular. */}
             {/* <FontCycle text="PUC Tech" className="text-accent-ink" /> */}
           </h1>
-          <p className="fade-in mt-6 max-w-3xl text-xl leading-relaxed [animation-delay:250ms] text-pretty text-muted md:text-2xl">
+          <p className="fade-in mt-6 max-w-3xl text-lg leading-relaxed [animation-delay:250ms] text-pretty text-muted md:text-xl">
             {aboutPage.intro}
           </p>
         </Reveal>
