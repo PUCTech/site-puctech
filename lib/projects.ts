@@ -22,7 +22,7 @@ const SECTIONS: Record<string, "description" | "objective" | "results"> = {
 };
 
 type SectionField = (typeof SECTIONS)[string];
-type Entry = { project: Project; order: number };
+export type Entry = { project: Project; order: number };
 
 // Linhas seguidas viram um parágrafo só; a linha em branco separa os parágrafos.
 function normalize(text: string) {
@@ -75,8 +75,12 @@ function splitSections(body: string, where: string, errors: string[]) {
 }
 
 function readProject(file: string, errors: string[]): Entry | null {
+  return parseProject(file, fs.readFileSync(path.join(PROJECTS_DIR, file), "utf8"), errors);
+}
+
+/** Lê o texto de um .md de projeto. O /admin usa isto com o arquivo vindo do GitHub. */
+export function parseProject(file: string, raw: string, errors: string[]): Entry | null {
   const where = `content/projetos/${file}`;
-  const raw = fs.readFileSync(path.join(PROJECTS_DIR, file), "utf8");
 
   let parsed: ReturnType<typeof matter>;
   try {
@@ -198,4 +202,24 @@ export function getProjects(): Project[] {
 
 export function getProject(slug: string): Project | undefined {
   return getProjects().find((project) => project.slug === slug);
+}
+/** Escreve um projeto no formato de content/projetos/*.md (o inverso de parseProject). */
+export function serializeProject(project: Omit<Project, "slug">, order?: number): string {
+  const data: Record<string, unknown> = { title: project.title };
+  const fields = ["summary", "area", "status", "period", "image", "tech", "team", "repo"] as const;
+  for (const key of fields) {
+    const value = project[key];
+    if (value !== undefined && value !== "" && !(Array.isArray(value) && value.length === 0)) data[key] = value;
+  }
+  if (order !== undefined) data.order = order;
+
+  const body = [
+    ["Descrição", project.description],
+    ["Objetivo e escopo", project.objective],
+    ["Resultados e aprendizados", project.results],
+  ]
+    .filter(([, text]) => text)
+    .map(([title, text]) => `## ${title}\n\n${text}\n`)
+    .join("\n");
+  return matter.stringify(`\n${body}`, data);
 }
