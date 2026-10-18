@@ -23,7 +23,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // Nome na equipe do projeto -> pessoa da lista de membros (inclusive quem já saiu),
 // para mostrar foto e LinkedIn. Compara sem acento nem maiúsculas.
 const plain = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-const memberNamed = (name: string) => allMembers.find((m) => plain(m.name) === plain(name));
+// Se o nome não bater inteiro ("Liam Vedovato Lopes" x "Liam Lopes"), aceita o mesmo
+// primeiro e último nome, desde que só uma pessoa tenha essa combinação.
+const ends = (text: string) => {
+  const words = plain(text).split(/\s+/);
+  return `${words[0]} ${words.at(-1)}`;
+};
+const memberNamed = (name: string) => {
+  const exact = allMembers.find((m) => plain(m.name) === plain(name));
+  if (exact) return exact;
+  const close = allMembers.filter((m) => ends(m.name) === ends(name));
+  return close.length === 1 ? close[0] : undefined;
+};
 
 // Texto do .md: linha em branco separa os parágrafos.
 const paragraphs = (text: string) => text.split("\n\n").map((p) => <p key={p}>{p}</p>);
