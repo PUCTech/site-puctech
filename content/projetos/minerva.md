@@ -7,9 +7,9 @@ status: "concluido"
 order: 2
 tech: [Java, Spring, Python, Streamlit, PostgreSQL, H2, JWT, Docker]
 team:
-  - "Kauã Bezerra Brito"
-  - "Luis Augusto Coelho de Souza"
-  - "Tulio Goncalves Vieira"
+  - "Kauã Bezerra"
+  - "Luís Augusto"
+  - "Túlio Gonçalves Vieira"
 repo: "https://github.com/Luis-coelho30/minerva-app"
 ---
 

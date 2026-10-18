@@ -18,7 +18,10 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-[-0.03em] md:text-5xl">Membros</h1>
-          <p className="mt-3 text-lg text-muted">{members.length} pessoas no site.</p>
+          <p className="mt-3 text-lg text-muted">
+            {members.filter((m) => !m.inactive).length} pessoas no site
+            {members.some((m) => m.inactive) && `, ${members.filter((m) => m.inactive).length} que já saíram`}.
+          </p>
         </div>
         <Link href="/admin/membros/novo" className={`${button.base} ${button.primary}`}>
           Nova pessoa
@@ -44,10 +47,11 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
                         <span aria-hidden className="size-11 rounded-full bg-surface" />
                       )}
                       <span className="min-w-0 flex-1">
-                        <span className="block font-semibold underline decoration-transparent decoration-2 underline-offset-4 transition-colors group-hover:decoration-accent">
+                        <span className="font-semibold underline decoration-transparent decoration-2 underline-offset-4 transition-colors group-hover:decoration-accent">
                           {member.name}
                         </span>
-                        <span className="block truncate font-mono text-sm text-muted">
+                        {member.inactive && <span className="ml-2 font-mono text-xs text-muted">inativo</span>}
+                        <span className="mt-0.5 block truncate font-mono text-sm text-muted">
                           {[member.cargo, ...(member.areas ?? []).map(areaLabel)].filter(Boolean).join(" · ") || "—"}
                         </span>
                       </span>
