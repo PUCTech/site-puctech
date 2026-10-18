@@ -35,6 +35,7 @@ export type Member = {
   viceOf?: AreaId[];
   photo?: string;
   linkedin?: string;
+  inactive?: boolean; // já saiu da liga: some das listas do site, mas segue creditado nos projetos
 };
 
 export type AreaInfo = {
@@ -66,7 +67,9 @@ export const areaInfo: AreaInfo[] = [
 
 // A lista de pessoas fica em content/membros.json (uma pessoa por linha), editada
 // pelo /admin ou à mão. A ordem da lista é a ordem em que aparecem no site.
-export const members = membersData as Member[];
+export const allMembers = membersData as Member[];
+// Todas as listas do site partem daqui: só quem ainda está na liga.
+export const members = allMembers.filter((m) => !m.inactive);
 
 // Confere a lista a cada build. Se algo estiver errado, o build falha com uma
 // mensagem dizendo qual pessoa (posição na lista) tem o problema.
@@ -91,7 +94,7 @@ export function teamErrors(list: Member[]) {
   return errors;
 }
 
-const errors = teamErrors(members);
+const errors = teamErrors(allMembers);
 if (errors.length > 0) throw new Error(`Erro em content/membros.json:\n- ${errors.join("\n- ")}`);
 
 export const advisors = members.filter((m) => m.group === "orientador");

@@ -78,6 +78,16 @@ export default async function EditMember({ params }: { params: Promise<{ index: 
             )}
           </div>
 
+          <label className="flex items-start gap-3 sm:col-span-2">
+            <input type="checkbox" name="inactive" defaultChecked={member?.inactive} className="mt-1" />
+            <span>
+              <span className="block font-semibold">Já saiu da liga</span>
+              <span className="block text-sm text-muted">
+                Some das listas do site, mas continua com foto e LinkedIn nos projetos em que participou.
+              </span>
+            </span>
+          </label>
+
           <div className="space-y-6 sm:col-span-2">
             <AreaChecks name="areas" label="áreas" hint="Só para Membro e Trainee." checked={member?.areas} />
             <AreaChecks name="presidentOf" label="coordena" hint="Só para Membro." checked={member?.presidentOf} />

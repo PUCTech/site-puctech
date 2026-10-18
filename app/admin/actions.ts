@@ -206,6 +206,7 @@ export async function saveMember(_: FormState, form: FormData): Promise<FormStat
           ? { photo: previous.photo }
           : {}),
       ...(str(form, "linkedin") && { linkedin: url(str(form, "linkedin"), "LinkedIn") }),
+      ...(form.get("inactive") === "on" && { inactive: true }),
     };
     const clean = JSON.parse(JSON.stringify(member)) as Member; // tira os campos undefined
 

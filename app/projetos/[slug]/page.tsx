@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { statusLabel } from "@/components/ProjectsShowcase";
 import Reveal from "@/components/Reveal";
 import { CdLink, Stage, button } from "@/components/Section";
+import { allMembers } from "@/data/team";
 import { getProject, getProjects } from "@/lib/projects";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -18,6 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!project) return {};
   return { title: project.title, description: project.summary ?? project.description };
 }
+
+// Nome na equipe do projeto -> pessoa da lista de membros (inclusive quem já saiu),
+// para mostrar foto e LinkedIn. Compara sem acento nem maiúsculas.
+const plain = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const memberNamed = (name: string) => allMembers.find((m) => plain(m.name) === plain(name));
 
 // Texto do .md: linha em branco separa os parágrafos.
 const paragraphs = (text: string) => text.split("\n\n").map((p) => <p key={p}>{p}</p>);
@@ -100,10 +106,38 @@ export default async function ProjectPage({ params }: Props) {
             {project.team && project.team.length > 0 && (
               <div>
                 <h2 className="font-mono text-sm text-muted">equipe</h2>
-                <ul className="mt-3 space-y-1.5 font-semibold">
-                  {project.team.map((person) => (
-                    <li key={person}>{person}</li>
-                  ))}
+                <ul className="mt-4 space-y-3">
+                  {project.team.map((name) => {
+                    const member = memberNamed(name);
+                    const content = (
+                      <>
+                        {member?.photo ? (
+                          <Image src={member.photo} alt="" width={40} height={40} className="size-10 shrink-0 rounded-full object-cover" />
+                        ) : (
+                          <span aria-hidden className="size-10 shrink-0 rounded-full bg-surface" />
+                        )}
+                        <span className="font-semibold leading-snug underline decoration-transparent decoration-2 underline-offset-4 transition-colors group-hover:decoration-accent">
+                          {member?.name ?? name}
+                        </span>
+                      </>
+                    );
+                    return (
+                      <li key={name}>
+                        {member?.linkedin ? (
+                          <a
+                            href={member.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex items-center gap-3"
+                          >
+                            {content}
+                          </a>
+                        ) : (
+                          <div className="flex items-center gap-3">{content}</div>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}

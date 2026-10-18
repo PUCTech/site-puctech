@@ -6,9 +6,9 @@ status: "concluido"
 order: 3
 tech: [Unity, Python, FastAPI, WebSockets, LangChain, ChromaDB, Whisper, SQLAlchemy, PostgreSQL]
 team:
-  - "@schnekenberg"
-  - "@GaiaOcean"
-  - "@Niikira"
+  - "Guilherme Schnekenberg"
+  - "Grazielle Batista de Almeida"
+  - "Nícolas Okamoto Celestrino"
   - "@Ce-22"
 repo: "https://github.com/schnekenberg/puctech_rothernet"
 ---

@@ -35,6 +35,6 @@ Construir uma aplicação funcional de gestão de saúde rotineira, com app mobi
 
 O resultado é um aplicativo Android, com build gerado pelo Expo.
 
-Pedro Bizzari liderou a equipe e fez o app mobile, além de integrar o front-end com a API. Liam Vedovato Lopes desenvolveu o back-end em Django. João Vitor P Bicalho cuidou do banco no Supabase e do web scraping.
+Pedro Bizzari liderou a equipe e fez o app mobile, além de integrar o front-end com a API. Liam Vedovato Lopes desenvolveu o back-end em Django. João Victor Pereira Bicalho cuidou do banco no Supabase e do web scraping.
 
 No front-end, o grupo praticou organização de telas, autenticação por token e validação de dados. No back-end, APIs REST, web scraping e deploy.

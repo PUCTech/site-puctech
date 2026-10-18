@@ -31,5 +31,11 @@
   {"name":"Pedru Paulo","group":"trainee","areas":["eventos"],"photo":"/equipe/pedru-paulo.jpg","linkedin":"https://www.linkedin.com/in/pedru-paulo-c-gama-02633b399/"},
   {"name":"Rafael Infantini","group":"trainee","areas":["eventos"],"photo":"/equipe/rafael-infantini.jpg","linkedin":"https://www.linkedin.com/in/rbinfantini/"},
   {"name":"Rafael Taffo","group":"trainee","areas":["marketing"],"photo":"/equipe/rafael-taffo.jpg","linkedin":"https://www.linkedin.com/in/rafael-taffo-montanha-5a11093bb/"},
-  {"name":"Victoria Tavares","group":"trainee","areas":["pessoas"],"photo":"/equipe/victoria-tavares.jpg","linkedin":"https://www.linkedin.com/in/victoria-tavares-877808411/"}
+  {"name":"Victoria Tavares","group":"trainee","areas":["pessoas"],"photo":"/equipe/victoria-tavares.jpg","linkedin":"https://www.linkedin.com/in/victoria-tavares-877808411/"},
+  {"name":"Guilherme Schnekenberg","group":"trainee","inactive":true,"photo":"/equipe/guilherme-schnekenberg.jpg","linkedin":"https://www.linkedin.com/in/guilherme-schnekenberg-a19b5b2b1/"},
+  {"name":"Grazielle Batista de Almeida","group":"trainee","inactive":true,"photo":"/equipe/grazielle-batista-de-almeida.jpg","linkedin":"https://www.linkedin.com/in/grazielle-batista-de-almeida-704844288/"},
+  {"name":"Túlio Gonçalves Vieira","group":"trainee","inactive":true,"photo":"/equipe/tulio-goncalves-vieira.jpg","linkedin":"https://www.linkedin.com/in/t%C3%BAlio-gon%C3%A7alves-vieira-6576602b9/"},
+  {"name":"Pedro Bizzari","group":"trainee","inactive":true,"photo":"/equipe/pedro-bizzari.jpg","linkedin":"https://www.linkedin.com/in/pedro-bizzari/"},
+  {"name":"João Victor Pereira Bicalho","group":"trainee","inactive":true,"photo":"/equipe/joao-victor-pereira-bicalho.jpg","linkedin":"https://www.linkedin.com/in/joao-victor-p-bicalho/"},
+  {"name":"Nícolas Okamoto Celestrino","group":"trainee","inactive":true,"photo":"/equipe/nicolas-okamoto-celestrino.jpg","linkedin":"https://www.linkedin.com/in/n%C3%ADcolas-okamoto/"}
 ]
