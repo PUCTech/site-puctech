@@ -138,7 +138,7 @@ export async function saveProject(_: FormState, form: FormData): Promise<FormSta
     parseProject(`${slug}.md`, markdown, errors);
     if (errors.length > 0) throw new Error(errors.join(" "));
 
-    await commit(`${original ? "Atualiza" : "Adiciona"} projeto: ${title} (via /admin)`, [
+    await commit(`chore(content): ${original ? "update" : "add"} project ${title} (via /admin)`, [
       { path, content: markdown },
       ...(photo && imagePath ? [{ path: imagePath, content: photo.content }] : []),
     ]);
@@ -154,7 +154,7 @@ export async function deleteProject(_: FormState, form: FormData): Promise<FormS
     const path = `${PROJECTS}/${slug}.md`;
     const current = await readFile(path);
     if (current.sha !== str(form, "sha")) throw new Error("Este projeto mudou. Recarregue antes de apagar.");
-    await commit(`Remove projeto: ${slug} (via /admin)`, [{ path, content: null }]);
+    await commit(`chore(content): remove project ${slug} (via /admin)`, [{ path, content: null }]);
     return "/admin/projetos?ok=apagado";
   });
 }
@@ -221,7 +221,7 @@ export async function saveMember(_: FormState, form: FormData): Promise<FormStat
     const errors = teamErrors(list);
     if (errors.length > 0) throw new Error(errors.join(" "));
 
-    await commit(`${index === -1 ? "Adiciona" : "Atualiza"} membro: ${name} (via /admin)`, [
+    await commit(`chore(content): ${index === -1 ? "add" : "update"} member ${name} (via /admin)`, [
       { path: MEMBERS, content: membersJson(list) },
       ...(photo && photoPath ? [{ path: photoPath, content: photo.content }] : []),
     ]);
@@ -237,7 +237,7 @@ export async function deleteMember(_: FormState, form: FormData): Promise<FormSt
     const member = list[index];
     if (!Number.isInteger(index) || !member) throw new Error("Pessoa não encontrada.");
     list.splice(index, 1);
-    await commit(`Remove membro: ${member.name} (via /admin)`, [{ path: MEMBERS, content: membersJson(list) }]);
+    await commit(`chore(content): remove member ${member.name} (via /admin)`, [{ path: MEMBERS, content: membersJson(list) }]);
     return "/admin/membros?ok=apagado";
   });
 }
