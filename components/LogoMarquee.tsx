@@ -1,33 +1,56 @@
 import Image from "next/image";
 
-type Partner = { name: string; logo?: string };
+// logoDark: versão do logo para o modo escuro (texto claro).
+type Partner = { name: string; logo?: string; logoDark?: string; href?: string };
 
 // Faixa de logos que rola sem parar (marquee). A lista é duplicada, então andar
 // metade da largura fecha o ciclo sem "pulo". Passar o mouse pausa.
-// Logos .svg/.png com fundo transparente viram pretos (brancos no modo escuro);
-// .jpg (com fundo) ficam em tons de cinza até ganharem uma versão vetorial.
+// Logos em cores originais. Os que têm texto claro/escuro ganham logoDark para o modo escuro.
 export default function LogoMarquee({ partners }: { partners: Partner[] }) {
-  const logo = (partner: Partner, hidden: boolean) => (
-    <li
-      key={hidden ? `copia-${partner.name}` : partner.name}
-      aria-hidden={hidden || undefined}
-      className={`flex h-16 w-40 shrink-0 items-center justify-center ${hidden ? "motion-reduce:hidden" : ""}`}
-    >
-      {partner.logo ? (
-        <Image
-          src={partner.logo}
-          alt={hidden ? "" : partner.name}
-          width={160}
-          height={64}
-          className={`max-h-14 w-auto object-contain opacity-70 transition-opacity hover:opacity-100 ${
-            partner.logo.endsWith(".jpg") ? "rounded-lg grayscale" : "brightness-0 dark:invert"
-          }`}
-        />
-      ) : (
-        <span className="font-semibold text-muted">{partner.name}</span>
-      )}
-    </li>
+  const image = (partner: Partner, hidden: boolean, src: string, className: string, decorative = hidden) => (
+    <Image
+      key={src}
+      src={src}
+      alt={decorative ? "" : partner.name}
+      width={224}
+      height={96}
+      className={`max-h-20 w-auto object-contain ${className}`}
+    />
   );
+
+  const logo = (partner: Partner, hidden: boolean) => {
+    const content = !partner.logo ? (
+      <span className="font-semibold text-muted">{partner.name}</span>
+    ) : partner.logoDark ? (
+      <>
+        {image(partner, hidden, partner.logo, "dark:hidden")}
+        {image(partner, hidden, partner.logoDark, "hidden dark:block", true)}
+      </>
+    ) : (
+      image(partner, hidden, partner.logo, partner.logo.endsWith(".jpg") ? "rounded-lg" : "")
+    );
+    return (
+      <li
+        key={hidden ? `copia-${partner.name}` : partner.name}
+        aria-hidden={hidden || undefined}
+        className={`flex h-24 w-56 shrink-0 items-center justify-center ${hidden ? "motion-reduce:hidden" : ""}`}
+      >
+        {partner.href ? (
+          <a
+            href={partner.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={hidden ? -1 : undefined}
+            className="flex size-full items-center justify-center"
+          >
+            {content}
+          </a>
+        ) : (
+          content
+        )}
+      </li>
+    );
+  };
 
   return (
     <div className="marquee-mask group overflow-hidden motion-reduce:overflow-visible">
