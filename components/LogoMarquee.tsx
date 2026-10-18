@@ -14,7 +14,7 @@ export default function LogoMarquee({ partners }: { partners: Partner[] }) {
       alt={decorative ? "" : partner.name}
       width={224}
       height={96}
-      className={`max-h-20 w-auto object-contain ${className}`}
+      className={`max-h-14 w-auto object-contain md:max-h-20 ${className}`}
     />
   );
 
@@ -33,7 +33,7 @@ export default function LogoMarquee({ partners }: { partners: Partner[] }) {
       <li
         key={hidden ? `copia-${partner.name}` : partner.name}
         aria-hidden={hidden || undefined}
-        className={`flex h-24 w-56 shrink-0 items-center justify-center ${hidden ? "motion-reduce:hidden" : ""}`}
+        className={`flex h-20 w-40 shrink-0 items-center md:h-24 md:w-56 justify-center ${hidden ? "motion-reduce:hidden" : ""}`}
       >
         {partner.href ? (
           <a
@@ -54,7 +54,7 @@ export default function LogoMarquee({ partners }: { partners: Partner[] }) {
 
   return (
     <div className="marquee-mask group overflow-hidden motion-reduce:overflow-visible">
-      <ul className="marquee-track flex w-max gap-10 group-hover:[animation-play-state:paused] motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:animate-none">
+      <ul className="marquee-track flex w-max gap-8 md:gap-10 group-hover:[animation-play-state:paused] motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:animate-none">
         {partners.map((partner) => logo(partner, false))}
         {/* Segunda cópia só para o efeito contínuo; some para leitores de tela e com movimento reduzido. */}
         {partners.map((partner) => logo(partner, true))}
