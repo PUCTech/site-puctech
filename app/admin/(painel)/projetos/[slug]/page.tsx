@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteProject, saveProject } from "@/app/admin/actions";
 import { AdminForm, DeleteForm, Field } from "@/components/admin/forms";
+import { ImageInput } from "@/components/admin/ImageInput";
 import { input } from "@/components/admin/styles";
 import { projectAreas, projectStatuses } from "@/data/projects";
 import { loadProjects } from "@/lib/admin-data";
@@ -84,25 +84,10 @@ export default async function EditProject({ params }: { params: Promise<{ slug: 
           </Field>
 
           <div className="sm:col-span-2">
-            <Field label="imagem" hint="JPG, PNG ou WebP, até 4 MB. Aparece em 16:10.">
-              <div className="flex flex-wrap items-center gap-5">
-                {project?.image && (
-                  <Image
-                    src={project.image}
-                    alt=""
-                    width={160}
-                    height={100}
-                    className="aspect-[16/10] w-40 rounded-xl object-cover"
-                  />
-                )}
-                <input name="image" type="file" accept="image/jpeg,image/png,image/webp" className="text-sm" />
-              </div>
-            </Field>
-            {project?.image && (
-              <label className="mt-3 flex items-center gap-2 text-sm text-muted">
-                <input type="checkbox" name="removeImage" /> remover imagem
-              </label>
-            )}
+            <span className="font-mono text-sm text-muted">imagem</span>
+            <div className="mt-2">
+              <ImageInput name="image" removeName="removeImage" current={project?.image} shape="wide" />
+            </div>
           </div>
 
           {[

@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteMember, saveMember } from "@/app/admin/actions";
 import { AdminForm, DeleteForm, Field } from "@/components/admin/forms";
+import { ImageInput } from "@/components/admin/ImageInput";
 import { input } from "@/components/admin/styles";
 import { areaInfo, groups, type AreaId } from "@/data/team";
 import { loadMembers } from "@/lib/admin-data";
@@ -63,19 +63,10 @@ export default async function EditMember({ params }: { params: Promise<{ index: 
           </Field>
 
           <div className="sm:col-span-2">
-            <Field label="foto" hint="JPG, PNG ou WebP, até 4 MB. De preferência quadrada, com o rosto no centro.">
-              <div className="flex flex-wrap items-center gap-5">
-                {member?.photo && (
-                  <Image src={member.photo} alt="" width={64} height={64} className="size-16 rounded-full object-cover" />
-                )}
-                <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" className="text-sm" />
-              </div>
-            </Field>
-            {member?.photo && (
-              <label className="mt-3 flex items-center gap-2 text-sm text-muted">
-                <input type="checkbox" name="removePhoto" /> remover foto
-              </label>
-            )}
+            <span className="font-mono text-sm text-muted">foto</span>
+            <div className="mt-2">
+              <ImageInput name="photo" removeName="removePhoto" current={member?.photo} shape="round" />
+            </div>
           </div>
 
           <label className="flex items-start gap-3 sm:col-span-2">
