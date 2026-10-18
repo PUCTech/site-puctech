@@ -40,6 +40,7 @@ function write(cells: Grid, w: number, h: number, x: number, y: number, text: st
 }
 
 // donut.c, de Andy Sloane: o toro girando que inspirou tudo isto.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- fora do rodízio (veja scenes), guardado para voltar
 const donut: Scene["make"] = (w, h, cellRatio) => {
   const SHADES = ".,-~:;=!*#$@";
   const R1 = 1;
@@ -669,7 +670,7 @@ const npm: Scene["make"] = (w, h) => {
 };
 
 export const scenes: Scene[] = [
-  { command: "./donut", make: donut },
+  // { command: "./donut", make: donut }, // fora do rodízio por enquanto
   { command: "sl -F", make: sl },
   { command: "life", make: life },
   { command: "pong", make: pong },
