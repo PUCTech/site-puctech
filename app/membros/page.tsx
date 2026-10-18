@@ -10,6 +10,7 @@ import MembersWall from "@/components/team/MembersWall";
 import OrgChart from "@/components/team/OrgChart";
 import {
   advisors,
+  executive,
   founders,
   groupDescriptions,
   honorary,
@@ -149,7 +150,7 @@ export default function EquipePage() {
       />
 
       <Stage id="diretoria-executiva" className={gap}>
-        <Heading title="Diretoria Executiva">
+        <Heading title="Organograma">
           <p>{groupDescriptions.diretoriaExecutiva}</p>
         </Heading>
         <Reveal delay={150}>
@@ -168,14 +169,17 @@ export default function EquipePage() {
       />
 
       {/* Todo mundo da liga (sem trainees por enquanto), com o LinkedIn de cada um. */}
-      <Stage id="membros" className={gap}>
-        <Heading title="Membros">
+      <Stage id="integrantes" className={gap}>
+        <Heading title="Integrantes">
           <p>Quem faz a PUC Tech acontecer no dia a dia. Filtre por área e clique em alguém para ver o LinkedIn.</p>
         </Heading>
         <Reveal delay={150}>
           <div className="mt-10">
             <MembersWall
-              people={members.filter((m) => m.group === "membro").sort((a, b) => a.name.localeCompare(b.name))}
+              people={[
+                ...executive,
+                ...members.filter((m) => m.group === "membro").sort((a, b) => a.name.localeCompare(b.name)),
+              ]}
             />
           </div>
         </Reveal>
