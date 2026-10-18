@@ -8,6 +8,7 @@ const pt = {
     title: "A Primeira Liga de Ciência e Tecnologia da PUC-SP",
   },
   numbers: "Nossos números",
+  hiredTitle: "Empresas que contrataram nossos membros",
   about: {
     title: "Sobre",
     paragraphs: [
@@ -48,6 +49,7 @@ const en: HomeContent = {
     title: "The First Science and Technology League at PUC-SP",
   },
   numbers: "Our numbers",
+  hiredTitle: "Companies that hired our members",
   about: {
     title: "About",
     paragraphs: [
@@ -85,6 +87,7 @@ const es: HomeContent = {
     title: "La Primera Liga de Ciencia y Tecnología de la PUC-SP",
   },
   numbers: "Nuestros números",
+  hiredTitle: "Empresas que contrataron a nuestros miembros",
   about: {
     title: "Sobre nosotros",
     paragraphs: [
@@ -138,4 +141,29 @@ export const partners: { name: string; logo?: string; logoDark?: string; href?: 
   { name: "Conecta Devs", logo: "/parceiros/conecta-devs.jpg" },
   { name: "PUC Junior", logo: "/parceiros/puc-junior.png", logoDark: "/parceiros/puc-junior-dark.png", href: "https://pucjunior.com.br" },
   { name: "PUC Angels", logo: "/parceiros/puc-angels.webp", logoDark: "/parceiros/puc-angels-dark.webp", href: "https://pucangels.org" },
+];
+
+// Empresas que contrataram membros e ex-membros da liga (logo abaixo dos números da home).
+// Só logos em SVG, em public/empresas/. `logoDark` é a versão para o modo escuro.
+// `tier` é a faixa, como numa parede de patrocinadores: 1 em cima, com logos maiores; 2 embaixo.
+// `shape` corrige logos que não são horizontais: "square" (Itaú) ou "stacked" (símbolo em
+// cima e nome embaixo, como o do Einstein), para parecerem do tamanho dos outros da faixa.
+export const hiredAt: {
+  name: string;
+  logo: string;
+  logoDark?: string;
+  href: string;
+  tier: 1 | 2;
+  shape?: "square" | "stacked";
+}[] = [
+  { name: "Microsoft", logo: "/empresas/microsoft.svg", logoDark: "/empresas/microsoft-dark.svg", href: "https://www.microsoft.com", tier: 1 },
+  { name: "Itaú", logo: "/empresas/itau.svg", href: "https://www.itau.com.br", tier: 1, shape: "square" },
+  { name: "BTG Pactual", logo: "/empresas/btg.svg", logoDark: "/empresas/btg-dark.svg", href: "https://www.btgpactual.com", tier: 1 },
+  { name: "Safra", logo: "/empresas/safra.svg", logoDark: "/empresas/safra-dark.svg", href: "https://www.safra.com.br", tier: 1 },
+  { name: "Vivo", logo: "/empresas/vivo.svg", logoDark: "/empresas/vivo-dark.svg", href: "https://www.vivo.com.br", tier: 1 },
+  { name: "Banco do Brasil", logo: "/empresas/banco-do-brasil.svg", href: "https://www.bb.com.br", tier: 2 },
+  { name: "Einstein", logo: "/empresas/einstein.svg", logoDark: "/empresas/einstein-dark.svg", href: "https://www.einstein.br", tier: 2, shape: "stacked" },
+  { name: "Banco Pan", logo: "/empresas/banco-pan.svg", logoDark: "/empresas/banco-pan-dark.svg", href: "https://www.bancopan.com.br", tier: 2 },
+  { name: "Serena", logo: "/empresas/serena.svg", logoDark: "/empresas/serena-dark.svg", href: "https://srna.co", tier: 2 },
+  { name: "nstech", logo: "/empresas/nstech.svg", href: "https://nstech.com.br", tier: 2 },
 ];
