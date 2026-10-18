@@ -9,7 +9,7 @@ team:
   - "Guilherme Schnekenberg"
   - "Grazielle Batista de Almeida"
   - "Nícolas Okamoto Celestrino"
-  - "@Ce-22"
+  - Cesar Silva
 repo: "https://github.com/schnekenberg/puctech_rothernet"
 ---
 

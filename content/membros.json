@@ -1,5 +1,5 @@
 [
-  {"name":"Profa. Cristiana","group":"orientador","cargo":"Tutora","photo":"/equipe/profa-cristiana.jpg","linkedin":"http://lattes.cnpq.br/9085326429110439"},
+  {"name":"Profa. Cristiana Fusco","group":"orientador","cargo":"Tutora","photo":"/equipe/profa-cristiana.jpg","linkedin":"http://lattes.cnpq.br/9085326429110439"},
   {"name":"Prof. Daniel Gatti","group":"orientador","photo":"/equipe/prof-daniel-gatti.jpg","linkedin":"https://www.linkedin.com/in/dgatti/"},
   {"name":"Igor Simões","group":"fundador","photo":"/equipe/igor-simoes.jpg","linkedin":"https://www.linkedin.com/in/igorssimoes/"},
   {"name":"Leonardo Grupioni","group":"fundador","photo":"/equipe/leonardo-grupioni.jpg","linkedin":"https://www.linkedin.com/in/leonardo-grupioni-5929941aa/"},
@@ -38,5 +38,6 @@
   {"name":"Túlio Gonçalves Vieira","group":"trainee","inactive":true,"photo":"/equipe/tulio-goncalves-vieira.jpg","linkedin":"https://www.linkedin.com/in/t%C3%BAlio-gon%C3%A7alves-vieira-6576602b9/"},
   {"name":"Pedro Bizzari","group":"trainee","inactive":true,"photo":"/equipe/pedro-bizzari.jpg","linkedin":"https://www.linkedin.com/in/pedro-bizzari/"},
   {"name":"João Victor Pereira Bicalho","group":"trainee","inactive":true,"photo":"/equipe/joao-victor-pereira-bicalho.jpg","linkedin":"https://www.linkedin.com/in/joao-victor-p-bicalho/"},
-  {"name":"Nícolas Okamoto Celestrino","group":"trainee","inactive":true,"photo":"/equipe/nicolas-okamoto-celestrino.jpg","linkedin":"https://www.linkedin.com/in/n%C3%ADcolas-okamoto/"}
+  {"name":"Nícolas Okamoto Celestrino","group":"trainee","inactive":true,"photo":"/equipe/nicolas-okamoto-celestrino.jpg","linkedin":"https://www.linkedin.com/in/n%C3%ADcolas-okamoto/"},
+  {"name":"Cesar Silva","group":"trainee","inactive":true,"photo":"/equipe/cesar-silva.jpg","linkedin":"https://www.linkedin.com/in/cesar-silva-b3b63b306/"}
 ]
