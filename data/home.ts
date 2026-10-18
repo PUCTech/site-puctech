@@ -121,11 +121,11 @@ export const home: Record<Lang, HomeContent> = { pt, en, es };
 
 // Números da home (os rótulos ficam em `statLabels`, em cada idioma, na mesma ordem).
 export const stats = [
-  { value: 50, suffix: "+" },
+  { value: 65, suffix: "+" },
   { value: 10, suffix: "+" },
   { value: 20, suffix: "+" },
   { value: 5, suffix: "+" },
-  { value: 15, suffix: "+" },
+  { value: 30, suffix: "+" },
 ];
 
 // Para mostrar o logo de um parceiro, coloque o arquivo em public/parceiros/

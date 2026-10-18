@@ -485,7 +485,7 @@ const neofetch: Scene["make"] = (w, h) => {
     "Uptime: desde 2024",
     "Packages: 10+ projetos",
     "Shell: zsh (com muito café)",
-    "Members: 50+ estudantes",
+    "Members: 65+ estudantes",
     "CPU: Ciência da Computação",
     "GPU: ideias em paralelo",
   ];
