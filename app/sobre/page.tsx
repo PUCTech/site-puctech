@@ -200,7 +200,7 @@ function Timeline() {
             <span
               key={year}
               aria-hidden
-              className="absolute top-[calc(var(--line)-0.5rem)] h-5 w-px bg-border"
+              className="absolute top-[calc(var(--line)-0.75rem)] h-7 w-0.5 -translate-x-1/2 bg-ink/40"
               style={{ left: `${(px((i + 1) * 12) / TRACK_PX) * 100}%` }}
             />
           ))}
