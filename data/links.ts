@@ -35,6 +35,12 @@ export const linksPage = {
 
 export const links: LinkItem[] = [
   {
+    label: "Nosso site",
+    // O endereço do site sem o "https://", ex.: puctech.com.br
+    description: siteConfig.url.replace(/^https?:\/\//, ""),
+    href: "/",
+  },
+  {
     label: "Processo seletivo",
     description: selectionPage.badge,
     href: "/processo-seletivo",
