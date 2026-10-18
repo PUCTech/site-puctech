@@ -88,28 +88,6 @@ body {
   mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 
-/* Pop-up de projeto: entrada suave. */
-@keyframes dialog-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.project-dialog[open] {
-  animation: dialog-in 200ms ease-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .project-dialog[open] {
-    animation: none;
-  }
-}
-
 /* Linha do tempo (/sobre): a linha se desenha da esquerda e cada marco aparece
    quando ela passa por ele (--at vai de 0 a 1 ao longo da linha). */
 .timeline-line {

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import AreaIcon from "@/components/AreaIcon";
 import ProjectsShowcase from "@/components/ProjectsShowcase";
-import { Block } from "@/components/Section";
-import { projectAreas, projectsPage } from "@/data/projects";
+import Reveal from "@/components/Reveal";
+import { Stage } from "@/components/Section";
+import { projectsPage } from "@/data/projects";
 import { getProjects } from "@/lib/projects";
 
 export const metadata: Metadata = {
@@ -13,24 +13,19 @@ export const metadata: Metadata = {
 
 export default function ProjetosPage() {
   return (
-    <ProjectsShowcase
-      title={projectsPage.title}
-      intro={projectsPage.intro}
-      projects={getProjects()}
-    >
-      <Block id="areas" title="Áreas de Atuação">
-        <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-          {projectAreas.map((area) => (
-            <li key={area.title} className="flex gap-4">
-              <AreaIcon title={area.title} className="mt-0.5 size-6 shrink-0 text-accent-ink" />
-              <div>
-                <h3 className="font-display font-bold">{area.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted">{area.text}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </Block>
-    </ProjectsShowcase>
+    <main>
+      <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
+        <h1 className="fade-in text-4xl font-bold tracking-[-0.04em] md:text-6xl">{projectsPage.title}</h1>
+        <p className="fade-in mt-6 max-w-3xl text-lg leading-relaxed text-pretty text-muted [animation-delay:250ms] md:text-xl">
+          {projectsPage.intro}
+        </p>
+      </Stage>
+
+      <Stage id="lista" className="pt-4 pb-20 md:pb-28">
+        <Reveal delay={150}>
+          <ProjectsShowcase projects={getProjects()} />
+        </Reveal>
+      </Stage>
+    </main>
   );
 }

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getProjects } from "@/lib/projects";
 import { siteConfig } from "@/lib/site";
 
 const pages = [
@@ -11,7 +12,7 @@ const pages = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return pages.map((path) => ({
+  return [...pages, ...getProjects().map((project) => `/projetos/${project.slug}`)].map((path) => ({
     url: `${siteConfig.url}${path}`,
     lastModified: new Date(),
   }));
