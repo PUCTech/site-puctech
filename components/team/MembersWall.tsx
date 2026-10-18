@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import MemberCard, { membersGrid } from "@/components/team/MemberCard";
+import MemberCard from "@/components/team/MemberCard";
 import { areaColor, areasOf, labelOf } from "@/components/team/areas";
 import { areaInfo, type AreaId, type Member } from "@/data/team";
 
@@ -11,6 +11,10 @@ const dot: Record<AreaId, string> = {
   eventos: "bg-amber-400",
   pessoas: "bg-fuchsia-400",
 };
+
+// 2, 3, 4 e 5 colunas, descontando os gaps de 1.5rem entre elas.
+const cell =
+  "w-[calc((100%-1.5rem)/2)] sm:w-[calc((100%-3rem)/3)] md:w-[calc((100%-4.5rem)/4)] lg:w-[calc((100%-6rem)/5)]";
 
 /**
  * Todo mundo, com filtro por área. Filtrar não tira ninguém da grade: quem não é
@@ -49,7 +53,8 @@ export default function MembersWall({ people }: { people: Member[] }) {
         })}
       </div>
 
-      <div className={`mt-10 ${membersGrid}`}>
+      {/* Flex com largura de coluna fixa: a última linha, se incompleta, fica centralizada. */}
+      <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-10">
         {people.map((m) => {
           const areas = areasOf(m);
           const dimmed = area !== null && !areas.includes(area);
@@ -57,7 +62,7 @@ export default function MembersWall({ people }: { people: Member[] }) {
             <div
               key={m.name}
               aria-hidden={dimmed || undefined}
-              className={`transition-opacity duration-300 ${dimmed ? "pointer-events-none opacity-20" : ""}`}
+              className={`${cell} transition-opacity duration-300 ${dimmed ? "pointer-events-none opacity-20" : ""}`}
             >
               <MemberCard
                 member={m}
