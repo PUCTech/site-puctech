@@ -10,7 +10,8 @@ import {
 } from "@/data/projects";
 import type { Lang } from "@/lib/i18n";
 
-// Lê os projetos de content/projetos/*.md. Só roda no servidor (no build).
+// Lê os projetos de content/projetos/*.md. O site lê do Supabase (lib/content.ts);
+// isto ficou para o /admin e para gerar o seed (scripts/seed.ts).
 // Se algo estiver errado, o build falha com uma mensagem dizendo o arquivo e o problema.
 
 const PROJECTS_DIR = path.join(process.cwd(), "content", "projetos");
@@ -238,10 +239,6 @@ export function getProjects(lang: Lang = "pt"): Project[] {
     throw new Error(`Erro em content/projetos:\n- ${errors.join("\n- ")}`);
   }
   return sorted;
-}
-
-export function getProject(slug: string, lang: Lang = "pt"): Project | undefined {
-  return getProjects(lang).find((project) => project.slug === slug);
 }
 /** Escreve um projeto no formato de content/projetos/*.md (o inverso de parseProject). */
 export function serializeProject(project: Omit<Project, "slug">, order?: number): string {

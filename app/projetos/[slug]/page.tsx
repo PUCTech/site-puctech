@@ -6,16 +6,16 @@ import { projectMeta } from "@/components/ProjectsShowcase";
 import Reveal from "@/components/Reveal";
 import { CdLink, Stage, button } from "@/components/Section";
 import { projectsPage } from "@/data/projects";
-import { allMembers } from "@/data/team";
+import type { Member } from "@/data/team";
+import { getAllMembers, getProject, getProjects } from "@/lib/content";
 import { getLang } from "@/lib/lang";
-import { getProject, getProjects } from "@/lib/projects";
 
 type Props = PageProps<"/projetos/[slug]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = await getLang();
   const { slug } = await params;
-  const project = getProject(slug, lang);
+  const project = await getProject(slug, lang);
   if (!project) return {};
   return {
     title: project.title,
@@ -32,7 +32,7 @@ const ends = (text: string) => {
   const words = plain(text).split(/\s+/);
   return `${words[0]} ${words.at(-1)}`;
 };
-const memberNamed = (name: string) => {
+const memberNamed = (allMembers: Member[], name: string) => {
   const exact = allMembers.find((m) => plain(m.name) === plain(name));
   if (exact) return exact;
   const close = allMembers.filter((m) => ends(m.name) === ends(name));
@@ -46,7 +46,7 @@ export default async function ProjectPage({ params }: Props) {
   const lang = await getLang();
   const { slug } = await params;
   const t = projectsPage[lang];
-  const projects = getProjects(lang);
+  const [projects, allMembers] = await Promise.all([getProjects(lang), getAllMembers()]);
   const index = projects.findIndex((project) => project.slug === slug);
   if (index === -1) notFound();
   const project = projects[index];
@@ -124,7 +124,7 @@ export default async function ProjectPage({ params }: Props) {
                 <h2 className="font-mono text-sm text-muted">{t.team}</h2>
                 <ul className="mt-4 space-y-3">
                   {project.team.map((name) => {
-                    const member = memberNamed(name);
+                    const member = memberNamed(allMembers, name);
                     const content = (
                       <>
                         {member?.photo ? (

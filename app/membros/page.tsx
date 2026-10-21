@@ -8,17 +8,8 @@ import MemberCard, {
 } from "@/components/team/MemberCard";
 import MembersWall from "@/components/team/MembersWall";
 import OrgChart from "@/components/team/OrgChart";
-import {
-  advisors,
-  executive,
-  founders,
-  honorary,
-  idealizers,
-  members,
-  strategic,
-  teamPage,
-  type Member,
-} from "@/data/team";
+import { teamPage, type Group, type Member } from "@/data/team";
+import { getAllMembers } from "@/lib/content";
 import type { Lang } from "@/lib/i18n";
 import { getLang } from "@/lib/lang";
 
@@ -106,6 +97,10 @@ export default async function MembrosPage() {
   const lang = await getLang();
   const t = teamPage[lang];
   const g = t.groups;
+  // Só quem ainda está na liga; quem saiu segue só nos créditos dos projetos.
+  const members = (await getAllMembers()).filter((m) => !m.inactive);
+  const inGroup = (...ids: Group[]) => members.filter((m) => ids.includes(m.group));
+  const executive = inGroup("presidente", "vice-presidente");
   return (
     <main>
       <Stage className="pt-16 pb-12 md:pt-28 md:pb-16">
@@ -141,14 +136,14 @@ export default async function MembrosPage() {
               lang={lang}
               title={g.tutores.title}
               subtitle={g.tutores.text}
-              members={advisors}
+              members={inGroup("orientador")}
               role={t.roles.tutor}
             />
             <CompactGroup
               lang={lang}
               title={g.fundadores.title}
               subtitle={g.fundadores.text}
-              members={founders}
+              members={inGroup("fundador")}
               role={t.roles.founder}
             />
           </div>
@@ -160,7 +155,7 @@ export default async function MembrosPage() {
         id="honorarios"
         title={g.honorarios.title}
         subtitle={g.honorarios.text}
-        members={honorary}
+        members={inGroup("honorario")}
         role={t.roles.honorary}
       />
 
@@ -170,7 +165,7 @@ export default async function MembrosPage() {
         </Heading>
         <Reveal delay={150}>
           <div className="mt-12">
-            <OrgChart lang={lang} />
+            <OrgChart lang={lang} members={members} />
           </div>
         </Reveal>
       </Stage>
@@ -180,7 +175,7 @@ export default async function MembrosPage() {
         id="diretorias-estrategicas"
         title={g.diretoriasEstrategicas.title}
         subtitle={g.diretoriasEstrategicas.text}
-        members={strategic}
+        members={inGroup("diretoria-estrategica")}
         highlight
       />
 
@@ -207,7 +202,7 @@ export default async function MembrosPage() {
         id="idealizadores"
         title={g.idealizadores.title}
         subtitle={g.idealizadores.text}
-        members={idealizers}
+        members={inGroup("idealizador")}
       />
 
       <div className="pb-12 md:pb-16" />

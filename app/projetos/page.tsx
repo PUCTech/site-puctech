@@ -3,8 +3,7 @@ import ProjectsShowcase from "@/components/ProjectsShowcase";
 import Reveal from "@/components/Reveal";
 import { Stage } from "@/components/Section";
 import { projectsPage } from "@/data/projects";
-
-import { getProjects } from "@/lib/projects";
+import { getProjects } from "@/lib/content";
 import { getLang } from "@/lib/lang";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,7 +26,7 @@ export default async function ProjetosPage() {
 
       <Stage id="lista" className="pt-4 pb-20 md:pb-28">
         <Reveal delay={150}>
-          <ProjectsShowcase projects={getProjects(lang)} lang={lang} />
+          <ProjectsShowcase projects={await getProjects(lang)} lang={lang} />
         </Reveal>
       </Stage>
     </main>

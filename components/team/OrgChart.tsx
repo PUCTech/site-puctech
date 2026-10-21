@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { areaColor, areaIndex, areasOf, labelOf } from "@/components/team/areas";
-import { areaInfo, cargoIn, executive, members, teamPage, type AreaId, type Member } from "@/data/team";
+import { areaInfo, cargoIn, teamPage, type AreaId, type Member } from "@/data/team";
 import type { Lang } from "@/lib/i18n";
 
 const roleOf = (m: Member, lang: Lang) => {
@@ -16,26 +16,28 @@ const roleOf = (m: Member, lang: Lang) => {
 // última (Marketing, Eventos, Eventos + Pessoas, Pessoas). Coordenação primeiro.
 // shortcut: só funciona enquanto ninguém estiver em duas áreas não vizinhas; se
 // acontecer, o retângulo daquela área cobre quem está no meio.
-const team = members
-  .filter((m) => m.group === "membro")
-  .map((m) => ({ m, areas: areasOf(m) }))
-  .sort((a, b) => {
-    const first = (x: AreaId[]) => (x.length ? areaIndex(x[0]) : 99);
-    const last = (x: AreaId[]) => (x.length ? areaIndex(x[x.length - 1]) : 99);
-    const leads = (m: Member) => (m.presidentOf ? 0 : m.viceOf ? 1 : 2);
-    return (
-      first(a.areas) - first(b.areas) ||
-      last(a.areas) - last(b.areas) ||
-      leads(a.m) - leads(b.m) ||
-      a.m.name.localeCompare(b.m.name)
-    );
-  });
+const teamOf = (members: Member[]) =>
+  members
+    .filter((m) => m.group === "membro")
+    .map((m) => ({ m, areas: areasOf(m) }))
+    .sort((a, b) => {
+      const first = (x: AreaId[]) => (x.length ? areaIndex(x[0]) : 99);
+      const last = (x: AreaId[]) => (x.length ? areaIndex(x[x.length - 1]) : 99);
+      const leads = (m: Member) => (m.presidentOf ? 0 : m.viceOf ? 1 : 2);
+      return (
+        first(a.areas) - first(b.areas) ||
+        last(a.areas) - last(b.areas) ||
+        leads(a.m) - leads(b.m) ||
+        a.m.name.localeCompare(b.m.name)
+      );
+    });
 
 // Colunas (contando de 1) onde o retângulo de cada área começa e termina.
-const spans = areaInfo.flatMap((area) => {
-  const cols = team.flatMap(({ areas }, i) => (areas.includes(area.id) ? [i + 1] : []));
-  return cols.length ? [{ id: area.id, start: cols[0], end: cols[cols.length - 1] + 1 }] : [];
-});
+const spansOf = (team: ReturnType<typeof teamOf>) =>
+  areaInfo.flatMap((area) => {
+    const cols = team.flatMap(({ areas }, i) => (areas.includes(area.id) ? [i + 1] : []));
+    return cols.length ? [{ id: area.id, start: cols[0], end: cols[cols.length - 1] + 1 }] : [];
+  });
 
 function Photo({ member, className }: { member: Member; className: string }) {
   return (
@@ -64,7 +66,10 @@ function Name({ member, className = "" }: { member: Member; className?: string }
  * Organograma: diretoria executiva no topo, uma linha descendo e todo mundo num
  * grupo só. Retângulos pontilhados coloridos mostram de que área cada um é.
  */
-export default function OrgChart({ lang }: { lang: Lang }) {
+export default function OrgChart({ lang, members }: { lang: Lang; members: Member[] }) {
+  const executive = members.filter((m) => m.group === "presidente" || m.group === "vice-presidente");
+  const team = teamOf(members);
+  const spans = spansOf(team);
   return (
     <div>
       {/* Presidente e vice ligados por uma linha; dela desce a linha para o grupo. */}

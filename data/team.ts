@@ -1,4 +1,3 @@
-import membersData from "@/content/membros.json";
 import type { Lang, T } from "@/lib/i18n";
 
 export type AreaId = "marketing" | "eventos" | "pessoas";
@@ -70,14 +69,9 @@ export const areaInfo: AreaInfo[] = [
   },
 ];
 
-// A lista de pessoas fica em content/membros.json (uma pessoa por linha), editada
-// pelo /admin ou à mão. A ordem da lista é a ordem em que aparecem no site.
-export const allMembers = membersData as Member[];
-// Todas as listas do site partem daqui: só quem ainda está na liga.
-export const members = allMembers.filter((m) => !m.inactive);
+// A lista de pessoas fica no Supabase (tabela members), lida por lib/content.ts.
 
-// Confere a lista a cada build. Se algo estiver errado, o build falha com uma
-// mensagem dizendo qual pessoa (posição na lista) tem o problema.
+// Confere a lista antes de o /admin salvar: diz qual pessoa (posição na lista) tem o problema.
 export function teamErrors(list: Member[]) {
   const errors: string[] = [];
 
@@ -99,20 +93,6 @@ export function teamErrors(list: Member[]) {
   return errors;
 }
 
-const errors = teamErrors(allMembers);
-if (errors.length > 0) throw new Error(`Erro em content/membros.json:\n- ${errors.join("\n- ")}`);
-
-export const advisors = members.filter((m) => m.group === "orientador");
-export const honorary = members.filter((m) => m.group === "honorario");
-export const founders = members.filter((m) => m.group === "fundador");
-export const executive = members.filter(
-  (m) => m.group === "presidente" || m.group === "vice-presidente",
-);
-export const strategic = members.filter(
-  (m) => m.group === "diretoria-estrategica",
-);
-export const trainees = members.filter((m) => m.group === "trainee");
-export const idealizers = members.filter((m) => m.group === "idealizador");
 // Textos da página /membros, em cada idioma.
 // Mudou um texto em português? Mude também em `en` e `es`, logo abaixo.
 const pt = {
