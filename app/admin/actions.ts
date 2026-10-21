@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { admins, endSession, owner, requireAdmin } from "@/lib/admin-auth";
+import { admins, endSession, githubUser, ownerId, requireAdmin } from "@/lib/admin-auth";
 import { loadMember, loadProject, versionOf } from "@/lib/admin-data";
 import type { MemberRow, ProjectRow, Texts } from "@/lib/content";
 import { db, removeImage, uploadImage } from "@/lib/supabase";
@@ -235,7 +235,7 @@ export async function deleteMember(_: FormState, form: FormData): Promise<FormSt
 }
 
 // ---------- Admins ----------
-// Quem pode entrar no /admin. O id da conta do GitHub é travado no primeiro login.
+// Quem pode entrar no /admin. Vale a conta do GitHub (id), buscada aqui pelo nome de usuário.
 
 export async function addAdmin(_: FormState, form: FormData): Promise<FormState> {
   const me = await requireAdmin();
@@ -243,8 +243,11 @@ export async function addAdmin(_: FormState, form: FormData): Promise<FormState>
     const login = str(form, "login").replace(/^@/, "").toLowerCase();
     // Regra de nomes do GitHub: letras, números e hífens soltos, até 39 caracteres.
     if (!/^[a-z0-9](?:-?[a-z0-9]){0,38}$/.test(login)) throw new Error("Usuário do GitHub inválido.");
-    if ((await admins(`github_login=eq.${login}`)).length > 0) throw new Error(`@${login} já é admin.`);
-    await admins("", { method: "POST", body: JSON.stringify({ github_login: login, added_by: me.github_login }) });
+    const user = await githubUser(login);
+    if (!user) throw new Error(`Não existe usuário @${login} no GitHub.`);
+    if ((await admins(`github_id=eq.${user.id}`)).length > 0) throw new Error(`@${user.login} já é admin.`);
+    const body = JSON.stringify({ github_login: user.login.toLowerCase(), github_id: user.id, added_by: me.github_login });
+    await admins("", { method: "POST", body });
     return "/admin/admins";
   });
 }
@@ -255,7 +258,7 @@ export async function removeAdmin(_: FormState, form: FormData): Promise<FormSta
     const [admin] = await admins(`id=eq.${encodeURIComponent(str(form, "id"))}`);
     if (!admin) throw new Error("Admin não encontrado.");
     if (admin.id === me.id) throw new Error("Você não pode remover a si mesmo.");
-    if (admin.github_login === owner()) throw new Error("O dono (ADMIN_GITHUB) não pode ser removido por aqui.");
+    if (admin.github_id === ownerId()) throw new Error("O dono (ADMIN_GITHUB_ID) não pode ser removido por aqui.");
     await admins(`id=eq.${admin.id}`, { method: "DELETE" });
     return "/admin/admins";
   });

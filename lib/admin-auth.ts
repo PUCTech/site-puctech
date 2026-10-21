@@ -4,8 +4,9 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { db } from "@/lib/supabase";
 
-// Acesso ao /admin: login com GitHub (app/api/auth/github). Só entra quem está na
-// tabela admins; ADMIN_GITHUB é o dono, sempre admin (cobre o primeiro login).
+// Acesso ao /admin: login com GitHub (app/api/auth/github). Só entra a conta do GitHub
+// (pelo id, que nunca muda) que está na tabela admins; ADMIN_GITHUB_ID é o dono,
+// sempre admin (cobre o primeiro login).
 // O cookie, válido por 8 horas, guarda o id da conta do GitHub, assinado com o
 // GITHUB_CLIENT_SECRET (trocar o secret desloga todo mundo). A tabela é consultada
 // a cada pedido: quem for removido perde o acesso na hora.
@@ -15,7 +16,8 @@ const MAX_AGE = 8 * 60 * 60; // segundos
 export const STATE_COOKIE = "puctech_oauth_state"; // state do login com GitHub
 
 const secret = () => process.env.GITHUB_CLIENT_SECRET ?? "";
-export const owner = () => (process.env.ADMIN_GITHUB ?? "").trim().toLowerCase();
+/** Id da conta do GitHub do dono (ADMIN_GITHUB_ID), ou null se não configurado. */
+export const ownerId = () => Number(process.env.ADMIN_GITHUB_ID) || null;
 const sign = (value: string) => createHmac("sha256", secret()).update(value).digest("hex");
 
 // Compara sem vazar pelo tempo de resposta quantos caracteres batem.
@@ -27,7 +29,7 @@ function same(a: string, b: string) {
 export type Admin = {
   id: string;
   github_login: string;
-  github_id: number | null;
+  github_id: number;
   added_by: string;
   created_at: string;
 };
@@ -38,34 +40,36 @@ export async function admins(query: string, init?: RequestInit): Promise<Admin[]
   return response.json();
 }
 
-const patch = (body: object): RequestInit => ({ method: "PATCH", body: JSON.stringify(body) });
-
 /**
- * Decide se a conta do GitHub entra. No primeiro login trava o github_id: daí em
- * diante vale a conta, não o nome (que pode trocar de dono). `null` = sem acesso.
+ * Conta do GitHub pelo nome de usuário (id e nome com a grafia certa), ou null se não
+ * existir. Com as credenciais do OAuth App o limite do GitHub sobe de 60 para 5.000 por hora.
  */
+export async function githubUser(login: string): Promise<{ id: number; login: string } | null> {
+  const credentials = Buffer.from(`${process.env.GITHUB_CLIENT_ID}:${secret()}`).toString("base64");
+  const response = await fetch(`https://api.github.com/users/${encodeURIComponent(login)}`, {
+    cache: "no-store",
+    headers: { Accept: "application/vnd.github+json", Authorization: `Basic ${credentials}` },
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Não deu para consultar o GitHub (${response.status}). Tente de novo.`);
+  const user = (await response.json()) as { id: number; login: string };
+  return { id: user.id, login: user.login };
+}
+
+/** Decide se a conta do GitHub entra: só pelo id. `null` = sem acesso. */
 export async function admit(githubId: number, githubLogin: string): Promise<Admin | null> {
   const login = githubLogin.toLowerCase();
 
   const [known] = await admins(`github_id=eq.${githubId}`);
   if (known) {
     if (known.github_login === login) return known;
-    // Trocou de nome no GitHub: a lista acompanha (se o nome novo não estiver reservado).
-    try {
-      return (await admins(`id=eq.${known.id}`, patch({ github_login: login })))[0] ?? known;
-    } catch {
-      return known;
-    }
+    // Trocou de nome no GitHub: o nome na lista acompanha (é só para mostrar).
+    const body = JSON.stringify({ github_login: login });
+    return (await admins(`id=eq.${known.id}`, { method: "PATCH", body }))[0] ?? known;
   }
 
-  const [invited] = await admins(`github_login=eq.${encodeURIComponent(login)}`);
-  if (invited) {
-    if (invited.github_id !== null) return null; // o nome já foi confirmado por outra conta
-    return (await admins(`id=eq.${invited.id}&github_id=is.null`, patch({ github_id: githubId })))[0] ?? null;
-  }
-
-  if (login === owner()) {
-    const body = JSON.stringify({ github_login: login, github_id: githubId, added_by: "ADMIN_GITHUB" });
+  if (githubId === ownerId()) {
+    const body = JSON.stringify({ github_login: login, github_id: githubId, added_by: "ADMIN_GITHUB_ID" });
     return (await admins("", { method: "POST", body }))[0];
   }
   return null;
