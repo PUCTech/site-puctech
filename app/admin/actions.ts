@@ -2,18 +2,17 @@
 
 import { redirect } from "next/navigation";
 import { admins, endSession, owner, requireAdmin } from "@/lib/admin-auth";
-import { commit, listFiles, readFile } from "@/lib/github";
-import { parseProject, serializeProject } from "@/lib/projects";
-import { projectAreas, projectStatuses, type Project } from "@/data/projects";
-import { areaInfo, groups, teamErrors, type AreaId, type Group, type Member } from "@/data/team";
+import { loadMember, loadProject, versionOf } from "@/lib/admin-data";
+import type { MemberRow, ProjectRow, Texts } from "@/lib/content";
+import { db, removeImage, uploadImage } from "@/lib/supabase";
+import { projectAreas, projectStatuses } from "@/data/projects";
+import { areaInfo, groups, type AreaId, type Group } from "@/data/team";
 
 // Toda função exportada daqui vira um endpoint público: as que mexem em dados
 // começam com requireAdmin(), mesmo que a página já seja protegida.
 
 export type FormState = { error?: string };
 
-const MEMBERS = "content/membros.json";
-const PROJECTS = "content/projetos";
 const MAX_UPLOAD = 4 * 1024 * 1024; // a Vercel recusa requisições acima de ~4,5 MB
 const IMAGE_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
@@ -46,8 +45,28 @@ async function upload(form: FormData, key: string) {
   const ext = IMAGE_TYPES[file.type];
   if (!ext) throw new Error("A imagem precisa ser JPG, PNG ou WebP.");
   if (file.size > MAX_UPLOAD) throw new Error("A imagem passa de 4 MB. Diminua e tente de novo.");
-  return { ext, content: Buffer.from(await file.arrayBuffer()) };
+  return { ext, type: file.type, content: Buffer.from(await file.arrayBuffer()) };
 }
+
+/**
+ * Grava a linha (com a foto nova, se houver) e só então apaga a foto antiga. Se o
+ * banco recusar, a foto recém-enviada é apagada para não sobrar solta.
+ */
+async function write(
+  request: () => Promise<Response>,
+  photo: { uploaded: string | null; previous: string | null | undefined; kept: string | null },
+  duplicate: string,
+) {
+  const response = await request();
+  if (!response.ok) {
+    await removeImage(photo.uploaded);
+    const error = (await response.json().catch(() => ({}))) as { code?: string; message?: string };
+    throw new Error(error.code === "23505" ? duplicate : `O banco recusou: ${error.message ?? response.status}`);
+  }
+  if (photo.previous !== photo.kept) await removeImage(photo.previous);
+}
+
+const conflict = (what: string) => new Error(`${what} mudou desde que você abriu a página. Recarregue e tente de novo.`);
 
 // Erros de validação viram mensagem no formulário; o resto (GitHub fora, token errado) também.
 async function attempt(run: () => Promise<string>): Promise<FormState> {
@@ -56,9 +75,6 @@ async function attempt(run: () => Promise<string>): Promise<FormState> {
     target = await run();
   } catch (error) {
     const message = (error as Error).message;
-    if (message.includes("fast forward")) {
-      return { error: "Alguém salvou ao mesmo tempo. Recarregue a página e tente de novo." };
-    }
     return { error: message };
   }
   redirect(target); // fora do try: o redirect do Next funciona lançando um erro especial
@@ -83,58 +99,55 @@ export async function saveProject(_: FormState, form: FormData): Promise<FormSta
     const slug = original || slugify(str(form, "slug") || title);
     if (!/^[a-z0-9-]+$/.test(slug)) throw new Error("Endereço inválido: use só letras, números e hífens.");
     if (slug === "novo") throw new Error('O endereço "novo" é reservado. Escolha outro.');
-    const path = `${PROJECTS}/${slug}.md`;
 
-    const existing = await listFiles(PROJECTS);
-    if (!original && existing.includes(`${slug}.md`)) throw new Error(`Já existe um projeto em /projetos/${slug}.`);
-    if (original) {
-      const current = await readFile(path);
-      if (current.sha !== str(form, "sha")) {
-        throw new Error("Este projeto mudou desde que você abriu a página. Recarregue e tente de novo.");
-      }
-    }
+    const current = original ? await loadProject(original) : undefined;
+    if (original && !current) throw new Error("Projeto não encontrado.");
+    if (current && versionOf(current) !== str(form, "version")) throw conflict("Este projeto");
 
     const area = str(form, "area");
     const status = str(form, "status");
     if (area && !projectAreas.some((item) => item.title === area)) throw new Error("Área inválida.");
     if (status && !projectStatuses.some((item) => item.id === status)) throw new Error("Status inválido.");
     const orderText = str(form, "order");
-    const order = orderText ? Number(orderText) : undefined;
-    if (order !== undefined && !Number.isFinite(order)) throw new Error("Ordem precisa ser um número.");
+    const order = orderText ? Number(orderText) : 1000;
+    if (!Number.isInteger(order)) throw new Error("Ordem precisa ser um número inteiro.");
+    const description = str(form, "description").replace(/\r\n/g, "\n");
+    if (!description) throw new Error('Preencha "sobre o projeto".');
 
-    const photo = await upload(form, "image");
-    const imagePath = photo ? `public/projetos/${slug}.${photo.ext}` : null;
-    const image = imagePath
-      ? imagePath.replace(/^public/, "")
-      : form.get("removeImage") === "on"
-        ? undefined
-        : str(form, "currentImage") || undefined;
+    // Só o português é editado aqui; as traduções (en, es) que já existirem ficam.
+    const texts = (key: "title" | "summary" | "description" | "objective" | "results", value: string): Texts | null =>
+      value ? { ...(current?.[key] ?? {}), pt: value } : null;
+    const list = (items: string[]) => (items.length > 0 ? items : null);
 
-    const project: Omit<Project, "slug"> = {
-      title,
-      summary: str(form, "summary") || undefined,
-      area: (area || undefined) as Project["area"],
-      status: (status || undefined) as Project["status"],
-      period: str(form, "period") || undefined,
+    const file = await upload(form, "image");
+    const uploaded = file ? await uploadImage(`projetos/${slug}-${Date.now()}.${file.ext}`, file.content, file.type) : null;
+    const image = uploaded ?? (form.get("removeImage") === "on" ? null : (current?.image ?? null));
+
+    const row: Omit<ProjectRow, "id"> = {
+      slug,
+      order,
+      title: texts("title", title)!,
+      summary: texts("summary", str(form, "summary")),
+      description: texts("description", description)!,
+      objective: texts("objective", str(form, "objective").replace(/\r\n/g, "\n")),
+      results: texts("results", str(form, "results").replace(/\r\n/g, "\n")),
+      area: (area || null) as ProjectRow["area"],
+      status: (status || null) as ProjectRow["status"],
+      period: str(form, "period") || null,
       image,
-      tech: lines(str(form, "tech"), /,/),
-      team: lines(str(form, "team"), /\n/),
-      repo: url(str(form, "repo"), "Repositório"),
-      description: str(form, "description").replace(/\r\n/g, "\n"),
-      objective: str(form, "objective").replace(/\r\n/g, "\n") || undefined,
-      results: str(form, "results").replace(/\r\n/g, "\n") || undefined,
+      tech: list(lines(str(form, "tech"), /,/)),
+      team: list(lines(str(form, "team"), /\n/)),
+      repo: url(str(form, "repo"), "Repositório") ?? null,
     };
 
-    // Confere com o mesmo leitor do site: se o build fosse quebrar, o erro aparece aqui.
-    const markdown = serializeProject(project, order);
-    const errors: string[] = [];
-    parseProject(`${slug}.md`, markdown, errors);
-    if (errors.length > 0) throw new Error(errors.join(" "));
-
-    await commit(`chore(content): ${original ? "update" : "add"} project ${title} (via /admin)`, [
-      { path, content: markdown },
-      ...(photo && imagePath ? [{ path: imagePath, content: photo.content }] : []),
-    ]);
+    await write(
+      () =>
+        current
+          ? db(`projects?id=eq.${current.id}`, { method: "PATCH", body: JSON.stringify(row) })
+          : db("projects", { method: "POST", body: JSON.stringify(row) }),
+      { uploaded, previous: current?.image, kept: image },
+      `Já existe um projeto com esse título ou em /projetos/${slug}.`,
+    );
     return "/admin/projetos?ok=salvo";
   });
 }
@@ -142,43 +155,23 @@ export async function saveProject(_: FormState, form: FormData): Promise<FormSta
 export async function deleteProject(_: FormState, form: FormData): Promise<FormState> {
   await requireAdmin();
   return attempt(async () => {
-    const slug = str(form, "original");
-    if (!/^[a-z0-9-]+$/.test(slug)) throw new Error("Projeto inválido.");
-    const path = `${PROJECTS}/${slug}.md`;
-    const current = await readFile(path);
-    if (current.sha !== str(form, "sha")) throw new Error("Este projeto mudou. Recarregue antes de apagar.");
-    // Leva junto as traduções (content/projetos/en e es), quando existirem.
-    const translations: string[] = [];
-    for (const lang of ["en", "es"]) {
-      const files = await listFiles(`${PROJECTS}/${lang}`).catch(() => [] as string[]);
-      if (files.includes(`${slug}.md`)) translations.push(`${PROJECTS}/${lang}/${slug}.md`);
-    }
-    await commit(`chore(content): remove project ${slug} (via /admin)`, [
-      { path, content: null },
-      ...translations.map((file) => ({ path: file, content: null })),
-    ]);
+    const current = await loadProject(str(form, "original"));
+    if (!current) throw new Error("Projeto não encontrado.");
+    if (versionOf(current) !== str(form, "version")) throw conflict("Este projeto");
+    await write(() => db(`projects?id=eq.${current.id}`, { method: "DELETE" }), { uploaded: null, previous: current.image, kept: null }, "");
     return "/admin/projetos?ok=apagado";
   });
 }
 
 // ---------- Membros ----------
 
-async function readMembers(sha: string) {
-  const file = await readFile(MEMBERS);
-  if (file.sha !== sha) throw new Error("A lista de membros mudou desde que você abriu a página. Recarregue e tente de novo.");
-  return JSON.parse(file.text) as Member[];
-}
-
-// Uma pessoa por linha: diffs pequenos e fácil de editar à mão.
-const membersJson = (list: Member[]) => `[\n${list.map((m) => `  ${JSON.stringify(m)}`).join(",\n")}\n]\n`;
-
 export async function saveMember(_: FormState, form: FormData): Promise<FormState> {
   await requireAdmin();
   return attempt(async () => {
-    const list = await readMembers(str(form, "sha"));
-    const indexText = str(form, "index"); // vazio = pessoa nova
-    const index = indexText === "" ? -1 : Number(indexText);
-    if (index !== -1 && !(Number.isInteger(index) && list[index])) throw new Error("Pessoa não encontrada.");
+    const id = str(form, "id"); // vazio = pessoa nova
+    const current = id ? await loadMember(id) : undefined;
+    if (id && !current) throw new Error("Pessoa não encontrada.");
+    if (current && versionOf(current) !== str(form, "version")) throw conflict("Esta pessoa");
 
     const name = str(form, "name");
     if (!name) throw new Error("Preencha o nome.");
@@ -187,46 +180,45 @@ export async function saveMember(_: FormState, form: FormData): Promise<FormStat
     const areaList = (key: string) => {
       const values = form.getAll(key).map(String);
       if (values.some((value) => !areaInfo.some((area) => area.id === value))) throw new Error("Área inválida.");
-      return values.length > 0 ? (values as AreaId[]) : undefined;
+      return values.length > 0 ? (values as AreaId[]) : null;
     };
 
-    const photo = await upload(form, "photo");
-    const photoPath = photo ? `public/equipe/${slugify(name)}.${photo.ext}` : null;
-    const previous = index === -1 ? undefined : list[index];
+    // Sem ordem preenchida: a pessoa nova vai para o fim (do grupo dela, que é como o site agrupa).
+    const positionText = str(form, "position");
+    let position = positionText ? Number(positionText) : current?.position;
+    if (position === undefined) {
+      const [last] = (await (await db("members?select=position&order=position.desc&limit=1")).json()) as { position: number }[];
+      position = (last?.position ?? 0) + 1;
+    }
+    if (!Number.isInteger(position)) throw new Error("Ordem precisa ser um número inteiro.");
+
+    const file = await upload(form, "photo");
+    const uploaded = file ? await uploadImage(`membros/${slugify(name)}-${Date.now()}.${file.ext}`, file.content, file.type) : null;
+    const photo = uploaded ?? (form.get("removePhoto") === "on" ? null : (current?.photo ?? null));
 
     // Campos que não valem para o grupo escolhido são descartados em vez de dar erro.
     const canHaveAreas = group === "membro" || group === "trainee";
-    const member: Member = {
+    const row: Omit<MemberRow, "id"> = {
+      position,
       name,
       group,
-      ...(str(form, "cargo") && { cargo: str(form, "cargo") }),
-      ...(canHaveAreas && { areas: areaList("areas") }),
-      ...(group === "membro" && { presidentOf: areaList("presidentOf"), viceOf: areaList("viceOf") }),
-      ...(photoPath
-        ? { photo: photoPath.replace(/^public/, "") }
-        : form.get("removePhoto") !== "on" && previous?.photo
-          ? { photo: previous.photo }
-          : {}),
-      ...(str(form, "linkedin") && { linkedin: url(str(form, "linkedin"), "LinkedIn") }),
-      ...(form.get("inactive") === "on" && { inactive: true }),
+      cargo: str(form, "cargo") || null,
+      areas: canHaveAreas ? areaList("areas") : null,
+      president_of: group === "membro" ? areaList("presidentOf") : null,
+      vice_of: group === "membro" ? areaList("viceOf") : null,
+      photo,
+      linkedin: url(str(form, "linkedin"), "LinkedIn") ?? null,
+      inactive: form.get("inactive") === "on",
     };
-    const clean = JSON.parse(JSON.stringify(member)) as Member; // tira os campos undefined
 
-    if (index === -1) {
-      // Entra logo depois da última pessoa do mesmo grupo (ou no fim da lista).
-      const last = list.findLastIndex((m) => m.group === group);
-      list.splice(last === -1 ? list.length : last + 1, 0, clean);
-    } else {
-      list[index] = clean;
-    }
-
-    const errors = teamErrors(list);
-    if (errors.length > 0) throw new Error(errors.join(" "));
-
-    await commit(`chore(content): ${index === -1 ? "add" : "update"} member ${name} (via /admin)`, [
-      { path: MEMBERS, content: membersJson(list) },
-      ...(photo && photoPath ? [{ path: photoPath, content: photo.content }] : []),
-    ]);
+    await write(
+      () =>
+        current
+          ? db(`members?id=eq.${current.id}`, { method: "PATCH", body: JSON.stringify(row) })
+          : db("members", { method: "POST", body: JSON.stringify(row) }),
+      { uploaded, previous: current?.photo, kept: photo },
+      "",
+    );
     return "/admin/membros?ok=salvo";
   });
 }
@@ -234,12 +226,10 @@ export async function saveMember(_: FormState, form: FormData): Promise<FormStat
 export async function deleteMember(_: FormState, form: FormData): Promise<FormState> {
   await requireAdmin();
   return attempt(async () => {
-    const list = await readMembers(str(form, "sha"));
-    const index = Number(str(form, "index"));
-    const member = list[index];
-    if (!Number.isInteger(index) || !member) throw new Error("Pessoa não encontrada.");
-    list.splice(index, 1);
-    await commit(`chore(content): remove member ${member.name} (via /admin)`, [{ path: MEMBERS, content: membersJson(list) }]);
+    const current = await loadMember(str(form, "id"));
+    if (!current) throw new Error("Pessoa não encontrada.");
+    if (versionOf(current) !== str(form, "version")) throw conflict("Esta pessoa");
+    await write(() => db(`members?id=eq.${current.id}`, { method: "DELETE" }), { uploaded: null, previous: current.photo, kept: null }, "");
     return "/admin/membros?ok=apagado";
   });
 }

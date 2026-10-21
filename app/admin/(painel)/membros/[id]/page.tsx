@@ -5,7 +5,7 @@ import { AdminForm, DeleteForm, Field } from "@/components/admin/forms";
 import { ImageInput } from "@/components/admin/ImageInput";
 import { input } from "@/components/admin/styles";
 import { areaInfo, groups, type AreaId } from "@/data/team";
-import { loadMembers } from "@/lib/admin-data";
+import { loadMember, versionOf } from "@/lib/admin-data";
 
 function AreaChecks({ name, label, hint, checked }: { name: string; label: string; hint: string; checked?: AreaId[] }) {
   return (
@@ -24,12 +24,12 @@ function AreaChecks({ name, label, hint, checked }: { name: string; label: strin
   );
 }
 
-export default async function EditMember({ params }: { params: Promise<{ index: string }> }) {
-  const { index } = await params;
-  const isNew = index === "novo";
-  const { members, sha } = await loadMembers();
-  const member = isNew ? undefined : members[Number(index)];
-  if (!isNew && (!/^\d+$/.test(index) || !member)) notFound();
+export default async function EditMember({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const isNew = id === "novo";
+  const member = isNew ? undefined : await loadMember(id);
+  if (!isNew && !member) notFound();
+  const version = member ? versionOf(member) : "";
 
   return (
     <>
@@ -39,8 +39,8 @@ export default async function EditMember({ params }: { params: Promise<{ index: 
       <h1 className="mt-6 text-3xl font-bold tracking-[-0.03em] md:text-5xl">{member ? member.name : "Nova pessoa"}</h1>
 
       <AdminForm action={saveMember} submit={isNew ? "Adicionar" : "Salvar"} className="mt-12 max-w-3xl">
-        <input type="hidden" name="index" value={isNew ? "" : index} />
-        <input type="hidden" name="sha" value={sha} />
+        <input type="hidden" name="id" value={member?.id ?? ""} />
+        <input type="hidden" name="version" value={version} />
 
         <div className="grid gap-6 sm:grid-cols-2">
           <Field label="nome">
@@ -56,16 +56,19 @@ export default async function EditMember({ params }: { params: Promise<{ index: 
             </select>
           </Field>
           <Field label="cargo" hint="Opcional. Texto abaixo do nome (ex.: Tutora, Diretor de Ensino).">
-            <input name="cargo" defaultValue={member?.cargo} className={input} />
+            <input name="cargo" defaultValue={member?.cargo ?? undefined} className={input} />
           </Field>
           <Field label="linkedin" hint="Ou outro link (Lattes, site).">
-            <input name="linkedin" type="url" defaultValue={member?.linkedin} placeholder="https://www.linkedin.com/in/…" className={input} />
+            <input name="linkedin" type="url" defaultValue={member?.linkedin ?? undefined} placeholder="https://www.linkedin.com/in/…" className={input} />
+          </Field>
+          <Field label="ordem" hint="Menor aparece primeiro dentro do grupo. Vazio: vai para o fim.">
+            <input name="position" type="number" step={1} defaultValue={member?.position} className={input} />
           </Field>
 
           <div className="sm:col-span-2">
             <span className="font-mono text-sm text-muted">foto</span>
             <div className="mt-2">
-              <ImageInput name="photo" removeName="removePhoto" current={member?.photo} shape="round" />
+              <ImageInput name="photo" removeName="removePhoto" current={member?.photo ?? undefined} shape="round" />
             </div>
           </div>
 
@@ -80,9 +83,9 @@ export default async function EditMember({ params }: { params: Promise<{ index: 
           </label>
 
           <div className="space-y-6 sm:col-span-2">
-            <AreaChecks name="areas" label="áreas" hint="Só para Membro e Trainee." checked={member?.areas} />
-            <AreaChecks name="presidentOf" label="coordena" hint="Só para Membro." checked={member?.presidentOf} />
-            <AreaChecks name="viceOf" label="vice-coordena" hint="Só para Membro." checked={member?.viceOf} />
+            <AreaChecks name="areas" label="áreas" hint="Só para Membro e Trainee." checked={member?.areas ?? undefined} />
+            <AreaChecks name="presidentOf" label="coordena" hint="Só para Membro." checked={member?.president_of ?? undefined} />
+            <AreaChecks name="viceOf" label="vice-coordena" hint="Só para Membro." checked={member?.vice_of ?? undefined} />
           </div>
         </div>
       </AdminForm>
@@ -90,8 +93,8 @@ export default async function EditMember({ params }: { params: Promise<{ index: 
       {member && (
         <div className="mt-16 border-t border-border pt-8">
           <DeleteForm action={deleteMember} what={member.name}>
-            <input type="hidden" name="index" value={index} />
-            <input type="hidden" name="sha" value={sha} />
+            <input type="hidden" name="id" value={member.id} />
+            <input type="hidden" name="version" value={version} />
           </DeleteForm>
         </div>
       )}

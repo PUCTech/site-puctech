@@ -8,9 +8,7 @@ import { loadMembers } from "@/lib/admin-data";
 const areaLabel = (id: string) => areaInfo.find((area) => area.id === id)?.label ?? id;
 
 export default async function AdminMembers({ searchParams }: { searchParams: Promise<{ ok?: string }> }) {
-  const [{ ok }, { members }] = await Promise.all([searchParams, loadMembers()]);
-  // Guarda a posição de cada pessoa na lista: é ela que identifica quem editar.
-  const indexed = members.map((member, index) => ({ member, index }));
+  const [{ ok }, members] = await Promise.all([searchParams, loadMembers()]);
 
   return (
     <>
@@ -30,7 +28,7 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
 
       <div className="mt-12 space-y-14">
         {groups.map((group) => {
-          const people = indexed.filter(({ member }) => member.group === group.id);
+          const people = members.filter((member) => member.group === group.id);
           if (people.length === 0) return null;
           return (
             <section key={group.id}>
@@ -38,9 +36,9 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
                 {group.label} <span className="opacity-60">{people.length}</span>
               </h2>
               <ul className="mt-4 border-b border-border">
-                {people.map(({ member, index }) => (
-                  <li key={index} className="border-t border-border">
-                    <Link href={`/admin/membros/${index}`} className="group flex items-center gap-4 py-4">
+                {people.map((member) => (
+                  <li key={member.id} className="border-t border-border">
+                    <Link href={`/admin/membros/${member.id}`} className="group flex items-center gap-4 py-4">
                       {member.photo ? (
                         <Image src={member.photo} alt="" width={44} height={44} className="size-11 rounded-full object-cover" />
                       ) : (

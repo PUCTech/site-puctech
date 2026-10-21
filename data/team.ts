@@ -71,28 +71,6 @@ export const areaInfo: AreaInfo[] = [
 
 // A lista de pessoas fica no Supabase (tabela members), lida por lib/content.ts.
 
-// Confere a lista antes de o /admin salvar: diz qual pessoa (posição na lista) tem o problema.
-export function teamErrors(list: Member[]) {
-  const errors: string[] = [];
-
-  list.forEach((member, index) => {
-    const who = `"${member.name}" (posição ${index + 1} da lista)`;
-    const canHaveAreas = member.group === "membro" || member.group === "trainee";
-
-    if (!canHaveAreas && member.areas) {
-      errors.push(`${who}: areas só vale para group "membro" ou "trainee".`);
-    }
-    if (member.group !== "membro" && member.presidentOf) {
-      errors.push(`${who}: presidentOf só vale para group "membro".`);
-    }
-    if (member.group !== "membro" && member.viceOf) {
-      errors.push(`${who}: viceOf só vale para group "membro".`);
-    }
-  });
-
-  return errors;
-}
-
 // Textos da página /membros, em cada idioma.
 // Mudou um texto em português? Mude também em `en` e `es`, logo abaixo.
 const pt = {

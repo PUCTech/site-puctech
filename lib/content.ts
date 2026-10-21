@@ -19,7 +19,7 @@ async function orFiles<R>(what: string, read: () => Promise<R>, fallback: () => 
   }
 }
 
-async function rows<R>(path: string): Promise<R[]> {
+export async function rows<R>(path: string): Promise<R[]> {
   const response = await db(path);
   if (!response.ok) throw new Error(`Supabase ${response.status} em ${path}: ${(await response.text()).slice(0, 200)}`);
   return response.json();
@@ -28,7 +28,9 @@ async function rows<R>(path: string): Promise<R[]> {
 // null do banco -> campo ausente, como era no JSON e no .md.
 const opt = <V>(value: V | null) => value ?? undefined;
 
-type MemberRow = {
+export type MemberRow = {
+  id: string;
+  position: number;
   name: string;
   group: Member["group"];
   cargo: string | null;
@@ -46,7 +48,7 @@ export async function getAllMembers(): Promise<Member[]> {
 }
 
 async function membersFromDb(): Promise<Member[]> {
-  return (await rows<MemberRow>("members?select=*&order=position")).map((m) => ({
+  return (await rows<MemberRow>("members?select=*&order=position,name")).map((m) => ({
     name: m.name,
     group: m.group,
     cargo: opt(m.cargo),
@@ -59,9 +61,11 @@ async function membersFromDb(): Promise<Member[]> {
   }));
 }
 
-type Texts = Partial<Record<Lang, string>> & { pt: string };
-type ProjectRow = {
+export type Texts = Partial<Record<Lang, string>> & { pt: string };
+export type ProjectRow = {
+  id: string;
   slug: string;
+  order: number;
   title: Texts;
   summary: Texts | null;
   description: Texts;

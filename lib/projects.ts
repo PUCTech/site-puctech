@@ -240,23 +240,3 @@ export function getProjects(lang: Lang = "pt"): Project[] {
   }
   return sorted;
 }
-/** Escreve um projeto no formato de content/projetos/*.md (o inverso de parseProject). */
-export function serializeProject(project: Omit<Project, "slug">, order?: number): string {
-  const data: Record<string, unknown> = { title: project.title };
-  const fields = ["summary", "area", "status", "period", "image", "tech", "team", "repo"] as const;
-  for (const key of fields) {
-    const value = project[key];
-    if (value !== undefined && value !== "" && !(Array.isArray(value) && value.length === 0)) data[key] = value;
-  }
-  if (order !== undefined) data.order = order;
-
-  const body = [
-    ["Descrição", project.description],
-    ["Objetivo e escopo", project.objective],
-    ["Resultados e aprendizados", project.results],
-  ]
-    .filter(([, text]) => text)
-    .map(([title, text]) => `## ${title}\n\n${text}\n`)
-    .join("\n");
-  return matter.stringify(`\n${body}`, data);
-}

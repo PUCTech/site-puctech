@@ -5,14 +5,16 @@ import { AdminForm, DeleteForm, Field } from "@/components/admin/forms";
 import { ImageInput } from "@/components/admin/ImageInput";
 import { input } from "@/components/admin/styles";
 import { projectAreas, projectStatuses } from "@/data/projects";
-import { loadProjects } from "@/lib/admin-data";
+import { loadProject, versionOf } from "@/lib/admin-data";
 
 export default async function EditProject({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const isNew = slug === "novo";
-  const entry = isNew ? null : (await loadProjects()).find((item) => item.project.slug === slug);
-  if (!isNew && !entry) notFound();
-  const project = entry?.project;
+  const project = isNew ? undefined : await loadProject(slug);
+  if (!isNew && !project) notFound();
+  const version = project ? versionOf(project) : "";
+  // O formulário edita só o português.
+  const pt = (value: { pt: string } | null | undefined) => value?.pt;
 
   return (
     <>
@@ -20,24 +22,23 @@ export default async function EditProject({ params }: { params: Promise<{ slug: 
         ← projetos
       </Link>
       <h1 className="mt-6 text-3xl font-bold tracking-[-0.03em] md:text-5xl">
-        {project ? project.title : "Novo projeto"}
+        {project ? project.title.pt : "Novo projeto"}
       </h1>
       {project && <p className="mt-3 font-mono text-sm text-muted">/projetos/{project.slug}</p>}
       <p className="mt-3 max-w-2xl text-sm text-muted">
-        Aqui é o texto em português. As versões em inglês e espanhol ficam em{" "}
-        <code className="font-mono">content/projetos/en/</code> e <code className="font-mono">es/</code>, no GitHub;
-        sem tradução, o site mostra o português.
+        Aqui é o texto em português. As traduções em inglês e espanhol que já existem continuam como estão; sem
+        tradução, o site mostra o português.
       </p>
 
       <AdminForm action={saveProject} submit={isNew ? "Criar projeto" : "Salvar"} className="mt-12 max-w-3xl">
         <input type="hidden" name="original" value={project?.slug ?? ""} />
-        <input type="hidden" name="sha" value={entry?.sha ?? ""} />
+        <input type="hidden" name="version" value={version} />
         <input type="hidden" name="currentImage" value={project?.image ?? ""} />
 
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <Field label="título">
-              <input name="title" required defaultValue={project?.title} className={input} />
+              <input name="title" required defaultValue={pt(project?.title)} className={input} />
             </Field>
           </div>
           {isNew && (
@@ -49,7 +50,7 @@ export default async function EditProject({ params }: { params: Promise<{ slug: 
           )}
           <div className="sm:col-span-2">
             <Field label="resumo" hint="Uma ou duas frases. Aparece na lista de projetos.">
-              <input name="summary" defaultValue={project?.summary} className={input} />
+              <input name="summary" defaultValue={pt(project?.summary)} className={input} />
             </Field>
           </div>
           <Field label="área">
@@ -71,10 +72,10 @@ export default async function EditProject({ params }: { params: Promise<{ slug: 
             </select>
           </Field>
           <Field label="período" hint="Ex.: 2026.1">
-            <input name="period" defaultValue={project?.period} className={input} />
+            <input name="period" defaultValue={project?.period ?? undefined} className={input} />
           </Field>
           <Field label="ordem" hint="Menor aparece primeiro.">
-            <input name="order" type="number" defaultValue={entry && entry.order !== 1000 ? entry.order : ""} className={input} />
+            <input name="order" type="number" defaultValue={project && project.order !== 1000 ? project.order : ""} className={input} />
           </Field>
           <div className="sm:col-span-2">
             <Field label="stack" hint="Separe por vírgula.">
@@ -85,20 +86,20 @@ export default async function EditProject({ params }: { params: Promise<{ slug: 
             <textarea name="team" rows={4} defaultValue={project?.team?.join("\n")} className={input} />
           </Field>
           <Field label="repositório">
-            <input name="repo" type="url" defaultValue={project?.repo} placeholder="https://github.com/…" className={input} />
+            <input name="repo" type="url" defaultValue={project?.repo ?? undefined} placeholder="https://github.com/…" className={input} />
           </Field>
 
           <div className="sm:col-span-2">
             <span className="font-mono text-sm text-muted">imagem</span>
             <div className="mt-2">
-              <ImageInput name="image" removeName="removeImage" current={project?.image} shape="wide" />
+              <ImageInput name="image" removeName="removeImage" current={project?.image ?? undefined} shape="wide" />
             </div>
           </div>
 
           {[
-            { name: "description", label: "sobre o projeto", value: project?.description, required: true },
-            { name: "objective", label: "objetivo e escopo", value: project?.objective },
-            { name: "results", label: "resultados e aprendizados", value: project?.results },
+            { name: "description", label: "sobre o projeto", value: pt(project?.description), required: true },
+            { name: "objective", label: "objetivo e escopo", value: pt(project?.objective) },
+            { name: "results", label: "resultados e aprendizados", value: pt(project?.results) },
           ].map((field) => (
             <div key={field.name} className="sm:col-span-2">
               <Field label={field.label} hint={field.required ? "Obrigatório. Linha em branco separa parágrafos." : undefined}>
@@ -109,11 +110,11 @@ export default async function EditProject({ params }: { params: Promise<{ slug: 
         </div>
       </AdminForm>
 
-      {project && entry && (
+      {project && (
         <div className="mt-16 border-t border-border pt-8">
           <DeleteForm action={deleteProject} what="este projeto">
             <input type="hidden" name="original" value={project.slug} />
-            <input type="hidden" name="sha" value={entry.sha} />
+            <input type="hidden" name="version" value={version} />
           </DeleteForm>
         </div>
       )}

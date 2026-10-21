@@ -65,7 +65,7 @@ export function AdminForm({
 export function DeleteForm({
   action,
   what,
-  note = "Isso sai do site no próximo deploy.",
+  note = "Isso sai do site na hora.",
   label = `apagar ${what}`,
   children,
 }: {
@@ -130,7 +130,7 @@ export function Notice({ ok }: { ok?: string }) {
   return (
     <p role="status" className="mb-10 border-l-2 border-accent pl-4 text-[15px]">
       <strong className="font-semibold">{text}</strong>{" "}
-      <span className="text-muted">O site publica a mudança sozinho em cerca de 1 minuto.</span>
+      <span className="text-muted">O site já mostra a mudança.</span>
     </p>
   );
 }

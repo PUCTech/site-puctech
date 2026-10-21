@@ -3,7 +3,7 @@ import { db, reply, unauthorized } from "@/lib/supabase";
 
 // Lista pública, na ordem do site.
 export async function GET() {
-  return reply(await db("members?select=*&order=position"));
+  return reply(await db("members?select=*&order=position,name"));
 }
 
 // Cria um membro. Só com a sessão do /admin; o banco recusa grupo/área inválidos.

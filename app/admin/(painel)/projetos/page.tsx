@@ -23,7 +23,7 @@ export default async function AdminProjects({ searchParams }: { searchParams: Pr
       </div>
 
       <ol className="mt-10 border-b border-border">
-        {projects.map(({ project }, index) => (
+        {projects.map((project, index) => (
           <li key={project.slug} className="border-t border-border">
             <Link
               href={`/admin/projetos/${project.slug}`}
@@ -32,7 +32,7 @@ export default async function AdminProjects({ searchParams }: { searchParams: Pr
               <span className="font-mono text-sm text-accent-ink">{String(index + 1).padStart(2, "0")}</span>
               <span>
                 <span className="block text-xl font-bold tracking-[-0.02em] underline decoration-transparent decoration-2 underline-offset-4 transition-colors group-hover:decoration-accent">
-                  {project.title}
+                  {project.title.pt}
                 </span>
                 <span className="mt-1 block font-mono text-sm text-muted">
                   /projetos/{project.slug}

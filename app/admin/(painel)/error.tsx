@@ -1,13 +1,13 @@
 "use client";
 
-// Falha ao falar com o GitHub (token ausente/expirado, GitHub fora do ar…).
+// Falha ao falar com o banco (Supabase fora do ar, variáveis faltando…).
 export default function AdminError({ reset }: { reset: () => void }) {
   return (
     <div className="max-w-xl">
       <h1 className="text-3xl font-bold tracking-[-0.03em] md:text-5xl">Não deu para carregar</h1>
       <p className="mt-4 text-lg leading-relaxed text-pretty text-muted">
-        O admin lê e salva os dados pelo GitHub. Confira se o GITHUB_TOKEN está configurado e ainda é válido, e
-        se o GITHUB_BRANCH existe.
+        O admin lê e salva os dados no Supabase. Confira se ele está no ar e se SUPABASE_URL e
+        SUPABASE_SECRET_KEY estão configurados.
       </p>
       <button
         type="button"
