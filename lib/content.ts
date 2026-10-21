@@ -1,10 +1,23 @@
 import "server-only";
 import type { Project } from "@/data/projects";
 import type { Member } from "@/data/team";
+import membersFile from "@/content/membros.json";
 import type { Lang } from "@/lib/i18n";
+import { getProjects as projectsFromFiles } from "@/lib/projects";
 import { db } from "@/lib/supabase";
 
 // O site lê membros e projetos do Supabase, já no formato que os componentes usam.
+// Se o banco falhar, usa content/ (membros.json e projetos/*.md): pode estar
+// desatualizado, mas a página abre em vez de dar erro.
+
+async function orFiles<R>(what: string, read: () => Promise<R>, fallback: () => R): Promise<R> {
+  try {
+    return await read();
+  } catch (error) {
+    console.error(`Supabase indisponível (${what}); usando content/.`, error);
+    return fallback();
+  }
+}
 
 async function rows<R>(path: string): Promise<R[]> {
   const response = await db(path);
@@ -29,6 +42,10 @@ type MemberRow = {
 
 /** Todo mundo, na ordem do site, inclusive quem já saiu (creditado nos projetos). */
 export async function getAllMembers(): Promise<Member[]> {
+  return orFiles("membros", membersFromDb, () => membersFile as Member[]);
+}
+
+async function membersFromDb(): Promise<Member[]> {
   return (await rows<MemberRow>("members?select=*&order=position")).map((m) => ({
     name: m.name,
     group: m.group,
@@ -61,6 +78,12 @@ type ProjectRow = {
 
 /** Projetos na ordem do site (order e, no empate, título em português), no idioma pedido. */
 export async function getProjects(lang: Lang = "pt", slug?: string): Promise<Project[]> {
+  return orFiles("projetos", () => projectsFromDb(lang, slug), () =>
+    projectsFromFiles(lang).filter((project) => !slug || project.slug === slug),
+  );
+}
+
+async function projectsFromDb(lang: Lang, slug?: string): Promise<Project[]> {
   const filter = slug ? `&slug=eq.${encodeURIComponent(slug)}` : "";
   const text = (value: Texts | null) => (value ? (value[lang] ?? value.pt) : undefined);
   return (await rows<ProjectRow>(`projects?select=*&order=order,title->>pt${filter}`)).map((p) => ({

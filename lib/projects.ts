@@ -10,8 +10,8 @@ import {
 } from "@/data/projects";
 import type { Lang } from "@/lib/i18n";
 
-// Lê os projetos de content/projetos/*.md. O site lê do Supabase (lib/content.ts);
-// isto ficou para o /admin e para gerar o seed (scripts/seed.ts).
+// Lê os projetos de content/projetos/*.md. O site lê do Supabase (lib/content.ts) e
+// cai aqui se o banco falhar; o seed (scripts/seed.ts) também usa.
 // Se algo estiver errado, o build falha com uma mensagem dizendo o arquivo e o problema.
 
 const PROJECTS_DIR = path.join(process.cwd(), "content", "projetos");
