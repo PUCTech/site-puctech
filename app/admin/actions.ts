@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { checkKey, endSession, requireAdmin, startSession } from "@/lib/admin-auth";
+import { admins, endSession, owner, requireAdmin } from "@/lib/admin-auth";
 import { commit, listFiles, readFile } from "@/lib/github";
 import { parseProject, serializeProject } from "@/lib/projects";
 import { projectAreas, projectStatuses, type Project } from "@/data/projects";
@@ -65,14 +65,7 @@ async function attempt(run: () => Promise<string>): Promise<FormState> {
 }
 
 // ---------- Login ----------
-
-export async function login(_: FormState, form: FormData): Promise<FormState> {
-  // Atraso fixo: deixa tentativas em massa lentas (a chave em si já é impossível de adivinhar).
-  await new Promise((resolve) => setTimeout(resolve, 600));
-  if (!checkKey(str(form, "key"))) return { error: "Chave incorreta." };
-  await startSession();
-  redirect("/admin");
-}
+// Entrar é pelo GitHub (app/api/auth/github); aqui só sair.
 
 export async function logout() {
   await endSession();
@@ -248,5 +241,32 @@ export async function deleteMember(_: FormState, form: FormData): Promise<FormSt
     list.splice(index, 1);
     await commit(`chore(content): remove member ${member.name} (via /admin)`, [{ path: MEMBERS, content: membersJson(list) }]);
     return "/admin/membros?ok=apagado";
+  });
+}
+
+// ---------- Admins ----------
+// Quem pode entrar no /admin. O id da conta do GitHub é travado no primeiro login.
+
+export async function addAdmin(_: FormState, form: FormData): Promise<FormState> {
+  const me = await requireAdmin();
+  return attempt(async () => {
+    const login = str(form, "login").replace(/^@/, "").toLowerCase();
+    // Regra de nomes do GitHub: letras, números e hífens soltos, até 39 caracteres.
+    if (!/^[a-z0-9](?:-?[a-z0-9]){0,38}$/.test(login)) throw new Error("Usuário do GitHub inválido.");
+    if ((await admins(`github_login=eq.${login}`)).length > 0) throw new Error(`@${login} já é admin.`);
+    await admins("", { method: "POST", body: JSON.stringify({ github_login: login, added_by: me.github_login }) });
+    return "/admin/admins";
+  });
+}
+
+export async function removeAdmin(_: FormState, form: FormData): Promise<FormState> {
+  const me = await requireAdmin();
+  return attempt(async () => {
+    const [admin] = await admins(`id=eq.${encodeURIComponent(str(form, "id"))}`);
+    if (!admin) throw new Error("Admin não encontrado.");
+    if (admin.id === me.id) throw new Error("Você não pode remover a si mesmo.");
+    if (admin.github_login === owner()) throw new Error("O dono (ADMIN_GITHUB) não pode ser removido por aqui.");
+    await admins(`id=eq.${admin.id}`, { method: "DELETE" });
+    return "/admin/admins";
   });
 }

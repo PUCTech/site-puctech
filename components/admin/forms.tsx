@@ -62,13 +62,25 @@ export function AdminForm({
 }
 
 /** Botão de apagar: pede confirmação antes de mandar. */
-export function DeleteForm({ action, what, children }: { action: Action; what: string; children: ReactNode }) {
+export function DeleteForm({
+  action,
+  what,
+  note = "Isso sai do site no próximo deploy.",
+  label = `apagar ${what}`,
+  children,
+}: {
+  action: Action;
+  what: string;
+  note?: string;
+  label?: string;
+  children: ReactNode;
+}) {
   const [state, formAction] = useActionState(action, {});
   return (
     <form
       action={formAction}
       onSubmit={(event) => {
-        if (!confirm(`Apagar ${what}? Isso sai do site no próximo deploy.`)) event.preventDefault();
+        if (!confirm(`Apagar ${what}? ${note}`)) event.preventDefault();
       }}
     >
       {children}
@@ -76,7 +88,7 @@ export function DeleteForm({ action, what, children }: { action: Action; what: s
         type="submit"
         className="font-mono text-sm text-red-600 underline underline-offset-4 hover:text-ink dark:text-red-400"
       >
-        apagar {what}
+        {label}
       </button>
       {state.error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{state.error}</p>}
     </form>
@@ -91,6 +103,7 @@ export function AdminTabs() {
       {[
         { href: "/admin/projetos", label: "Projetos" },
         { href: "/admin/membros", label: "Membros" },
+        { href: "/admin/admins", label: "Admins" },
       ].map((tab) => {
         const active = pathname.startsWith(tab.href);
         return (
