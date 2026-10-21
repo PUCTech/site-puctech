@@ -12,7 +12,7 @@ create type project_area as enum (
 create type project_status as enum ('em-andamento', 'concluido');
 
 create table members (
-  id bigint generated always as identity primary key,
+  id uuid primary key default gen_random_uuid(),
   position int not null unique, -- ordem em que aparece no site
   name text not null,
   "group" member_group not null,
@@ -32,7 +32,8 @@ create table members (
 -- Textos traduzíveis são jsonb no formato T de lib/i18n.ts: {"pt": "...", "en": "...", "es": "..."}.
 -- Só "pt" é obrigatório; idioma que faltar cai no português.
 create table projects (
-  slug text primary key check (slug ~ '^[a-z0-9-]+$'),
+  id uuid primary key default gen_random_uuid(),
+  slug text not null unique check (slug ~ '^[a-z0-9-]+$'),
   "order" int not null default 1000,
   title jsonb not null check (title ? 'pt'),
   summary jsonb,
