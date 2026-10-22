@@ -166,4 +166,5 @@ export const hiredAt: {
   { name: "Banco Pan", logo: "/empresas/banco-pan.svg", logoDark: "/empresas/banco-pan-dark.svg", href: "https://www.bancopan.com.br", tier: 2 },
   { name: "Serena", logo: "/empresas/serena.svg", logoDark: "/empresas/serena-dark.svg", href: "https://srna.co", tier: 2 },
   { name: "nstech", logo: "/empresas/nstech.svg", href: "https://nstech.com.br", tier: 2 },
+  { name: "Peacore", logo: "/empresas/peacore.png", href: "https://peacore.com.br", tier: 2, shape: "stacked" },
 ];
