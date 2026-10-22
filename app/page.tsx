@@ -16,7 +16,7 @@ import { getLang } from "@/lib/lang";
 // Empresas que contrataram membros: altura (px, no desktop) dos logos de cada faixa, e quanto
 // a mais ganham os que não são horizontais, para parecerem do tamanho dos outros da faixa.
 // No celular cada faixa quebra num ponto fixo (`mobileBreak` logos na primeira linha), para
-// nunca sobrar um logo sozinho: a de cima fica 2 + 3, a de baixo 3 + 2.
+// nunca sobrar um logo sozinho: a de cima fica 2 + 3, a de baixo 3 + 3.
 const tiers = [1, 2] as const;
 const tierHeight = { 1: { desktop: 56, mobile: 34 }, 2: { desktop: 30, mobile: 22 } };
 const mobileBreak = { 1: 2, 2: 3 };
